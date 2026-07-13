@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -38,6 +38,35 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1098552117
+    locked: 0
+  - name: Between
+    uniqueID: 4178993737
+    locked: 0
+  - name: Fix BG
+    uniqueID: 2251351843
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Foreground
+    uniqueID: 411084043
+    locked: 0
+  - name: In front of FG
+    uniqueID: 3403159241
+    locked: 0
+  - name: Grass
+    uniqueID: 2832959773
+    locked: 0
+  - name: Player
+    uniqueID: 2025507539
+    locked: 0
+  - name: Tree
+    uniqueID: 799678501
+    locked: 0
+  - name: Fairy
+    uniqueID: 1370001017
+    locked: 0
+  m_RenderingLayers:
+  - Default
