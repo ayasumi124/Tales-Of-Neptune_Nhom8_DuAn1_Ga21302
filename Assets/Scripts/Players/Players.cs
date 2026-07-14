@@ -20,7 +20,7 @@ public class Players : MonoBehaviour
     }
     void Start()
     {
-        Debug.Log("Players script is running.");
+        
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         attack = GetComponent<Attack>();
