@@ -47,6 +47,7 @@ public class CloneFollow : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("ScriptisRunning");
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
