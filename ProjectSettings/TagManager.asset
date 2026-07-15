@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Tree
   layers:
   - Default
   - TransparentFX
@@ -41,11 +42,11 @@ TagManager:
   - name: Background
     uniqueID: 1098552117
     locked: 0
-  - name: Between
-    uniqueID: 4178993737
-    locked: 0
   - name: Fix BG
     uniqueID: 2251351843
+    locked: 0
+  - name: Between
+    uniqueID: 4178993737
     locked: 0
   - name: Default
     uniqueID: 0
@@ -64,6 +65,18 @@ TagManager:
     locked: 0
   - name: Tree
     uniqueID: 799678501
+    locked: 0
+  - name: Tree2
+    uniqueID: 4199481383
+    locked: 0
+  - name: Tree3
+    uniqueID: 2918352403
+    locked: 0
+  - name: Tree4
+    uniqueID: 3206623877
+    locked: 0
+  - name: Tree5
+    uniqueID: 1215820729
     locked: 0
   - name: Fairy
     uniqueID: 1370001017
