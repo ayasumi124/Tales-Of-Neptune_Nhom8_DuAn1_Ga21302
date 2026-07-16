@@ -28,7 +28,6 @@ public class Attack : MonoBehaviour
             animator.SetTrigger("Attack");
             combo = (combo + 1) % 2;
             AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
-            Debug.Log("player is moving and attacking");
         }
         //phát âm thanh đánh khi đứng im lặng, không di chuyển
         if (Input.GetKeyDown(KeyCode.J) && isAttacking && rb.linearVelocity.sqrMagnitude <= 0.1f)
