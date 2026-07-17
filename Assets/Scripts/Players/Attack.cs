@@ -6,6 +6,13 @@ public class Attack : MonoBehaviour
     private bool isAttacking;
     private Rigidbody2D rb;
     private int combo = 0;
+   
+
+public Transform attackPoint;
+public float attackRange = 0.6f;
+public LayerMask enermyLayer;
+public int damage = 1;
+   
 
     void Start()
     {
@@ -28,6 +35,7 @@ public class Attack : MonoBehaviour
             animator.SetTrigger("Attack");
             combo = (combo + 1) % 2;
             AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
+            
         }
         //phát âm thanh đánh khi đứng im lặng, không di chuyển
         if (Input.GetKeyDown(KeyCode.J) && isAttacking && rb.linearVelocity.sqrMagnitude <= 0.1f)
@@ -56,5 +64,22 @@ public class Attack : MonoBehaviour
     {
         isAttacking = false;
     }
+    void DealDamage()
+{
+    Collider2D[] hits = Physics2D.OverlapCircleAll(
+        attackPoint.position,
+        attackRange,
+        enermyLayer);
+
+    foreach (Collider2D hit in hits)
+    {
+        Enemy enemy = hit.GetComponent<Enemy>();
+
+        if (enemy != null)
+        {
+            enemy.TakeDamage(damage);
+        }
+    }
+}
 
 }
