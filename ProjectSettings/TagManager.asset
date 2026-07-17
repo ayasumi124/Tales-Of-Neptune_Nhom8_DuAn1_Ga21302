@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Tree
+  - Enermy
   layers:
   - Default
   - TransparentFX
@@ -80,6 +81,9 @@ TagManager:
     locked: 0
   - name: Fairy
     uniqueID: 1370001017
+    locked: 0
+  - name: Enermy
+    uniqueID: 3025102779
     locked: 0
   m_RenderingLayers:
   - Default
