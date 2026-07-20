@@ -1,4 +1,7 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
 public class Players : MonoBehaviour
 {
     private float tocDo;
@@ -78,14 +81,14 @@ public class Players : MonoBehaviour
         }
 
         // decrease health amount when the player presses the "H" key
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            Health health = GetComponent<Health>();
-            if (health != null)
-            {
+         if (Input.GetKeyDown(KeyCode.H))
+         {
+             Health health = GetComponent<Health>();
+             if (health != null)
+             {
                 health.TakeDamage(1f);
             }
-        }
+         }
         
 
 
