@@ -63,6 +63,7 @@ public class EnermyAttack : MonoBehaviour
 
     void FacePlayer()
     {
+        movement.CanMove =true;
         Vector2 dir =
             (movement.player.position - transform.position).normalized;
 
