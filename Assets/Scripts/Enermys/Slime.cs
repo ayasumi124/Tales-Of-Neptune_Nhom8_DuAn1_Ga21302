@@ -1,107 +1,167 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+using System.Collections;
+using UnityEngine.AI;
 
-public class Slime : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float moveSpeed = 3f;
-    public float chaseRadius = 5f;  // Khoảng cách phát hiện Player
-    public float attackRadius = 1.2f; // Khoảng cách để dừng lại chém
+    public NavMeshAgent navAgent;
+    public Transform player;
+    public LayerMask groundLayer, playerLayer;
+    public float health;
+    public float walkPointRange;
+    public float timeBetweenAttacks;
+    public float sightRange;
+    public float attackRange;
+    public int damage;
+    public Animator animator;
+    public ParticleSystem hitEffect;
 
-    [Header("Attack Settings")]
-    public float attackCooldown = 1.5f; // Thời gian hồi chiêu (1.5 giây chém 1 lần)
-    private float nextAttackTime = 0f;
+    private Vector3 walkPoint;
+    private bool walkPointSet;
+    private bool alreadyAttacked;
+    private bool takeDamage;
 
-    [Header("References")]
-    private Transform player;
-    private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
-    private Animator anim;
-
-    void Start()
+    private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        anim = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
+        player = GameObject.Find("Player").transform;
+        navAgent = GetComponent<NavMeshAgent>();
+    }
 
-        // Tự động tìm nhân vật chính bằng Tag "Player"
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj != null)
+    private void Update()
+    {
+        bool playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
+        bool playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLayer);
+
+        if (!playerInSightRange && !playerInAttackRange)
         {
-            player = playerObj.transform;
+            Patroling();
+        }
+        else if (playerInSightRange && !playerInAttackRange)
+        {
+            ChasePlayer();
+        }
+        else if (playerInAttackRange && playerInSightRange)
+        {
+            AttackPlayer();
+        }
+        else if (!playerInSightRange && takeDamage)
+        {
+            ChasePlayer();
         }
     }
 
-    void FixedUpdate()
+    private void Patroling()
     {
-        if (player == null) return;
-
-        // Tính khoảng cách đến người chơi
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-        // Nếu nằm trong tầm nhìn và chưa chạm tầm đánh -> Đuổi theo
-        if (distanceToPlayer <= chaseRadius && distanceToPlayer > attackRadius)
+        if (!walkPointSet)
         {
-            Vector2 direction = (player.position - transform.position).normalized;
-            
-            // Di chuyển slime sao cho nó có vật lý vừa nhảy về phía trước (Chuẩn vật lý Unity 6)
-            rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
-            
-
-            // Lập mặt quái theo hướng di chuyển
-            FlipSprite(direction.x);
-
-            // Bật animation chạy nhảy của slime
-            if (anim != null) anim.SetBool("IsMoving", true);
+            SearchWalkPoint();
         }
-        else
-        {
-            // Dừng lại khi mất dấu hoặc khi đã đứng sát để chuẩn bị chém
-            rb.linearVelocity = Vector2.zero; 
-            if (anim != null) anim.SetBool("IsMoving", false);
 
-            // Nếu đứng sát sạt trong tầm đánh -> Vung đao chém
-            if (distanceToPlayer <= attackRadius)
+        if (walkPointSet)
+        {
+            navAgent.SetDestination(walkPoint);
+        }
+
+        Vector3 distanceToWalkPoint = transform.position - walkPoint;
+        animator.SetFloat("Velocity", 0.2f);
+
+        if (distanceToWalkPoint.magnitude < 1f)
+        {
+            walkPointSet = false;
+        }
+    }
+
+    private void SearchWalkPoint()
+    {
+        float randomZ = Random.Range(-walkPointRange, walkPointRange);
+        float randomX = Random.Range(-walkPointRange, walkPointRange);
+        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
+
+        if (Physics.Raycast(walkPoint, -transform.up, 2f, groundLayer))
+        {
+            walkPointSet = true;
+        }
+    }
+
+   private void ChasePlayer()
+{
+    navAgent.SetDestination(player.position);
+    animator.SetFloat("Velocity", 0.6f);
+    navAgent.isStopped = false; // Add this line
+}
+
+
+  private void AttackPlayer()
+{
+    navAgent.SetDestination(transform.position);
+
+    if (!alreadyAttacked)
+    {
+        transform.LookAt(player.position);
+        alreadyAttacked = true;
+        animator.SetBool("Attack", true);
+        Invoke(nameof(ResetAttack), timeBetweenAttacks);
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, attackRange))
+        {
+            /*
+                YOU CAN USE THIS TO GET THE PLAYER HUD AND CALL THE TAKE DAMAGE FUNCTION
+
+            PlayerHUD playerHUD = hit.transform.GetComponent<PlayerHUD>();
+            if (playerHUD != null)
             {
-                Attack();
+               playerHUD.takeDamage(damage);
             }
+             */
         }
     }
+}
 
-    void FlipSprite(float directionX)
+
+    private void ResetAttack()
     {
-        if (directionX > 0.1f)
-        {
-            spriteRenderer.flipX = false; // Quay phải
-        }
-        else if (directionX < -0.1f)
-        {
-            spriteRenderer.flipX = true;  // Quay trái
-        }
+        alreadyAttacked = false;
+        animator.SetBool("Attack", false);
     }
 
-    void Attack()
+    public void TakeDamage(float damage)
     {
-        // Kiểm tra xem đã hết thời gian hồi chiêu chưa
-        if (Time.time >= nextAttackTime)
-        {
-            if (anim != null)
-            {
-                // Kích hoạt Trigger "Attack" bạn vừa tạo trong Animator
-                anim.SetTrigger("Attack"); 
-            }
+        health -= damage;
+        hitEffect.Play();
+        StartCoroutine(TakeDamageCoroutine());
 
-            // Tính toán thời gian cho phát chém tiếp theo
-            nextAttackTime = Time.time + attackCooldown;
+        if (health <= 0)
+        {
+            Invoke(nameof(DestroyEnemy), 0.5f);
         }
     }
 
-    // Vẽ vòng tròn tầm nhìn (Vàng) và tầm đánh (Đỏ) ngoài Scene để dễ nhìn
+    private IEnumerator TakeDamageCoroutine()
+    {
+        takeDamage = true;
+        yield return new WaitForSeconds(2f);
+        takeDamage = false;
+    }
+
+    private void DestroyEnemy()
+    {
+        StartCoroutine(DestroyEnemyCoroutine());
+    }
+
+    private IEnumerator DestroyEnemyCoroutine()
+    {
+        animator.SetBool("Dead", true);
+        yield return new WaitForSeconds(1.8f);
+        Destroy(gameObject);
+    }
+
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow; 
-        Gizmos.DrawWireSphere(transform.position, chaseRadius);
-        Gizmos.color = Color.red;    
-        Gizmos.DrawWireSphere(transform.position, attackRadius);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, sightRange);
     }
 }

@@ -5,15 +5,25 @@ public class CloneFollow : MonoBehaviour
     public Transform player;
 
     [Header("Movement")]
-    public float moveSpeed = 3f;
+    public float moveSpeed = 2.5f;
     public float roamRadius = 2f;
     public float followDistance = 5f;
-    public float stopFollowDistance = 2f;
+    public float stopFollowDistance = 0.8f;
 
     [Header("Combat")]
-    public float detectRange = 5f;
-    public float attackRange = 1f;
-    public float attackCooldown = 0.7f;
+    public float detectRange = 6f;
+    public float attackRange = 1.2f;
+    public float attackCooldown = 1f;
+    public float attackRadius = 0.6f;
+    public Transform attackPoint;
+    public LayerMask enermyLayer;
+
+
+
+
+
+    public int damage = 20;
+
 
     public AudioClip footstepSound;
     public AudioClip attackSound;
@@ -83,6 +93,10 @@ public class CloneFollow : MonoBehaviour
         else if (Vector2.Distance(transform.position, player.position) > followDistance)
         {
             state = State.Follow;
+        }
+        if (targetEnemy == null)
+        {
+            EnterIdle();
         }
 
         switch (state)
@@ -194,6 +208,24 @@ public class CloneFollow : MonoBehaviour
         }
     }
 
+    public void DealDamage()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            attackPoint.position,
+            attackRadius,
+            enermyLayer);
+
+        foreach (Collider2D hit in hits)
+        {
+            EnermyHealth hp = hit.GetComponent<EnermyHealth>();
+
+            if (hp != null)
+            {
+                hp.TakeDamage(damage);
+            }
+        }
+    }
+
     void MoveTo(Vector2 target)
     {
         Vector2 dir = target - rb.position;
@@ -275,4 +307,9 @@ public class CloneFollow : MonoBehaviour
     {
         ChooseRandomTarget();
     }
+
+    public void Die()
+{
+    Destroy(gameObject);
+}
 }
