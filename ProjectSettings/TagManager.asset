@@ -6,14 +6,15 @@ TagManager:
   tags:
   - Tree
   - Enermy
+  - Clone
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
+  - Enermy
   - 
   - 
   - 
@@ -49,14 +50,14 @@ TagManager:
   - name: Between
     uniqueID: 4178993737
     locked: 0
-  - name: Default
-    uniqueID: 0
-    locked: 0
   - name: Foreground
     uniqueID: 411084043
     locked: 0
   - name: In front of FG
     uniqueID: 3403159241
+    locked: 0
+  - name: Default
+    uniqueID: 0
     locked: 0
   - name: Grass
     uniqueID: 2832959773

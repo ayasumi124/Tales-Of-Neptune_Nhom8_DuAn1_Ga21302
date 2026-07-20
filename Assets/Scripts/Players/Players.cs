@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class Players : MonoBehaviour
 {
@@ -78,6 +80,16 @@ public class Players : MonoBehaviour
             AudioManager.Instance.PlayFootstep(false); // Nhân vật đứng yên -> Tắt tiếng chân
         }
 
+        // decrease health amount when the player presses the "H" key
+         if (Input.GetKeyDown(KeyCode.H))
+         {
+             Health health = GetComponent<Health>();
+             if (health != null)
+             {
+                health.TakeDamage(1f);
+            }
+         }
+        
 
 
 
