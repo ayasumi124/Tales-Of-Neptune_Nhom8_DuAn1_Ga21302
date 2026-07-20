@@ -58,11 +58,12 @@ public class EnermyAttack : MonoBehaviour
         FacePlayer();
 
         animator.SetTrigger("Attack");
+        //when player out of range
     }
 
     void FacePlayer()
     {
-        movement.CanMove = true;
+        movement.CanMove =true;
         Vector2 dir =
             (movement.player.position - transform.position).normalized;
 
