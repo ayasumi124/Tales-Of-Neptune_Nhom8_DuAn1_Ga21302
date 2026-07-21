@@ -31,6 +31,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+
     private void Start()
     {
         // Phát nhạc nền khi bắt đầu trò chơi
@@ -73,5 +74,16 @@ public class AudioManager : MonoBehaviour
                 footstepSource.Stop();
             }
         }
+    }
+
+    public void ChangeMusic(AudioClip clip)
+    {
+        if (musicSource.clip == clip)
+            return;
+
+        musicSource.Stop();
+        musicSource.clip = clip;
+        musicSource.loop = true;
+        musicSource.Play();
     }
 }
