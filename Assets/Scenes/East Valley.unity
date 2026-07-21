@@ -55186,6 +55186,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 156434428}
+    - target: {fileID: 1508673582511101674, guid: 943901550f00baf4799949a2584878ca, type: 3}
+      propertyPath: moveSpeed
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1864687900062010503, guid: 943901550f00baf4799949a2584878ca, type: 3}
       propertyPath: m_Name
       value: Slime_Idle_0
