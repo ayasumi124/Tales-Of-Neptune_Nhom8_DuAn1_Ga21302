@@ -14,13 +14,6 @@ public class Attack : MonoBehaviour
     public float attackDistance = 0.6f;
     public int damage = 20;
     private int combo = 0;
-   
-
-public Transform attackPoint;
-public float attackRange = 0.6f;
-public LayerMask enermyLayer;
-public int damage = 1;
-   
 
     void Start()
     {
@@ -47,7 +40,6 @@ public int damage = 1;
             animator.SetTrigger("Attack");
             combo = (combo + 1) % 2;
             AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
-            
         }
         Debug.Log(isAttacking);
         //phát âm thanh đánh khi đứng im lặng, không di chuyển
@@ -73,23 +65,6 @@ public int damage = 1;
         Debug.Log("EndAttack");
         isAttacking = false;
     }
-    void DealDamage()
-{
-    Collider2D[] hits = Physics2D.OverlapCircleAll(
-        attackPoint.position,
-        attackRange,
-        enermyLayer);
-
-    foreach (Collider2D hit in hits)
-    {
-        Enemy enemy = hit.GetComponent<Enemy>();
-
-        if (enemy != null)
-        {
-            enemy.TakeDamage(damage);
-        }
-    }
-}
 
 
     private void UpdateAttackPoint()
