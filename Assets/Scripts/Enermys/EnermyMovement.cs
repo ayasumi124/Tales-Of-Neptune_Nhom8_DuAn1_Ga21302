@@ -37,6 +37,15 @@ public class EnermyMovement : MonoBehaviour
 
     void Update()
     {
+
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+
+        if (state.IsTag("Attack"))
+        {
+            rb.linearVelocity = Vector2.zero;
+            animator.SetBool("IsMoving", false);
+            return;
+        }
         if (player == null)
             return;
 
