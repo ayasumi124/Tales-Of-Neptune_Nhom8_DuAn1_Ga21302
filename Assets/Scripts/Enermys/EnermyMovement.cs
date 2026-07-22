@@ -18,6 +18,11 @@ public class EnermyMovement : MonoBehaviour
     public float detectRange = 6f;
     public float attackRange = 1.1f;
 
+    [Header("Target")]
+    public Transform target;
+
+    public string[] targetTags = { "Player", "Clone" };
+
     [Header("Wander")]
     public float roamRadius = 3f;
     public float idleTime = 2f;
@@ -61,6 +66,12 @@ public class EnermyMovement : MonoBehaviour
     void Update()
     {
 
+        if (target == null ||
+    Vector2.Distance(transform.position, target.position) > detectRange)
+        {
+            FindNearestTarget();
+        }
+
         externalVelocity = Vector2.Lerp(
         externalVelocity,
         Vector2.zero,
@@ -74,7 +85,7 @@ public class EnermyMovement : MonoBehaviour
         if (player == null)
             return;
 
-        float distance = Vector2.Distance(transform.position, player.position);
+        float distance = Vector2.Distance(transform.position, target.position);
 
         switch (CurrentState)
         {
@@ -120,7 +131,7 @@ public class EnermyMovement : MonoBehaviour
                 }
 
                 if (distance > attackRange)
-                    MoveTo(player.position);
+                    MoveTo(target.position);
                 else
                     StopMove();
 
@@ -143,6 +154,31 @@ public class EnermyMovement : MonoBehaviour
         }
     }
 
+    void FindNearestTarget()
+    {
+        float nearestDistance = Mathf.Infinity;
+        Transform nearest = null;
+
+        foreach (string tag in targetTags)
+        {
+            GameObject[] objects = GameObject.FindGameObjectsWithTag(tag);
+
+            foreach (GameObject obj in objects)
+            {
+                float distance = Vector2.Distance(
+                    transform.position,
+                    obj.transform.position);
+
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearest = obj.transform;
+                }
+            }
+        }
+
+        target = nearest;
+    }
     void MoveTo(Vector2 target)
     {
         Vector2 dir = (target - (Vector2)transform.position).normalized;
@@ -156,7 +192,7 @@ public class EnermyMovement : MonoBehaviour
         sr.flipX = dir.x < 0;
     }
 
-    void StopMove()
+    public void StopMove()
     {
         rb.linearVelocity = externalVelocity;
 
@@ -165,6 +201,10 @@ public class EnermyMovement : MonoBehaviour
         enemyAudio.PlayFootstep(false);
     }
 
+    public void ResumeAI()
+    {
+        CurrentState = EnemyState.Chase;
+    }
     void ChooseRandomPoint()
     {
         targetPos = spawnPos + Random.insideUnitCircle * roamRadius;
