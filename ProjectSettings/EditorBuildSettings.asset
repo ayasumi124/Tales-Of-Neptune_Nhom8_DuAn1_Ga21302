@@ -8,6 +8,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Valley.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Town.unity
+    guid: 27c87c27346e3f944b3fe52f464d495f
+  - enabled: 1
+    path: Assets/Scenes/East Valley.unity
+    guid: 5816a04913b1e364c8b9733d780d3c6d
+  - enabled: 1
+    path: Assets/Scenes/Snow.unity
+    guid: 6e70dbf07e78f0a4a8528f396422e1ca
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 3590b91b4603b465dbb4216d601bff33, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -2,29 +2,44 @@ using UnityEngine;
 
 public class EnermyAudio : MonoBehaviour
 {
-    [Header("Audio Source")]
-    public AudioSource audioSource;
+    public AudioSource footstepSource;
+    public AudioSource sfxSource;
 
-    [Header("Audio Clips")]
-    public AudioClip attackSound;
-    public AudioClip hurtSound;
-    public AudioClip deathSound;
+    public AudioClip footstepClip;
+    public AudioClip attackClip;
+    public AudioClip hurtClip;
+    public AudioClip deathClip;
+
+    public void PlayFootstep(bool moving)
+    {
+        if (moving)
+        {
+            if (!footstepSource.isPlaying)
+            {
+                footstepSource.clip = footstepClip;
+                footstepSource.loop = true;
+                footstepSource.Play();
+            }
+        }
+        else
+        {
+            if (footstepSource.isPlaying)
+                footstepSource.Stop();
+        }
+    }
 
     public void PlayAttack()
     {
-        if (attackSound != null)
-            audioSource.PlayOneShot(attackSound);
+        sfxSource.PlayOneShot(attackClip);
     }
 
     public void PlayHurt()
     {
-        if (hurtSound != null)
-            audioSource.PlayOneShot(hurtSound);
+        sfxSource.PlayOneShot(hurtClip);
     }
 
     public void PlayDeath()
     {
-        if (deathSound != null)
-            audioSource.PlayOneShot(deathSound);
+        sfxSource.PlayOneShot(deathClip);
     }
 }
