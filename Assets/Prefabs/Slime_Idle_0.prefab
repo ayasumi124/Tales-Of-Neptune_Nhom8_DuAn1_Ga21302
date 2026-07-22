@@ -253,7 +253,7 @@ MonoBehaviour:
   player: {fileID: 0}
   moveSpeed: 0.7
   detectRange: 2
-  attackRange: 0.35
+  attackRange: 0.4
   target: {fileID: 0}
   targetTags:
   - Player
@@ -279,8 +279,8 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  attackDistance: 0.25
-  attackRadius: 0.2
+  attackDistance: 0.2
+  attackRadius: 0.15
   attackCooldown: 1
   damage: 1
 --- !u!82 &7947812308503660795
@@ -740,7 +740,7 @@ Transform:
   m_GameObject: {fileID: 7408988982405328463}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.004, y: -0.022, z: 0}
+  m_LocalPosition: {x: 0.163, y: -0.022, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1.5798}
   m_ConstrainProportionsScale: 0
   m_Children: []
