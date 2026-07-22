@@ -34,12 +34,16 @@ public class EnermyMovement : MonoBehaviour
     Vector2 targetPos;
 
     float idleTimer;
+    public Vector2 externalVelocity;
+
+    private SpriteRenderer sr;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         enemyAudio = GetComponent<EnermyAudio>();
+        sr = GetComponent<SpriteRenderer>();
 
         spawnPos = transform.position;
 
@@ -56,6 +60,11 @@ public class EnermyMovement : MonoBehaviour
 
     void Update()
     {
+
+        externalVelocity = Vector2.Lerp(
+        externalVelocity,
+        Vector2.zero,
+        12f * Time.deltaTime);
         if (!CanMove)
         {
             StopMove();
@@ -138,19 +147,18 @@ public class EnermyMovement : MonoBehaviour
     {
         Vector2 dir = (target - (Vector2)transform.position).normalized;
 
-        rb.linearVelocity = dir * moveSpeed;
+        rb.linearVelocity = dir * moveSpeed + externalVelocity;
 
         animator.SetBool("IsMoving", true);
 
         enemyAudio.PlayFootstep(true);
 
-        // Sprite gốc nhìn sang phải
-        GetComponent<SpriteRenderer>().flipX = dir.x < 0;
+        sr.flipX = dir.x < 0;
     }
 
     void StopMove()
     {
-        rb.linearVelocity = Vector2.zero;
+        rb.linearVelocity = externalVelocity;
 
         animator.SetBool("IsMoving", false);
 
@@ -181,5 +189,5 @@ public class EnermyMovement : MonoBehaviour
         Gizmos.DrawWireSphere(Application.isPlaying ? (Vector3)spawnPos : transform.position, roamRadius);
     }
 
-    
+
 }
