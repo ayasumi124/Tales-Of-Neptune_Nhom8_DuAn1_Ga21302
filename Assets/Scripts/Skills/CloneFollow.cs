@@ -12,11 +12,11 @@ public class CloneFollow : MonoBehaviour
 
     [Header("Combat")]
     public float detectRange = 6f;
-    public float attackRange = 1.2f;
+    public float attackRange = 0.8f;
     public float attackCooldown = 1f;
-    public float attackRadius = 0.6f;
+    public float attackRadius = 0.25f;
 
-    public Transform attackPoint;
+    public Transform[] attackPoints;
     public LayerMask enermyLayer;
 
     public int damage = 20;
@@ -174,7 +174,7 @@ public class CloneFollow : MonoBehaviour
             return;
         }
 
-        float dis = Vector2.Distance(transform.position, targetEnemy.position);
+        float dis = Vector2.Distance(rb.position, targetEnemy.position);
 
         if (dis > detectRange)
         {
@@ -183,6 +183,7 @@ public class CloneFollow : MonoBehaviour
             return;
         }
 
+        // Chưa đủ gần thì tiếp tục đuổi
         if (dis > attackRange)
         {
             MoveTo(targetEnemy.position);
@@ -190,7 +191,9 @@ public class CloneFollow : MonoBehaviour
         }
 
         rb.linearVelocity = Vector2.zero;
+
         animator.SetBool("IsMoving", false);
+
         StopFootstep();
 
         attackTimer -= Time.deltaTime;
@@ -200,15 +203,16 @@ public class CloneFollow : MonoBehaviour
 
         attackTimer = attackCooldown;
 
-        Vector2 dir = (targetEnemy.position - transform.position).normalized;
+        Vector2 face =
+            ((Vector2)targetEnemy.position - rb.position).normalized;
 
-        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-            dir = new Vector2(Mathf.Sign(dir.x), 0);
+        if (Mathf.Abs(face.x) > Mathf.Abs(face.y))
+            face = new Vector2(Mathf.Sign(face.x), 0);
         else
-            dir = new Vector2(0, Mathf.Sign(dir.y));
+            face = new Vector2(0, Mathf.Sign(face.y));
 
-        animator.SetFloat("LastMoveX", dir.x);
-        animator.SetFloat("LastMoveY", dir.y);
+        animator.SetFloat("LastMoveX", face.x);
+        animator.SetFloat("LastMoveY", face.y);
 
         animator.SetInteger("Combo", Random.Range(0, 2));
 
@@ -216,12 +220,12 @@ public class CloneFollow : MonoBehaviour
 
         attackSource.PlayOneShot(attackSound);
     }
-
     void MoveTo(Vector2 target)
     {
-        Vector2 dir = target - rb.position;
+        Vector2 offset = target - rb.position;
 
-        if (dir.magnitude < 0.05f)
+        // Giữ khoảng dừng nhỏ để không chồng collider
+        if (offset.magnitude < 0.1f)
         {
             rb.linearVelocity = Vector2.zero;
             animator.SetBool("IsMoving", false);
@@ -229,7 +233,7 @@ public class CloneFollow : MonoBehaviour
             return;
         }
 
-        dir.Normalize();
+        Vector2 dir = offset.normalized;
 
         rb.linearVelocity = dir * moveSpeed;
 
@@ -288,25 +292,31 @@ public class CloneFollow : MonoBehaviour
 
     public void DealDamage()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            attackPoint.position,
-            attackRadius,
-            enermyLayer);
-
-        foreach (Collider2D hit in hits)
+        foreach (Transform point in attackPoints)
         {
-            EnermyHealth hp = hit.GetComponent<EnermyHealth>();
+            if (point == null)
+                continue;
 
-            if (hp != null)
+            Collider2D[] hits =
+                Physics2D.OverlapCircleAll(
+                    point.position,
+                    attackRadius,
+                    enermyLayer);
+
+            foreach (Collider2D hit in hits)
             {
-                Vector2 dir =
-    (hp.transform.position - transform.position).normalized;
+                EnermyHealth hp = hit.GetComponent<EnermyHealth>();
 
-hp.TakeDamage(damage, dir);
+                if (hp != null)
+                {
+                    Vector2 dir =
+                        (hp.transform.position - transform.position).normalized;
+
+                    hp.TakeDamage(damage, dir);
+                }
             }
         }
     }
-
     void StopFootstep()
     {
         if (footstepSource.isPlaying)
@@ -322,5 +332,19 @@ hp.TakeDamage(damage, dir);
     public void Die()
     {
         Destroy(gameObject);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (attackPoints == null)
+            return;
+
+        Gizmos.color = Color.red;
+
+        foreach (Transform point in attackPoints)
+        {
+            if (point != null)
+                Gizmos.DrawWireSphere(point.position, attackRadius);
+        }
     }
 }

@@ -57723,6 +57723,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slime_Idle_0 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5218853899728729679, guid: 943901550f00baf4799949a2584878ca, type: 3}
+      propertyPath: deathClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
+    - target: {fileID: 5218853899728729679, guid: 943901550f00baf4799949a2584878ca, type: 3}
+      propertyPath: footstepClip
+      value: 
+      objectReference: {fileID: 8300000, guid: ed2629ca8b1c1eb42950a58c47847614, type: 3}
     - target: {fileID: 7262725974297968102, guid: 943901550f00baf4799949a2584878ca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 25.713886
@@ -59314,6 +59322,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slime_Idle_0
       objectReference: {fileID: 0}
+    - target: {fileID: 5218853899728729679, guid: 943901550f00baf4799949a2584878ca, type: 3}
+      propertyPath: deathClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
+    - target: {fileID: 5218853899728729679, guid: 943901550f00baf4799949a2584878ca, type: 3}
+      propertyPath: footstepClip
+      value: 
+      objectReference: {fileID: 8300000, guid: ed2629ca8b1c1eb42950a58c47847614, type: 3}
     - target: {fileID: 7262725974297968102, guid: 943901550f00baf4799949a2584878ca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 31.138157
