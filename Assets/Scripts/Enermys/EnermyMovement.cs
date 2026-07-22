@@ -41,6 +41,8 @@ public class EnermyMovement : MonoBehaviour
     float idleTimer;
     public Vector2 externalVelocity;
 
+    public Vector2 LastMoveDirection { get; private set; } = Vector2.down;
+
     private SpriteRenderer sr;
 
     void Start()
@@ -182,6 +184,11 @@ public class EnermyMovement : MonoBehaviour
     void MoveTo(Vector2 target)
     {
         Vector2 dir = (target - (Vector2)transform.position).normalized;
+
+        if (dir.sqrMagnitude > 0.01f)
+        {
+            LastMoveDirection = dir;
+        }
 
         rb.linearVelocity = dir * moveSpeed + externalVelocity;
 

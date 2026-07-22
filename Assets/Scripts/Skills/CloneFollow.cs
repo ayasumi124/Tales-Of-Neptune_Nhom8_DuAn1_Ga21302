@@ -117,7 +117,7 @@ public class CloneFollow : MonoBehaviour
         }
 
         rb.linearVelocity = Vector2.zero;
-        animator.SetBool("IsMoving", false);
+        animator.SetBool("IsRunning", false);
         StopFootstep();
 
         idleTimer -= Time.deltaTime;
@@ -195,7 +195,7 @@ public class CloneFollow : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
 
-        animator.SetBool("IsMoving", false);
+        animator.SetBool("IsRunning", false);
 
         StopFootstep();
 
@@ -231,7 +231,7 @@ public class CloneFollow : MonoBehaviour
         if (offset.magnitude < 0.1f)
         {
             rb.linearVelocity = Vector2.zero;
-            animator.SetBool("IsMoving", false);
+            animator.SetBool("IsRunning", false);
             StopFootstep();
             return;
         }
@@ -240,7 +240,7 @@ public class CloneFollow : MonoBehaviour
 
         rb.linearVelocity = dir * moveSpeed;
 
-        animator.SetBool("IsMoving", true);
+        animator.SetBool("IsRunning", true);
 
         Vector2 face;
 

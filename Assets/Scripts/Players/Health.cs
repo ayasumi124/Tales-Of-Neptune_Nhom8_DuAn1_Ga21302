@@ -30,9 +30,8 @@ public class Health : MonoBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-
-            audioPlayer.PlayDeath();
             animator.SetTrigger("Death");
+            audioPlayer.PlayDeath();
             onPlayerDeath?.Invoke();
 
             Debug.Log("Player is dead");
