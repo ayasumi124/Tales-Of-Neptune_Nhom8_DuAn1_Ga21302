@@ -21,6 +21,8 @@ public class CloneFollow : MonoBehaviour
 
     public int damage = 20;
 
+    private bool isAttacking;
+
     public AudioClip footstepSound;
     public AudioClip attackSound;
 
@@ -62,6 +64,7 @@ public class CloneFollow : MonoBehaviour
         footstepSource.loop = true;
 
         EnterIdle();
+        isAttacking= true;
     }
 
     void Update()
@@ -347,4 +350,10 @@ public class CloneFollow : MonoBehaviour
                 Gizmos.DrawWireSphere(point.position, attackRadius);
         }
     }
+
+        public void EndAttack()
+    {
+        isAttacking = false;
+    }
+
 }

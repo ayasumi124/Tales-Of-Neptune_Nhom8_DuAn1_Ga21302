@@ -234,10 +234,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnermyAudio
   footstepSource: {fileID: 7947812308503660795}
   sfxSource: {fileID: 6129834820399778356}
-  footstepClip: {fileID: 0}
-  attackClip: {fileID: 0}
+  footstepClip: {fileID: 8300000, guid: ed2629ca8b1c1eb42950a58c47847614, type: 3}
+  attackClip: {fileID: 8300000, guid: f16fc7bea6ef85549b0513f5046263ef, type: 3}
   hurtClip: {fileID: 8300000, guid: bc73b132c56a44e4aa8d36d2c5c82d95, type: 3}
-  deathClip: {fileID: 0}
+  deathClip: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
 --- !u!114 &1508673582511101674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,10 +251,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyMovement
   player: {fileID: 0}
-  moveSpeed: 1
-  detectRange: 3
-  attackRange: 1.1
-  roamRadius: 3
+  moveSpeed: 0.7
+  detectRange: 2
+  attackRange: 0.4
+  target: {fileID: 0}
+  targetTags:
+  - Player
+  - Clone
+  roamRadius: 2
   idleTime: 2
   CanMove: 1
   externalVelocity: {x: 0, y: 0}
@@ -275,8 +279,8 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  attackRadius: 0.25
-  attackDistance: 0.8
+  attackDistance: 0.2
+  attackRadius: 0.3
   attackCooldown: 1
   damage: 1
 --- !u!82 &7947812308503660795
@@ -736,7 +740,7 @@ Transform:
   m_GameObject: {fileID: 7408988982405328463}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.2, y: 0, z: 0}
+  m_LocalPosition: {x: 0.218, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1.5798}
   m_ConstrainProportionsScale: 0
   m_Children: []

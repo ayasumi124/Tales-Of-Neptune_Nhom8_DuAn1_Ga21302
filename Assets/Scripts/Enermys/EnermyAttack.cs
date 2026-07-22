@@ -9,8 +9,8 @@ public class EnermyAttack : MonoBehaviour
     public LayerMask playerLayer;
     private bool isAttacking;
 
-    public float attackRadius = 0.45f;
-    public float attackDistance = 0.6f;
+    public float attackDistance = 0.8f;
+    public float attackRadius = 0.25f;
     public float attackCooldown = 1f;
 
     public int damage = 1;
@@ -18,12 +18,14 @@ public class EnermyAttack : MonoBehaviour
     Animator animator;
     EnermyAudio enemyAudio;
 
+    SpriteRenderer sr;
     float timer;
 
     void Start()
     {
         animator = GetComponent<Animator>();
         enemyAudio = GetComponent<EnermyAudio>();
+        sr = GetComponent<SpriteRenderer>();
 
         if (movement == null)
             movement = GetComponent<EnermyMovement>();
@@ -39,33 +41,42 @@ public class EnermyAttack : MonoBehaviour
             FacePlayer();
         }
 
-        timer -= Time.deltaTime;
-
         float dis = Vector2.Distance(
             transform.position,
-            movement.player.position);
+            movement.target.position);
 
         if (dis > movement.attackRange)
+        {
+            isAttacking = false;
+            movement.CanMove = true;
             return;
+        }
+
 
         if (isAttacking)
+        {
+            movement.StopMove();
             return;
+        }
+
+        timer -= Time.deltaTime;
 
         if (timer > 0)
             return;
 
-        Attack();
+        if (timer <= 0)
+        {
+            Attack();
+        }
     }
 
     void Attack()
     {
         isAttacking = true;
 
-        FacePlayer();      // Khóa hướng ngay trước khi đánh
+        FacePlayer();
 
-        timer = attackCooldown;
-
-        movement.CanMove = false;
+        movement.StopMove();
 
         enemyAudio.PlayAttack();
 
@@ -73,9 +84,7 @@ public class EnermyAttack : MonoBehaviour
     }
     private void FacePlayer()
     {
-        Vector2 dir = (movement.player.position - transform.position).normalized;
-
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        Vector2 dir = (movement.target.position - transform.position).normalized;
 
         // Sprite gốc nhìn sang phải
         if (Mathf.Abs(dir.x) > 0.01f)
@@ -104,10 +113,19 @@ public class EnermyAttack : MonoBehaviour
 
         foreach (Collider2D hit in hits)
         {
-            Health hp = hit.GetComponentInParent<Health>();
+            Health playerHp = hit.GetComponentInParent<Health>();
 
-            if (hp != null)
-                hp.TakeDamage(damage);
+            if (playerHp != null)
+            {
+                playerHp.TakeDamage(damage);
+            }
+
+            CloneHealth cloneHp = hit.GetComponentInParent<CloneHealth>();
+
+            if (cloneHp != null)
+            {
+                cloneHp.TakeDamage(damage);
+            }
         }
     }
 
@@ -117,5 +135,19 @@ public class EnermyAttack : MonoBehaviour
         isAttacking = false;
 
         movement.CanMove = true;
+
+        // cho AI cập nhật lại
+        movement.ResumeAI();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(
+            attackPoint.position,
+            attackRadius);
     }
 }
