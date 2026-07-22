@@ -6,105 +6,113 @@ public class Attack : MonoBehaviour
     private bool isAttacking;
     private Rigidbody2D rb;
 
-    public Transform attackPoint;
+    public Transform[] attackPoint;
     public LayerMask enermyLayer;
 
     public float attackRadius = 0.6f;
     public float attackCooldown = 1f;
     public float attackDistance = 0.6f;
     public int damage = 20;
+
     private int combo = 0;
 
     void Start()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+
         isAttacking = true;
     }
 
     void Update()
     {
-
-        if (attackPoint != null)
-        {
-            Debug.Log(attackPoint.parent);
-        }
-
-        //phát âm thanh đánh khi di chuyển
+        // Đánh khi đang di chuyển
         if (Input.GetKeyDown(KeyCode.J) && isAttacking)
         {
             isAttacking = true;
-            UpdateAttackPoint();
-            animator.SetInteger("Combo", combo);
 
+            UpdateAttackPoint();
+
+            animator.SetInteger("Combo", combo);
             animator.SetTrigger("Attack");
+
             combo = (combo + 1) % 2;
+
             AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
         }
-        Debug.Log(isAttacking);
-        //phát âm thanh đánh khi đứng im lặng, không di chuyển
+
+        // Đánh khi đứng yên
         if (Input.GetKeyDown(KeyCode.J) && !isAttacking)
         {
             isAttacking = true;
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
-            animator.SetInteger("Combo", combo);
 
+            UpdateAttackPoint();
+
+            animator.SetInteger("Combo", combo);
             animator.SetTrigger("Attack");
 
             combo = (combo + 1) % 2;
 
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
         }
-
-
-        //tốc độ đánh khi nhấn nút J, nếu nhấn liên tục thì tốc độ đánh sẽ nhanh hơn
-
     }
 
     public void EndAttack()
     {
-        Debug.Log("EndAttack");
         isAttacking = false;
     }
 
-
     private void UpdateAttackPoint()
     {
-        Players player = GetComponent<Players>();
-
-        Vector2 dir = player.LastDirection;
-
-        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-        {
-            dir = new Vector2(Mathf.Sign(dir.x), 0);
-        }
-        else
-        {
-            dir = new Vector2(0, Mathf.Sign(dir.y));
-        }
-
-        attackPoint.localPosition = dir * attackDistance;
+        // Không cần làm gì.
+        // Các AttackPoint đã được đặt sẵn trong Unity
+        // theo hình quạt. Chỉ cần để nguyên.
     }
+
     public void DealDamage()
     {
         Debug.Log("DealDamage");
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            attackPoint.position,
-            attackRadius,
-            enermyLayer);
-
-        Debug.Log(hits.Length);
-
-        foreach (Collider2D hit in hits)
+        foreach (Transform point in attackPoint)
         {
-            Debug.Log(hit.name);
+            if (point == null)
+                continue;
 
-            EnermyHealth hp = hit.GetComponent<EnermyHealth>();
+            Collider2D[] hits =
+                Physics2D.OverlapCircleAll(
+                    point.position,
+                    attackRadius,
+                    enermyLayer);
 
-            if (hp != null)
+            foreach (Collider2D hit in hits)
             {
-                Debug.Log("Damage");
-                hp.TakeDamage(damage);
+                EnermyHealth hp = hit.GetComponent<EnermyHealth>();
+
+                if (hp != null)
+                {
+                    Vector2 dir =
+                        (hp.transform.position - transform.position).normalized;
+
+                    hp.TakeDamage(damage, dir);
+                }
+            }
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+
+        Gizmos.color = Color.red;
+
+        foreach (Transform point in attackPoint)
+        {
+            if (point != null)
+            {
+                Gizmos.DrawWireSphere(
+                    point.position,
+                    attackRadius);
             }
         }
     }

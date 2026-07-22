@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class EnermyHealth : MonoBehaviour
 {
@@ -14,6 +15,11 @@ public class EnermyHealth : MonoBehaviour
 
     private float hpTimer;
 
+    [Header("Knockback")]
+    public float knockbackForce = 6f;
+    public float knockbackTime = 0.1f;
+
+    private Rigidbody2D rb;
 
 
 
@@ -23,13 +29,16 @@ public class EnermyHealth : MonoBehaviour
     private EnermyAudio enermyAudio;
     private EnermyHealthBar enermyHealthBar;
 
+
     void Start()
     {
+
         currentHealth = maxHealth;
-        animator = GetComponent<Animator>();
         if (hpCanvas != null)
             hpCanvas.enabled = false;
         enermyAudio = GetComponent<EnermyAudio>();
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -51,13 +60,12 @@ public class EnermyHealth : MonoBehaviour
         hpTimer = 2f;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector2 knockbackDir)
     {
         if (isDead)
             return;
 
         currentHealth -= damage;
-
 
         Debug.Log(gameObject.name + " HP: " + currentHealth);
 
@@ -66,8 +74,21 @@ public class EnermyHealth : MonoBehaviour
 
         ShowHP();
 
-        // Sau này nếu có animation Hurt
         animator.SetTrigger("Hurt");
+
+        // Knockback
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+
+        if (rb != null)
+        {
+            EnermyMovement movement = GetComponent<EnermyMovement>();
+
+            if (movement != null)
+            {
+                movement.externalVelocity =
+                    knockbackDir.normalized * knockbackForce;
+            }
+        }
 
         if (currentHealth <= 0)
         {
@@ -78,8 +99,9 @@ public class EnermyHealth : MonoBehaviour
     void Die()
     {
         isDead = true;
-
+        animator.SetTrigger("Death");
         Debug.Log(gameObject.name + " Dead");
+
 
         // Tắt AI
         EnermyMovement movement = GetComponent<EnermyMovement>();
@@ -100,9 +122,11 @@ public class EnermyHealth : MonoBehaviour
             col.enabled = false;
 
         // Nếu sau này có animation chết thì thay Destroy bằng Trigger
+
         if (enermyAudio != null)
             enermyAudio.PlayDeath();
 
         Destroy(gameObject, deathDelay);
     }
+
 }

@@ -298,7 +298,12 @@ public class CloneFollow : MonoBehaviour
             EnermyHealth hp = hit.GetComponent<EnermyHealth>();
 
             if (hp != null)
-                hp.TakeDamage(damage);
+            {
+                Vector2 dir =
+    (hp.transform.position - transform.position).normalized;
+
+hp.TakeDamage(damage, dir);
+            }
         }
     }
 
