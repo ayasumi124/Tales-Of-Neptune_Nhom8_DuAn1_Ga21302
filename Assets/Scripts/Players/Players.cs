@@ -10,6 +10,7 @@ public class Players : MonoBehaviour
     float moveY;
     public Rigidbody2D rb;
     public Animator animator;
+    private PlayerStamina stamina;
     public float FacingDirection { get; private set; } = 1;
     public Vector2 LastDirection { get; private set; } = Vector2.down;
 
@@ -26,6 +27,7 @@ public class Players : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         attack = GetComponent<Attack>();
+        stamina = GetComponent<PlayerStamina>();
         tocDoChay = tocDo;
     }
 
@@ -45,9 +47,20 @@ public class Players : MonoBehaviour
         else if (moveX < 0)
             FacingDirection = -1;
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        // Luôn hồi stamina
+        stamina.Recover();
+
+        bool canRun =
+            Input.GetKey(KeyCode.LeftShift) &&
+            !stamina.IsExhausted &&
+            stamina.currentStamina > 0 &&
+            (moveX != 0 || moveY != 0);
+
+        if (canRun)
         {
             tocDo = tocDoChay * 2;
+
+            stamina.Drain();
         }
         else
         {
@@ -69,7 +82,7 @@ public class Players : MonoBehaviour
 
         animator.SetBool("IsMoving", isMoving);
 
-        
+
 
         if (rb.linearVelocity.sqrMagnitude > 0.1f)
         {
@@ -81,15 +94,15 @@ public class Players : MonoBehaviour
         }
 
         // decrease health amount when the player presses the "H" key
-         if (Input.GetKeyDown(KeyCode.H))
-         {
-             Health health = GetComponent<Health>();
-             if (health != null)
-             {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            Health health = GetComponent<Health>();
+            if (health != null)
+            {
                 health.TakeDamage(1f);
             }
-         }
-        
+        }
+
 
 
 
