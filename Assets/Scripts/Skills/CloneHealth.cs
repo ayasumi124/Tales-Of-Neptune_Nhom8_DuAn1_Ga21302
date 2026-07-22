@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class CloneHealth : MonoBehaviour
 {
-    public int maxHealth = 7;
+    public int maxHealth = 5;
     public int currentHealth;
 
     public Canvas hpCanvas;
+    private Animator animator;
 
     float hpTimer;
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         currentHealth = maxHealth;
 
         if (hpCanvas != null)
@@ -42,9 +44,14 @@ public class CloneHealth : MonoBehaviour
         currentHealth -= damage;
 
         ShowHP();
+        animator.SetTrigger("Hurt");
 
         if (currentHealth <= 0)
+        {
             Die();
+            animator.SetTrigger("Death");
+        }
+            
     }
 
     void Die()

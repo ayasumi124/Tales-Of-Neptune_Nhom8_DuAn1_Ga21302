@@ -49,12 +49,13 @@ public class Players : MonoBehaviour
 
         // Luôn hồi stamina
         stamina.Recover();
-
+        bool isRunning = rb.linearVelocity.sqrMagnitude > 0.01f;
         bool canRun =
             Input.GetKey(KeyCode.LeftShift) &&
             !stamina.IsExhausted &&
             stamina.currentStamina > 0 &&
-            (moveX != 0 || moveY != 0);
+            isRunning;
+        animator.SetBool("IsRunning", canRun);
 
         if (canRun)
         {

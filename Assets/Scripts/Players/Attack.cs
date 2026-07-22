@@ -27,7 +27,7 @@ public class Attack : MonoBehaviour
     void Update()
     {
         // Đánh khi đang di chuyển
-        if (Input.GetKeyDown(KeyCode.J) && isAttacking)
+        if (Input.GetKeyDown(KeyCode.J) && isAttacking || Input.GetKeyDown(KeyCode.Mouse0))
         {
             isAttacking = true;
 
