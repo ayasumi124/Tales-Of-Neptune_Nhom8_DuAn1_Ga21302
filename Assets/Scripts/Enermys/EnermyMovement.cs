@@ -43,8 +43,6 @@ public class EnermyMovement : MonoBehaviour
 
     public Vector2 LastMoveDirection { get; private set; } = Vector2.down;
 
-    public float stopDistance = 0.8f;
-
     private SpriteRenderer sr;
 
     void Start()
@@ -133,7 +131,8 @@ public class EnermyMovement : MonoBehaviour
                     CurrentState = EnemyState.Return;
                     break;
                 }
-                if (distance > stopDistance)
+
+                if (distance > attackRange)
                     MoveTo(target.position);
                 else
                     StopMove();
