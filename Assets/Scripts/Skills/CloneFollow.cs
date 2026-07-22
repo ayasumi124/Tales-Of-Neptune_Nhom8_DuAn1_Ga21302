@@ -8,42 +8,35 @@ public class CloneFollow : MonoBehaviour
     public float moveSpeed = 2.5f;
     public float roamRadius = 2f;
     public float followDistance = 5f;
-    public float stopFollowDistance = 0.8f;
+    public float stopFollowDistance = 1f;
 
     [Header("Combat")]
     public float detectRange = 6f;
     public float attackRange = 1.2f;
     public float attackCooldown = 1f;
     public float attackRadius = 0.6f;
+
     public Transform attackPoint;
     public LayerMask enermyLayer;
 
-
-
-
-
     public int damage = 20;
-
 
     public AudioClip footstepSound;
     public AudioClip attackSound;
 
-    private Rigidbody2D rb;
-    private Animator animator;
-    private Animator playerAnimator;
+    Rigidbody2D rb;
+    Animator animator;
 
-    private AudioSource footstepSource;
-    private AudioSource attackSource;
+    AudioSource footstepSource;
+    AudioSource attackSource;
 
-    private Vector2 targetPos;
+    Transform targetEnemy;
 
-    private Transform targetEnemy;
+    Vector2 targetPos;
 
-    private float idleTimer;
-    private float attackTimer;
-    private float searchTimer;
-
-    private bool attackPlaying;
+    float idleTimer;
+    float attackTimer;
+    float searchTimer;
 
     enum State
     {
@@ -57,11 +50,8 @@ public class CloneFollow : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("CloneFollow script started.");
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
-        playerAnimator = player.GetComponent<Animator>();
 
         AudioSource[] audio = GetComponents<AudioSource>();
 
@@ -76,27 +66,15 @@ public class CloneFollow : MonoBehaviour
 
     void Update()
     {
-        if (player == null) return;
+        if (player == null)
+            return;
 
         searchTimer -= Time.deltaTime;
 
         if (searchTimer <= 0)
         {
-            searchTimer = 0.3f;
+            searchTimer = 0.25f;
             FindNearestEnemy();
-        }
-
-        if (targetEnemy != null)
-        {
-            state = State.Combat;
-        }
-        else if (Vector2.Distance(transform.position, player.position) > followDistance)
-        {
-            state = State.Follow;
-        }
-        if (targetEnemy == null)
-        {
-            EnterIdle();
         }
 
         switch (state)
@@ -121,10 +99,22 @@ public class CloneFollow : MonoBehaviour
 
     void Idle()
     {
+        if (targetEnemy != null)
+        {
+            state = State.Combat;
+            return;
+        }
+
+        float dis = Vector2.Distance(transform.position, player.position);
+
+        if (dis > followDistance)
+        {
+            state = State.Follow;
+            return;
+        }
+
         rb.linearVelocity = Vector2.zero;
-
         animator.SetBool("IsMoving", false);
-
         StopFootstep();
 
         idleTimer -= Time.deltaTime;
@@ -138,6 +128,20 @@ public class CloneFollow : MonoBehaviour
 
     void Wander()
     {
+        if (targetEnemy != null)
+        {
+            state = State.Combat;
+            return;
+        }
+
+        float dis = Vector2.Distance(transform.position, player.position);
+
+        if (dis > followDistance)
+        {
+            state = State.Follow;
+            return;
+        }
+
         MoveTo(targetPos);
 
         if (Vector2.Distance(transform.position, targetPos) < 0.2f)
@@ -148,9 +152,15 @@ public class CloneFollow : MonoBehaviour
 
     void Follow()
     {
+        if (targetEnemy != null)
+        {
+            state = State.Combat;
+            return;
+        }
+
         MoveTo(player.position);
 
-        if (Vector2.Distance(transform.position, player.position) < stopFollowDistance)
+        if (Vector2.Distance(transform.position, player.position) <= stopFollowDistance)
         {
             EnterIdle();
         }
@@ -166,6 +176,13 @@ public class CloneFollow : MonoBehaviour
 
         float dis = Vector2.Distance(transform.position, targetEnemy.position);
 
+        if (dis > detectRange)
+        {
+            targetEnemy = null;
+            EnterIdle();
+            return;
+        }
+
         if (dis > attackRange)
         {
             MoveTo(targetEnemy.position);
@@ -173,57 +190,31 @@ public class CloneFollow : MonoBehaviour
         }
 
         rb.linearVelocity = Vector2.zero;
-
         animator.SetBool("IsMoving", false);
-
         StopFootstep();
 
         attackTimer -= Time.deltaTime;
 
-        if (attackTimer <= 0)
-        {
-            attackTimer = attackCooldown;
+        if (attackTimer > 0)
+            return;
 
-            Vector2 dir = (targetEnemy.position - transform.position).normalized;
+        attackTimer = attackCooldown;
 
-            if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-            {
-                dir.x = Mathf.Sign(dir.x);
-                dir.y = 0;
-            }
-            else
-            {
-                dir.y = Mathf.Sign(dir.y);
-                dir.x = 0;
-            }
+        Vector2 dir = (targetEnemy.position - transform.position).normalized;
 
-            animator.SetFloat("LastMoveX", dir.x);
-            animator.SetFloat("LastMoveY", dir.y);
+        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+            dir = new Vector2(Mathf.Sign(dir.x), 0);
+        else
+            dir = new Vector2(0, Mathf.Sign(dir.y));
 
-            animator.SetInteger("Combo", Random.Range(0, 2));
+        animator.SetFloat("LastMoveX", dir.x);
+        animator.SetFloat("LastMoveY", dir.y);
 
-            animator.SetTrigger("Attack");
+        animator.SetInteger("Combo", Random.Range(0, 2));
 
-            attackSource.PlayOneShot(attackSound);
-        }
-    }
+        animator.SetTrigger("Attack");
 
-    public void DealDamage()
-    {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            attackPoint.position,
-            attackRadius,
-            enermyLayer);
-
-        foreach (Collider2D hit in hits)
-        {
-            EnermyHealth hp = hit.GetComponent<EnermyHealth>();
-
-            if (hp != null)
-            {
-                hp.TakeDamage(damage);
-            }
-        }
+        attackSource.PlayOneShot(attackSound);
     }
 
     void MoveTo(Vector2 target)
@@ -244,22 +235,18 @@ public class CloneFollow : MonoBehaviour
 
         animator.SetBool("IsMoving", true);
 
+        Vector2 face;
+
         if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-        {
-            dir.x = Mathf.Sign(dir.x);
-            dir.y = 0;
-        }
+            face = new Vector2(Mathf.Sign(dir.x), 0);
         else
-        {
-            dir.y = Mathf.Sign(dir.y);
-            dir.x = 0;
-        }
+            face = new Vector2(0, Mathf.Sign(dir.y));
 
-        animator.SetFloat("MoveX", dir.x);
-        animator.SetFloat("MoveY", dir.y);
+        animator.SetFloat("MoveX", face.x);
+        animator.SetFloat("MoveY", face.y);
 
-        animator.SetFloat("LastMoveX", dir.x);
-        animator.SetFloat("LastMoveY", dir.y);
+        animator.SetFloat("LastMoveX", face.x);
+        animator.SetFloat("LastMoveY", face.y);
 
         if (!footstepSource.isPlaying)
             footstepSource.Play();
@@ -267,14 +254,17 @@ public class CloneFollow : MonoBehaviour
 
     void ChooseRandomTarget()
     {
-        Vector2 random = Random.insideUnitCircle * roamRadius;
+        Vector2 random =
+            Random.insideUnitCircle.normalized *
+            Random.Range(0.5f, roamRadius);
+
         targetPos = (Vector2)player.position + random;
     }
 
     void EnterIdle()
     {
         state = State.Idle;
-        idleTimer = Random.Range(1f, 3f);
+        idleTimer = Random.Range(1f, 2f);
     }
 
     void FindNearestEnemy()
@@ -282,7 +272,6 @@ public class CloneFollow : MonoBehaviour
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enermy");
 
         float min = Mathf.Infinity;
-
         targetEnemy = null;
 
         foreach (GameObject enemy in enemies)
@@ -297,6 +286,22 @@ public class CloneFollow : MonoBehaviour
         }
     }
 
+    public void DealDamage()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            attackPoint.position,
+            attackRadius,
+            enermyLayer);
+
+        foreach (Collider2D hit in hits)
+        {
+            EnermyHealth hp = hit.GetComponent<EnermyHealth>();
+
+            if (hp != null)
+                hp.TakeDamage(damage);
+        }
+    }
+
     void StopFootstep()
     {
         if (footstepSource.isPlaying)
@@ -305,11 +310,12 @@ public class CloneFollow : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        ChooseRandomTarget();
+        if (state == State.Wander)
+            ChooseRandomTarget();
     }
 
     public void Die()
-{
-    Destroy(gameObject);
-}
+    {
+        Destroy(gameObject);
+    }
 }

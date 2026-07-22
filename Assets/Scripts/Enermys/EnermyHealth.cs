@@ -9,12 +9,13 @@ public class EnermyHealth : MonoBehaviour
     [Header("Death")]
     public float deathDelay = 1f;
 
-      [Header("HP UI")]
+    [Header("HP UI")]
     public Canvas hpCanvas;
 
     private float hpTimer;
 
-    
+
+
 
     private Animator animator;
 
@@ -26,9 +27,9 @@ public class EnermyHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
         animator = GetComponent<Animator>();
-        enermyAudio = GetComponent<EnermyAudio>();
         if (hpCanvas != null)
             hpCanvas.enabled = false;
+        enermyAudio = GetComponent<EnermyAudio>();
     }
 
     void Update()
@@ -57,11 +58,12 @@ public class EnermyHealth : MonoBehaviour
 
         currentHealth -= damage;
 
+
         Debug.Log(gameObject.name + " HP: " + currentHealth);
 
         if (enermyAudio != null)
             enermyAudio.PlayHurt();
-        
+
         ShowHP();
 
         // Sau này nếu có animation Hurt

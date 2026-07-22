@@ -2,29 +2,46 @@ using UnityEngine;
 
 public class EnermyMovement : MonoBehaviour
 {
+    public enum EnemyState
+    {
+        Idle,
+        Wander,
+        Chase,
+        Return
+    }
+
     [Header("Target")]
     public Transform player;
 
     [Header("Movement")]
     public float moveSpeed = 2f;
     public float detectRange = 6f;
+    public float attackRange = 1.1f;
 
-    [HideInInspector]
+    [Header("Wander")]
+    public float roamRadius = 3f;
+    public float idleTime = 2f;
+
     public bool CanMove = true;
 
-    private Rigidbody2D rb;
-    private Animator animator;
-    private SpriteRenderer spriteRenderer;
+    public EnemyState CurrentState { get; private set; }
+
+    Rigidbody2D rb;
+    Animator animator;
+    EnermyAudio enemyAudio;
+
+    Vector2 spawnPos;
+    Vector2 targetPos;
+
+    float idleTimer;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        enemyAudio = GetComponent<EnermyAudio>();
 
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (spriteRenderer == null)
-            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        spawnPos = transform.position;
 
         if (player == null)
         {
@@ -33,62 +50,136 @@ public class EnermyMovement : MonoBehaviour
             if (obj != null)
                 player = obj.transform;
         }
+
+        EnterIdle();
     }
 
     void Update()
     {
-
-        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
-
-        if (state.IsTag("Attack"))
+        if (!CanMove)
         {
-            rb.linearVelocity = Vector2.zero;
-            animator.SetBool("IsMoving", false);
+            StopMove();
             return;
         }
+
         if (player == null)
             return;
 
-        if (!CanMove)
+        float distance = Vector2.Distance(transform.position, player.position);
+
+        switch (CurrentState)
         {
-            rb.linearVelocity = Vector2.zero;
-            animator.SetBool("IsMoving", false);
-            return;
+            case EnemyState.Idle:
+
+                idleTimer -= Time.deltaTime;
+
+                if (distance <= detectRange)
+                {
+                    CurrentState = EnemyState.Chase;
+                    break;
+                }
+
+                if (idleTimer <= 0)
+                {
+                    ChooseRandomPoint();
+                    CurrentState = EnemyState.Wander;
+                }
+
+                break;
+
+            case EnemyState.Wander:
+
+                if (distance <= detectRange)
+                {
+                    CurrentState = EnemyState.Chase;
+                    break;
+                }
+
+                MoveTo(targetPos);
+
+                if (Vector2.Distance(transform.position, targetPos) < 0.2f)
+                    EnterIdle();
+
+                break;
+
+            case EnemyState.Chase:
+
+                if (distance > detectRange)
+                {
+                    CurrentState = EnemyState.Return;
+                    break;
+                }
+
+                if (distance > attackRange)
+                    MoveTo(player.position);
+                else
+                    StopMove();
+
+                break;
+
+            case EnemyState.Return:
+
+                MoveTo(spawnPos);
+
+                if (distance <= detectRange)
+                {
+                    CurrentState = EnemyState.Chase;
+                    break;
+                }
+
+                if (Vector2.Distance(transform.position, spawnPos) < 0.2f)
+                    EnterIdle();
+
+                break;
         }
+    }
 
-        float distance =
-            Vector2.Distance(transform.position, player.position);
-
-        if (distance > detectRange)
-        {
-            rb.linearVelocity = Vector2.zero;
-            animator.SetBool("IsMoving", false);
-            return;
-        }
-
-        Vector2 dir =
-            (player.position - transform.position).normalized;
+    void MoveTo(Vector2 target)
+    {
+        Vector2 dir = (target - (Vector2)transform.position).normalized;
 
         rb.linearVelocity = dir * moveSpeed;
 
         animator.SetBool("IsMoving", true);
 
-        // Flip nếu chỉ có 1 animation chạy
-        if (dir.x > 0.05f)
-            spriteRenderer.flipX = false;
-        else if (dir.x < -0.05f)
-            spriteRenderer.flipX = true;
+        enemyAudio.PlayFootstep(true);
 
-        // Hướng Idle + Attack
-        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-        {
-            animator.SetFloat("LastMoveX", Mathf.Sign(dir.x));
-            animator.SetFloat("LastMoveY", 0);
-        }
-        else
-        {
-            animator.SetFloat("LastMoveX", 0);
-            animator.SetFloat("LastMoveY", Mathf.Sign(dir.y));
-        }
+        // Sprite gốc nhìn sang phải
+        GetComponent<SpriteRenderer>().flipX = dir.x < 0;
     }
+
+    void StopMove()
+    {
+        rb.linearVelocity = Vector2.zero;
+
+        animator.SetBool("IsMoving", false);
+
+        enemyAudio.PlayFootstep(false);
+    }
+
+    void ChooseRandomPoint()
+    {
+        targetPos = spawnPos + Random.insideUnitCircle * roamRadius;
+    }
+
+    void EnterIdle()
+    {
+        CurrentState = EnemyState.Idle;
+
+        idleTimer = Random.Range(1f, idleTime);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(Application.isPlaying ? (Vector3)spawnPos : transform.position, roamRadius);
+    }
+
+    
 }

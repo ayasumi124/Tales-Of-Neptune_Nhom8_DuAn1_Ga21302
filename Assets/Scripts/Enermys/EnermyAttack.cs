@@ -2,27 +2,28 @@ using UnityEngine;
 
 public class EnermyAttack : MonoBehaviour
 {
-    [Header("Reference")]
     public EnermyMovement movement;
 
-    [Header("Attack")]
     public Transform attackPoint;
-    public LayerMask playerLayer;
 
-    public float attackRange = 1.1f;
-    public float attackDistance = 0.6f;
+    public LayerMask playerLayer;
+    private bool isAttacking;
+
     public float attackRadius = 0.45f;
+    public float attackDistance = 0.6f;
     public float attackCooldown = 1f;
 
     public int damage = 1;
 
-    private Animator animator;
+    Animator animator;
+    EnermyAudio enemyAudio;
 
-    private float attackTimer;
+    float timer;
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        enemyAudio = GetComponent<EnermyAudio>();
 
         if (movement == null)
             movement = GetComponent<EnermyMovement>();
@@ -30,56 +31,66 @@ public class EnermyAttack : MonoBehaviour
 
     void Update()
     {
-        if (movement.player == null)
+        if (movement == null || movement.player == null)
             return;
 
-        attackTimer -= Time.deltaTime;
+        if (!isAttacking)
+        {
+            FacePlayer();
+        }
 
-        float distance =
-            Vector2.Distance(
-                transform.position,
-                movement.player.position);
+        timer -= Time.deltaTime;
 
-        if (distance > attackRange)
+        float dis = Vector2.Distance(
+            transform.position,
+            movement.player.position);
+
+        if (dis > movement.attackRange)
             return;
 
-        if (attackTimer > 0)
+        if (isAttacking)
             return;
 
-        attackTimer = attackCooldown;
+        if (timer > 0)
+            return;
 
         Attack();
     }
 
     void Attack()
     {
+        isAttacking = true;
+
+        FacePlayer();      // Khóa hướng ngay trước khi đánh
+
+        timer = attackCooldown;
+
         movement.CanMove = false;
 
-        FacePlayer();
+        enemyAudio.PlayAttack();
 
         animator.SetTrigger("Attack");
-        //when player out of range
     }
-
-    void FacePlayer()
+    private void FacePlayer()
     {
-        movement.CanMove =true;
-        Vector2 dir =
-            (movement.player.position - transform.position).normalized;
+        Vector2 dir = (movement.player.position - transform.position).normalized;
+
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+
+        // Sprite gốc nhìn sang phải
+        if (Mathf.Abs(dir.x) > 0.01f)
+        {
+            sr.flipX = dir.x < 0;
+        }
+
+        Vector2 attackDir;
 
         if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-        {
-            dir = new Vector2(Mathf.Sign(dir.x), 0);
-        }
+            attackDir = new Vector2(Mathf.Sign(dir.x), 0);
         else
-        {
-            dir = new Vector2(0, Mathf.Sign(dir.y));
-        }
+            attackDir = new Vector2(0, Mathf.Sign(dir.y));
 
-        animator.SetFloat("LastMoveX", dir.x);
-        animator.SetFloat("LastMoveY", dir.y);
-
-        attackPoint.localPosition = dir * attackDistance;
+        attackPoint.localPosition = attackDir * attackDistance;
     }
 
     // Animation Event
@@ -96,27 +107,15 @@ public class EnermyAttack : MonoBehaviour
             Health hp = hit.GetComponentInParent<Health>();
 
             if (hp != null)
-            {
                 hp.TakeDamage(damage);
-            }
         }
     }
 
     // Animation Event
     public void EndAttack()
     {
+        isAttacking = false;
+
         movement.CanMove = true;
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (attackPoint == null)
-            return;
-
-        Gizmos.color = Color.red;
-
-        Gizmos.DrawWireSphere(
-            attackPoint.position,
-            attackRadius);
     }
 }
