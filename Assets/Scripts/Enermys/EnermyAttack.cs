@@ -164,6 +164,12 @@ public class EnermyAttack : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(
+            transform.position,
+            attackPoint.position
+        );
         if (attackPoint == null)
             return;
 
