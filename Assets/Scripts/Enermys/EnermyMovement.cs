@@ -87,6 +87,14 @@ public class EnermyMovement : MonoBehaviour
         if (player == null)
             return;
 
+        Health hp = FindFirstObjectByType<Health>();
+
+        if (hp != null && hp.IsDead)
+        {
+            StopMove();
+            return;
+        }
+
         float distance = Vector2.Distance(transform.position, target.position);
 
         switch (CurrentState)

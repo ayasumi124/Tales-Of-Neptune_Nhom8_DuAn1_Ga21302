@@ -23,6 +23,8 @@ public class CloneFollow : MonoBehaviour
 
     private bool isAttacking;
 
+    private Health playerHealth;
+
     public AudioClip footstepSound;
     public AudioClip attackSound;
 
@@ -64,11 +66,20 @@ public class CloneFollow : MonoBehaviour
         footstepSource.loop = true;
 
         EnterIdle();
-        isAttacking= true;
+        isAttacking = true;
+
+        if (player != null)
+            playerHealth = player.GetComponent<Health>();
     }
 
     void Update()
     {
+        if (playerHealth != null && playerHealth.IsDead)
+        {
+            Die();
+            return;
+        }
+
         if (player == null)
             return;
 
@@ -351,7 +362,7 @@ public class CloneFollow : MonoBehaviour
         }
     }
 
-        public void EndAttack()
+    public void EndAttack()
     {
         isAttacking = false;
     }
