@@ -205,6 +205,8 @@ MonoBehaviour:
   currentHealth: 0
   deathDelay: 1
   hpCanvas: {fileID: 4441943256739025041}
+  coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
+  dropRate: 0.8
   knockbackForce: 15
   knockbackTime: 0.1
 --- !u!114 &1103410256815555851
@@ -253,7 +255,7 @@ MonoBehaviour:
   player: {fileID: 0}
   moveSpeed: 0.7
   detectRange: 2
-  attackRange: 0.4
+  attackRange: 0.5
   target: {fileID: 0}
   targetTags:
   - Player
@@ -705,7 +707,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7482667652216324306, guid: 7d13e1c5e463cff4bbef1fd5469ce7e3, type: 3}
+  m_Sprite: {fileID: 7482667652216324306, guid: 1e9be84a58916cc4180eb70be5db1b35, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -825,7 +827,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7482667652216324306, guid: 7d13e1c5e463cff4bbef1fd5469ce7e3, type: 3}
+  m_Sprite: {fileID: 7482667652216324306, guid: 1e9be84a58916cc4180eb70be5db1b35, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
