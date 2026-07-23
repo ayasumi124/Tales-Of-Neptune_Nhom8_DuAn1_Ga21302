@@ -12,8 +12,13 @@ public class EnermyHealth : MonoBehaviour
 
     [Header("HP UI")]
     public Canvas hpCanvas;
-
     private float hpTimer;
+
+    [SerializeField] GameObject coinPrefab;
+
+    [SerializeField]
+    [Range(0, 1)]
+    float dropRate = 0.8f;
 
     [Header("Knockback")]
     public float knockbackForce = 6f;
@@ -126,6 +131,13 @@ public class EnermyHealth : MonoBehaviour
             enermyAudio.PlayDeath();
 
         Destroy(gameObject, deathDelay);
+        if (Random.value <= dropRate)
+        {
+            Instantiate(
+                coinPrefab,
+                transform.position,
+                Quaternion.identity);
+        }
     }
 
 }
