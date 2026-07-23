@@ -705,7 +705,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7482667652216324306, guid: d6936155fd21da340be71fe19472acb0, type: 3}
+  m_Sprite: {fileID: 7482667652216324306, guid: 7d13e1c5e463cff4bbef1fd5469ce7e3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -756,6 +756,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3244427131547197772}
   - component: {fileID: 8263114033301392697}
+  - component: {fileID: 2467717859326772186}
   - component: {fileID: 7839766473684956678}
   m_Layer: 6
   m_Name: HP_Fill
@@ -791,6 +792,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9006001392528122793}
   m_CullTransparentMesh: 1
+--- !u!114 &2467717859326772186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9006001392528122793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0bbb026e8c8c1e458788d1e72ff530c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnermyHealthBar
+  fillImage: {fileID: 7839766473684956678}
 --- !u!114 &7839766473684956678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -811,7 +825,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7482667652216324306, guid: d6936155fd21da340be71fe19472acb0, type: 3}
+  m_Sprite: {fileID: 7482667652216324306, guid: 7d13e1c5e463cff4bbef1fd5469ce7e3, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
