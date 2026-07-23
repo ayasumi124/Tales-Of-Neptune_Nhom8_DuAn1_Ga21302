@@ -1,31 +1,19 @@
 fileFormatVersion: 2
-guid: 6de4e33bfbc072047898946f4c4583d3
+guid: c30f499d5ec72b04ea652aa44bb97fb5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2101175276847748840
-    second: run_up_0
+      213: 2135875924052038010
+    second: hurt_left_0
   - first:
-      213: 3396987343971830283
-    second: run_up_1
+      213: -2051219087023964310
+    second: hurt_left_1
   - first:
-      213: 4026534355312065940
-    second: run_up_2
+      213: -8588558671849010594
+    second: hurt_left_2
   - first:
-      213: 3746123119762467834
-    second: run_up_3
-  - first:
-      213: -7395723654248013618
-    second: run_up_4
-  - first:
-      213: 6925657076329794216
-    second: run_up_5
-  - first:
-      213: -485735562940750571
-    second: run_up_6
-  - first:
-      213: 2286054313573989648
-    second: run_up_7
+      213: -6620304404248518428
+    second: hurt_left_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -121,13 +109,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: run_up_0
+      name: hurt_left_0
       rect:
         serializedVersion: 2
-        x: 38
-        y: 22
-        width: 19
-        height: 31
+        x: 39
+        y: 21
+        width: 22
+        height: 37
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -136,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 81928acd73027d2e0800000000000000
-      internalID: -2101175276847748840
+      spriteID: a715e6926d724ad10800000000000000
+      internalID: 2135875924052038010
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: run_up_1
+      name: hurt_left_1
       rect:
         serializedVersion: 2
-        x: 133
-        y: 25
-        width: 19
-        height: 29
+        x: 135
+        y: 21
+        width: 22
+        height: 37
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,20 +146,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b0a40f7cdf5842f20800000000000000
-      internalID: 3396987343971830283
+      spriteID: a6f7f61bb1b9883e0800000000000000
+      internalID: -2051219087023964310
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: run_up_2
+      name: hurt_left_2
       rect:
         serializedVersion: 2
-        x: 229
-        y: 23
+        x: 232
+        y: 21
         width: 19
-        height: 32
+        height: 36
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -180,20 +168,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 49d3844a9af11e730800000000000000
-      internalID: 4026534355312065940
+      spriteID: e5ac6df546f4fc880800000000000000
+      internalID: -8588558671849010594
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: run_up_3
+      name: hurt_left_3
       rect:
         serializedVersion: 2
-        x: 326
-        y: 19
-        width: 19
-        height: 35
+        x: 328
+        y: 21
+        width: 17
+        height: 36
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -202,96 +190,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: afbe15e2127ecf330800000000000000
-      internalID: 3746123119762467834
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: run_up_4
-      rect:
-        serializedVersion: 2
-        x: 423
-        y: 22
-        width: 19
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ec0e79b458c1d5990800000000000000
-      internalID: -7395723654248013618
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: run_up_5
-      rect:
-        serializedVersion: 2
-        x: 519
-        y: 25
-        width: 20
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8aacececa60ec1060800000000000000
-      internalID: 6925657076329794216
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: run_up_6
-      rect:
-        serializedVersion: 2
-        x: 616
-        y: 23
-        width: 19
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 515642c34125249f0800000000000000
-      internalID: -485735562940750571
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: run_up_7
-      rect:
-        serializedVersion: 2
-        x: 711
-        y: 19
-        width: 19
-        height: 35
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 01db3d14942b9bf10800000000000000
-      internalID: 2286054313573989648
+      spriteID: 4e020df5834ff14a0800000000000000
+      internalID: -6620304404248518428
       vertices: []
       indices: 
       edges: []
@@ -310,14 +210,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      run_up_0: -2101175276847748840
-      run_up_1: 3396987343971830283
-      run_up_2: 4026534355312065940
-      run_up_3: 3746123119762467834
-      run_up_4: -7395723654248013618
-      run_up_5: 6925657076329794216
-      run_up_6: -485735562940750571
-      run_up_7: 2286054313573989648
+      hurt_left_0: 2135875924052038010
+      hurt_left_1: -2051219087023964310
+      hurt_left_2: -8588558671849010594
+      hurt_left_3: -6620304404248518428
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

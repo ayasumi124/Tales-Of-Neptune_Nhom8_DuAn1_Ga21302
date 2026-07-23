@@ -2,27 +2,30 @@ using UnityEngine;
 
 public class EnermyAttack : MonoBehaviour
 {
-    [Header("Reference")]
     public EnermyMovement movement;
 
-    [Header("Attack")]
     public Transform attackPoint;
-    public LayerMask playerLayer;
 
-    public float attackRange = 1.1f;
-    public float attackDistance = 0.6f;
-    public float attackRadius = 0.45f;
+    public LayerMask playerLayer;
+    private bool isAttacking;
+
+    public float attackDistance = 0.8f;
+    public float attackRadius = 0.25f;
     public float attackCooldown = 1f;
 
     public int damage = 1;
 
-    private Animator animator;
+    Animator animator;
+    EnermyAudio enemyAudio;
 
-    private float attackTimer;
+    SpriteRenderer sr;
+    float timer;
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        enemyAudio = GetComponent<EnermyAudio>();
+        sr = GetComponent<SpriteRenderer>();
 
         if (movement == null)
             movement = GetComponent<EnermyMovement>();
@@ -30,57 +33,74 @@ public class EnermyAttack : MonoBehaviour
 
     void Update()
     {
-        if (movement.player == null)
+        if (movement == null || movement.player == null)
             return;
 
-        attackTimer -= Time.deltaTime;
+        if (!isAttacking)
+        {
+            FacePlayer();
+        }
 
-        float distance =
-            Vector2.Distance(
-                transform.position,
-                movement.player.position);
+        float dis = Vector2.Distance(
+            transform.position,
+            movement.target.position);
 
-        if (distance > attackRange)
+        if (dis > movement.attackRange)
+        {
+            isAttacking = false;
+            movement.CanMove = true;
+            return;
+        }
+
+
+        if (isAttacking)
+        {
+            movement.StopMove();
+            return;
+        }
+
+        timer -= Time.deltaTime;
+
+        if (timer > 0)
             return;
 
-        if (attackTimer > 0)
-            return;
-
-        attackTimer = attackCooldown;
-
-        Attack();
+        if (timer <= 0)
+        {
+            Attack();
+        }
     }
 
     void Attack()
     {
-        movement.CanMove = false;
+        isAttacking = true;
 
         FacePlayer();
 
+        movement.StopMove();
+
+        enemyAudio.PlayAttack();
+
         animator.SetTrigger("Attack");
-        //when player out of range
     }
+    private void FacePlayer()
+{
+    Vector2 dir = movement.LastMoveDirection;
 
-    void FacePlayer()
+    // Chỉ lật sprite khi đi trái/phải
+    if (Mathf.Abs(dir.x) > 0.01f)
     {
-        movement.CanMove =true;
-        Vector2 dir =
-            (movement.player.position - transform.position).normalized;
-
-        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-        {
-            dir = new Vector2(Mathf.Sign(dir.x), 0);
-        }
-        else
-        {
-            dir = new Vector2(0, Mathf.Sign(dir.y));
-        }
-
-        animator.SetFloat("LastMoveX", dir.x);
-        animator.SetFloat("LastMoveY", dir.y);
-
-        attackPoint.localPosition = dir * attackDistance;
+        sr.flipX = dir.x < 0;
     }
+
+    Vector2 attackDir;
+
+    if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+        attackDir = new Vector2(Mathf.Sign(dir.x), 0);
+    else
+        attackDir = new Vector2(0, Mathf.Sign(dir.y));
+
+    attackPoint.localPosition = attackDir * attackDistance;
+}
 
     // Animation Event
     public void DealDamage()
@@ -93,11 +113,18 @@ public class EnermyAttack : MonoBehaviour
 
         foreach (Collider2D hit in hits)
         {
-            Health hp = hit.GetComponentInParent<Health>();
+            Health playerHp = hit.GetComponentInParent<Health>();
 
-            if (hp != null)
+            if (playerHp != null)
             {
-                hp.TakeDamage(damage);
+                playerHp.TakeDamage(damage);
+            }
+
+            CloneHealth cloneHp = hit.GetComponentInParent<CloneHealth>();
+
+            if (cloneHp != null)
+            {
+                cloneHp.TakeDamage(damage);
             }
         }
     }
@@ -105,16 +132,20 @@ public class EnermyAttack : MonoBehaviour
     // Animation Event
     public void EndAttack()
     {
+        isAttacking = false;
+
         movement.CanMove = true;
+
+        // cho AI cập nhật lại
+        movement.ResumeAI();
     }
 
-    void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         if (attackPoint == null)
             return;
 
         Gizmos.color = Color.red;
-
         Gizmos.DrawWireSphere(
             attackPoint.position,
             attackRadius);
