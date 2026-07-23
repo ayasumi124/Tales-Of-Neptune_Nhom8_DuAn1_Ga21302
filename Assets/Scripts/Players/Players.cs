@@ -34,10 +34,33 @@ public class Players : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        Health health = GetComponent<Health>();
+
+        if (health != null && health.IsDead)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
         rb.linearVelocity = new Vector2(moveX * tocDo, moveY * tocDo);
     }
     void Update()
     {
+        Health health = GetComponent<Health>();
+
+        if (health != null && health.IsDead)
+        {
+            moveX = 0;
+            moveY = 0;
+
+            rb.linearVelocity = Vector2.zero;
+
+            animator.SetBool("IsMoving", false);
+            animator.SetBool("IsRunning", false);
+
+            AudioManager.Instance.PlayFootstep(false);
+
+            return;
+        }
         //Player Movement based on axis input
         moveX = Input.GetAxisRaw("Horizontal");
         moveY = Input.GetAxisRaw("Vertical");
@@ -97,7 +120,6 @@ public class Players : MonoBehaviour
         // decrease health amount when the player presses the "H" key
         if (Input.GetKeyDown(KeyCode.H))
         {
-            Health health = GetComponent<Health>();
             if (health != null)
             {
                 health.TakeDamage(1f);

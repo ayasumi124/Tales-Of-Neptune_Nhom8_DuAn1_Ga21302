@@ -49,13 +49,18 @@ public class CloneHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
-            animator.SetTrigger("Death");
         }
-            
+
     }
 
-    void Die()
+    public void Die()
     {
-        GetComponent<CloneFollow>().Die();
+        animator.SetTrigger("Death");
+        DestroyClone();
+    }
+
+    public void DestroyClone()
+    {
+        Destroy(gameObject); // thời gian bằng animation chết
     }
 }

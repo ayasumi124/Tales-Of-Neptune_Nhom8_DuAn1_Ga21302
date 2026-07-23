@@ -20,13 +20,15 @@ public class EnermyAttack : MonoBehaviour
 
     SpriteRenderer sr;
     float timer;
+    private Health playerHealth;
 
     void Start()
     {
         animator = GetComponent<Animator>();
         enemyAudio = GetComponent<EnermyAudio>();
         sr = GetComponent<SpriteRenderer>();
-
+        
+        playerHealth = FindFirstObjectByType<Health>();
         if (movement == null)
             movement = GetComponent<EnermyMovement>();
     }
@@ -35,6 +37,13 @@ public class EnermyAttack : MonoBehaviour
     {
         if (movement == null || movement.player == null)
             return;
+
+        if (playerHealth != null && playerHealth.IsDead)
+        {
+            isAttacking = false;
+            movement.StopMove();
+            return;
+        }
 
         if (!isAttacking)
         {
@@ -83,28 +92,33 @@ public class EnermyAttack : MonoBehaviour
         animator.SetTrigger("Attack");
     }
     private void FacePlayer()
-{
-    Vector2 dir = movement.LastMoveDirection;
-
-    // Chỉ lật sprite khi đi trái/phải
-    if (Mathf.Abs(dir.x) > 0.01f)
     {
-        sr.flipX = dir.x < 0;
+        Vector2 dir = movement.LastMoveDirection;
+
+        // Chỉ lật sprite khi đi trái/phải
+        if (Mathf.Abs(dir.x) > 0.01f)
+        {
+            sr.flipX = dir.x < 0;
+        }
+
+        Vector2 attackDir;
+
+        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+            attackDir = new Vector2(Mathf.Sign(dir.x), 0);
+        else
+            attackDir = new Vector2(0, Mathf.Sign(dir.y));
+
+        attackPoint.localPosition = attackDir * attackDistance;
     }
-
-    Vector2 attackDir;
-
-    if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-        attackDir = new Vector2(Mathf.Sign(dir.x), 0);
-    else
-        attackDir = new Vector2(0, Mathf.Sign(dir.y));
-
-    attackPoint.localPosition = attackDir * attackDistance;
-}
 
     // Animation Event
     public void DealDamage()
     {
+
+        if (playerHealth != null && playerHealth.IsDead)
+            return;
+
+
         Collider2D[] hits =
             Physics2D.OverlapCircleAll(
                 attackPoint.position,

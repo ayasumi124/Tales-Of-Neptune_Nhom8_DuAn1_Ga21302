@@ -52,6 +52,7 @@ public class EnermyHealth : MonoBehaviour
     }
 
 
+
     void ShowHP()
     {
         if (hpCanvas == null) return;
@@ -89,7 +90,6 @@ public class EnermyHealth : MonoBehaviour
                     knockbackDir.normalized * knockbackForce;
             }
         }
-
         if (currentHealth <= 0)
         {
             Die();
@@ -116,11 +116,10 @@ public class EnermyHealth : MonoBehaviour
             attack.enabled = false;
 
         // Tắt Collider
-        Collider2D col = GetComponent<Collider2D>();
-
-        if (col != null)
+        foreach (Collider2D col in GetComponents<Collider2D>())
+        {
             col.enabled = false;
-
+        }
         // Nếu sau này có animation chết thì thay Destroy bằng Trigger
 
         if (enermyAudio != null)
