@@ -104,33 +104,31 @@ public class EnermyHealth : MonoBehaviour
     void Die()
     {
         isDead = true;
+
         animator.SetTrigger("Death");
+
         Debug.Log(gameObject.name + " Dead");
 
-
-        // Tắt AI
         EnermyMovement movement = GetComponent<EnermyMovement>();
-
         if (movement != null)
             movement.enabled = false;
 
-        // Tắt đánh
         EnermyAttack attack = GetComponent<EnermyAttack>();
-
         if (attack != null)
             attack.enabled = false;
 
-        // Tắt Collider
         foreach (Collider2D col in GetComponents<Collider2D>())
         {
             col.enabled = false;
         }
-        // Nếu sau này có animation chết thì thay Destroy bằng Trigger
 
         if (enermyAudio != null)
             enermyAudio.PlayDeath();
+    }
 
-        Destroy(gameObject, deathDelay);
+    // Animation Event
+    public void OnDeathFinished()
+    {
         if (Random.value <= dropRate)
         {
             Instantiate(
@@ -138,6 +136,7 @@ public class EnermyHealth : MonoBehaviour
                 transform.position,
                 Quaternion.identity);
         }
-    }
 
+        Destroy(gameObject);
+    }
 }

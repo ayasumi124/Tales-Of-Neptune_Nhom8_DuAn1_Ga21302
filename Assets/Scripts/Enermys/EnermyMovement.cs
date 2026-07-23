@@ -16,7 +16,7 @@ public class EnermyMovement : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 2f;
     public float detectRange = 6f;
-    public float attackRange = 1.1f;
+    public float attackRange = 0.8f;
 
     [Header("Target")]
     public Transform target;
@@ -67,25 +67,32 @@ public class EnermyMovement : MonoBehaviour
 
     void Update()
     {
+        if (target == null)
+        {
+            FindNearestTarget();
 
-        if (target == null ||
-    Vector2.Distance(transform.position, target.position) > detectRange)
+            if (target == null)
+            {
+                StopMove();
+                return;
+            }
+        }
+
+        if (Vector2.Distance(transform.position, target.position) > detectRange)
         {
             FindNearestTarget();
         }
 
         externalVelocity = Vector2.Lerp(
-        externalVelocity,
-        Vector2.zero,
-        12f * Time.deltaTime);
+            externalVelocity,
+            Vector2.zero,
+            12f * Time.deltaTime);
+
         if (!CanMove)
         {
             StopMove();
             return;
         }
-
-        if (player == null)
-            return;
 
         Health hp = FindFirstObjectByType<Health>();
 
@@ -95,7 +102,8 @@ public class EnermyMovement : MonoBehaviour
             return;
         }
 
-        float distance = Vector2.Distance(transform.position, target.position);
+        float distance =
+            Vector2.Distance(transform.position, target.position);
 
         switch (CurrentState)
         {
@@ -139,14 +147,33 @@ public class EnermyMovement : MonoBehaviour
                     CurrentState = EnemyState.Return;
                     break;
                 }
-
-                if (distance > attackRange)
-                    MoveTo(target.position);
-                else
+                if (distance <= attackRange)
+                {
                     StopMove();
+                    break;
+                }
+
+                // Hướng từ enemy tới mục tiêu
+                Vector2 dir =
+                    ((Vector2)target.position - rb.position).normalized;
+
+                // Đứng cách mục tiêu đúng tầm đánh
+                Vector2 stopPos =
+                (Vector2)target.position - dir * (attackRange - 0.1f);
+
+                float disToStop =
+                    Vector2.Distance(rb.position, stopPos);
+
+                if (disToStop > 0.05f)
+                {
+                    MoveTo(stopPos);
+                }
+                else
+                {
+                    StopMove();
+                }
 
                 break;
-
             case EnemyState.Return:
 
                 MoveTo(spawnPos);
@@ -204,7 +231,11 @@ public class EnermyMovement : MonoBehaviour
 
         enemyAudio.PlayFootstep(true);
 
-        sr.flipX = dir.x < 0;
+        transform.localScale = new Vector3(
+    dir.x < 0 ? -1 : 1,
+    1,
+    1
+);
     }
 
     public void StopMove()
