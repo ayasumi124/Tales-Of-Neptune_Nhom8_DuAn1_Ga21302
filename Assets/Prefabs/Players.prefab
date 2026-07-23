@@ -51,6 +51,7 @@ GameObject:
   - component: {fileID: 2379962776103713919}
   - component: {fileID: 8460627641359223920}
   - component: {fileID: 7679339183036857776}
+  - component: {fileID: 6223604995423097975}
   m_Layer: 3
   m_Name: idle_down_0
   m_TagString: Player
@@ -432,6 +433,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6223604995423097975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437690232275256694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18bd417f12113084daaa2739e6f49d4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPickup
+  coinUI: {fileID: 0}
 --- !u!1 &606477516252739539
 GameObject:
   m_ObjectHideFlags: 0

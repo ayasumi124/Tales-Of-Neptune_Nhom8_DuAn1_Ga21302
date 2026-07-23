@@ -11,11 +11,20 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;     // Dùng để phát hiệu ứng âm thanh (SFX) - dùng PlayOneShot
 
     [Header("Audio Clips")]
+    [Header("Player")]
     public AudioClip footstepSound;
     public AudioClip attackSound;
     public AudioClip jumpSound;
+    [Header("Audio Music")]
     public AudioClip backgroundMusic; // Nhạc nền của trò chơi
     // Bạn có thể thêm nhiều clip khác ở đây (ví dụ: coinSound, hitSound...)
+    [Header("Item")]
+    public AudioClip coinPickupSound;
+    public AudioClip coinDropSound;
+
+    [Header("UI")]
+    public AudioClip buttonSound;
+    public AudioClip openInventorySound;
 
     private void Awake()
     {
@@ -35,12 +44,16 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         // Phát nhạc nền khi bắt đầu trò chơi
-        PlayMusic(backgroundMusic);
+        if (backgroundMusic != null)
+            PlayMusic(backgroundMusic);
     }
 
     // Hàm dùng để phát nhạc nền
     public void PlayMusic(AudioClip clip)
     {
+        if (clip == null)
+            return;
+
         musicSource.clip = clip;
         musicSource.loop = true;
         musicSource.Play();
@@ -78,6 +91,8 @@ public class AudioManager : MonoBehaviour
 
     public void ChangeMusic(AudioClip clip)
     {
+        if (clip == null)
+            return;
         if (musicSource.clip == clip)
             return;
 
