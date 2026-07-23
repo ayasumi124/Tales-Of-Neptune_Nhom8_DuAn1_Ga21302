@@ -3,15 +3,18 @@ using UnityEngine;
 public class Attack : MonoBehaviour
 {
     private Animator animator;
-    private bool isAttacking;
     private Rigidbody2D rb;
+
+    private bool isAttacking;
+    private float attackTimer;
 
     public Transform[] attackPoint;
     public LayerMask enermyLayer;
 
+    [Header("Attack")]
     public float attackRadius = 0.6f;
-    public float attackCooldown = 1f;
     public float attackDistance = 0.6f;
+    public float attackCooldown = 0.35f;
     public int damage = 20;
 
     private int combo = 0;
@@ -21,69 +24,48 @@ public class Attack : MonoBehaviour
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
 
-        isAttacking = true;
+        isAttacking = false;
+        attackTimer = 0f;
     }
 
     void Update()
+    {
+        attackTimer -= Time.deltaTime;
+
+        if ((Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.Mouse0))
+            && !isAttacking
+            && attackTimer <= 0f)
         {
-            
-            // Đánh khi đang di chuyển
-            if (Input.GetKeyDown(KeyCode.J) && isAttacking || Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                isAttacking = true;
-
-                UpdateAttackPoint();
-
-                animator.SetInteger("Combo", combo);
-                animator.SetTrigger("Attack");
-
-                combo = (combo + 1) % 2;
-
-                AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
-            }
-
-            // Đánh khi đứng yên
-            if (Input.GetKeyDown(KeyCode.J) && !isAttacking)
-            {
-                isAttacking = true;
-
-                UpdateAttackPoint();
-
-                animator.SetInteger("Combo", combo);
-                animator.SetTrigger("Attack");
-
-                combo = (combo + 1) % 2;
-
-                AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
-            }
+            AttackEnemy();
         }
-
-    public void EndAttack()
-    {
-        isAttacking = false;
     }
 
-    private void UpdateAttackPoint()
+    void AttackEnemy()
     {
-        // Không cần làm gì.
-        // Các AttackPoint đã được đặt sẵn trong Unity
-        // theo hình quạt. Chỉ cần để nguyên.
+        isAttacking = true;
+        attackTimer = attackCooldown;
+
+        animator.SetInteger("Combo", combo);
+        animator.ResetTrigger("Attack");
+        animator.SetTrigger("Attack");
+
+        combo = (combo + 1) % 2;
+
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
     }
 
+    // Animation Event
     public void DealDamage()
     {
-        Debug.Log("DealDamage");
-
         foreach (Transform point in attackPoint)
         {
             if (point == null)
                 continue;
 
-            Collider2D[] hits =
-                Physics2D.OverlapCircleAll(
-                    point.position,
-                    attackRadius,
-                    enermyLayer);
+            Collider2D[] hits = Physics2D.OverlapCircleAll(
+                point.position,
+                attackRadius,
+                enermyLayer);
 
             foreach (Collider2D hit in hits)
             {
@@ -100,6 +82,13 @@ public class Attack : MonoBehaviour
         }
     }
 
+    // Animation Event (đặt ở frame cuối animation)
+    public void EndAttack()
+    {
+        Debug.Log("EndAttack");
+        isAttacking = false;
+    }
+
     void OnDrawGizmosSelected()
     {
         if (attackPoint == null)
@@ -111,9 +100,7 @@ public class Attack : MonoBehaviour
         {
             if (point != null)
             {
-                Gizmos.DrawWireSphere(
-                    point.position,
-                    attackRadius);
+                Gizmos.DrawWireSphere(point.position, attackRadius);
             }
         }
     }
