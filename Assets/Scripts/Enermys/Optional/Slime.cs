@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Slime : MonoBehaviour
 {
     public NavMeshAgent navAgent;
     public Transform player;
