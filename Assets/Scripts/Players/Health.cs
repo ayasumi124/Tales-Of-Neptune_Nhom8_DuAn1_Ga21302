@@ -11,6 +11,8 @@ public class Health : MonoBehaviour
     private PlayerAudio audioPlayer;
     private Animator animator;
     public static event System.Action onPlayerDeath;
+
+    public bool IsDead { get; private set; } = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -22,20 +24,32 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        if (IsDead)
+            return;
+
         currentHealth -= amount;
 
         onPlayerDamaged?.Invoke();
         animator.SetTrigger("Hurt");
         audioPlayer.PlayHurt();
+
         if (currentHealth <= 0)
         {
             currentHealth = 0;
+            IsDead = true;
+
+            animator.ResetTrigger("Hurt");
             animator.SetTrigger("Death");
             audioPlayer.PlayDeath();
+
+            Debug.Log("Player is dead");
+
+            Attack attack = GetComponent<Attack>();
+
+            if (attack != null)
+                attack.enabled = false;
         }
-
     }
-
     // Update is called once per frame
     void Update()
     {
@@ -51,6 +65,32 @@ public class Health : MonoBehaviour
 
         if (gameOver != null)
             gameOver.ShowGameOver();
+
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            IsDead = true;
+
+            animator.SetTrigger("Death");
+            audioPlayer.PlayDeath();
+
+            // Dừng di chuyển
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
+
+            // Tắt điều khiển
+            Players players = GetComponent<Players>();
+            if (players != null)
+                players.enabled = false;
+
+            // Tắt đánh
+            Attack attack = GetComponent<Attack>();
+            if (attack != null)
+                attack.enabled = false;
+
+            Debug.Log("Player is dead");
+        }
     }
 }
 
