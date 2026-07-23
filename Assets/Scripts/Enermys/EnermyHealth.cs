@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class EnermyHealth : MonoBehaviour
 {
@@ -9,12 +10,18 @@ public class EnermyHealth : MonoBehaviour
     [Header("Death")]
     public float deathDelay = 1f;
 
-      [Header("HP UI")]
+    [Header("HP UI")]
     public Canvas hpCanvas;
 
     private float hpTimer;
 
-    
+    [Header("Knockback")]
+    public float knockbackForce = 6f;
+    public float knockbackTime = 0.1f;
+
+    private Rigidbody2D rb;
+
+
 
     private Animator animator;
 
@@ -22,13 +29,16 @@ public class EnermyHealth : MonoBehaviour
     private EnermyAudio enermyAudio;
     private EnermyHealthBar enermyHealthBar;
 
+
     void Start()
     {
+
         currentHealth = maxHealth;
-        animator = GetComponent<Animator>();
-        enermyAudio = GetComponent<EnermyAudio>();
         if (hpCanvas != null)
             hpCanvas.enabled = false;
+        enermyAudio = GetComponent<EnermyAudio>();
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -50,7 +60,7 @@ public class EnermyHealth : MonoBehaviour
         hpTimer = 2f;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector2 knockbackDir)
     {
         if (isDead)
             return;
@@ -61,11 +71,24 @@ public class EnermyHealth : MonoBehaviour
 
         if (enermyAudio != null)
             enermyAudio.PlayHurt();
-        
+
         ShowHP();
 
-        // Sau này nếu có animation Hurt
         animator.SetTrigger("Hurt");
+
+        // Knockback
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+
+        if (rb != null)
+        {
+            EnermyMovement movement = GetComponent<EnermyMovement>();
+
+            if (movement != null)
+            {
+                movement.externalVelocity =
+                    knockbackDir.normalized * knockbackForce;
+            }
+        }
 
         if (currentHealth <= 0)
         {
@@ -76,8 +99,9 @@ public class EnermyHealth : MonoBehaviour
     void Die()
     {
         isDead = true;
-
+        animator.SetTrigger("Death");
         Debug.Log(gameObject.name + " Dead");
+
 
         // Tắt AI
         EnermyMovement movement = GetComponent<EnermyMovement>();
@@ -98,9 +122,11 @@ public class EnermyHealth : MonoBehaviour
             col.enabled = false;
 
         // Nếu sau này có animation chết thì thay Destroy bằng Trigger
+
         if (enermyAudio != null)
             enermyAudio.PlayDeath();
 
         Destroy(gameObject, deathDelay);
     }
+
 }
