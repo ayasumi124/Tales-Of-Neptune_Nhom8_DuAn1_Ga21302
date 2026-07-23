@@ -21,7 +21,8 @@ public class AudioManager : MonoBehaviour
     [Header("Item")]
     public AudioClip coinPickupSound;
     public AudioClip coinDropSound;
-
+    public AudioClip coinBounceSound;
+    
     [Header("UI")]
     public AudioClip buttonSound;
     public AudioClip openInventorySound;
