@@ -16,13 +16,22 @@ public class Players : MonoBehaviour
 
     private Attack attack;
 
+    public static Players Instance;
+    public Transform pickupPoint;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         tocDo = 1.5f;
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
     void Start()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetPlayer(gameObject);
+        }
         Debug.Log("Players script is running.");
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();

@@ -19,6 +19,10 @@ public class CloneFollow : MonoBehaviour
     public Transform[] attackPoints;
     public LayerMask enermyLayer;
 
+    [Header("Obstacle")]
+    public LayerMask obstacleLayer;
+    public float avoidDistance = 0.4f;
+
     public int damage = 20;
 
     private bool isAttacking;
@@ -33,7 +37,7 @@ public class CloneFollow : MonoBehaviour
 
     AudioSource footstepSource;
     AudioSource attackSource;
-
+    private CloneAudio cloneAudio;
     Transform targetEnemy;
 
     Vector2 targetPos;
@@ -56,7 +60,7 @@ public class CloneFollow : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
+        cloneAudio = GetComponent<CloneAudio>();
         AudioSource[] audio = GetComponents<AudioSource>();
 
         footstepSource = audio[0];
@@ -248,6 +252,39 @@ public class CloneFollow : MonoBehaviour
         }
 
         Vector2 dir = offset.normalized;
+
+        // Nếu phía trước có vật cản thì đổi hướng
+        RaycastHit2D hit = Physics2D.Raycast(
+            rb.position,
+            dir,
+            avoidDistance,
+            obstacleLayer);
+
+        if (hit.collider != null)
+        {
+            // thử rẽ trái
+            Vector2 left = new Vector2(-dir.y, dir.x);
+
+            if (!Physics2D.Raycast(rb.position, left, avoidDistance, obstacleLayer))
+            {
+                dir = left;
+            }
+            else
+            {
+                // thử rẽ phải
+                Vector2 right = new Vector2(dir.y, -dir.x);
+
+                if (!Physics2D.Raycast(rb.position, right, avoidDistance, obstacleLayer))
+                {
+                    dir = right;
+                }
+                else
+                {
+                    // cả hai đều bị chặn thì lùi một chút
+                    dir = -dir;
+                }
+            }
+        }
 
         rb.linearVelocity = dir * moveSpeed;
 

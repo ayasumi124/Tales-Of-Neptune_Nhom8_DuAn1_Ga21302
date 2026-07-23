@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 369389188057268899}
   m_Layer: 0
   m_Name: Coin2Preview_0
-  m_TagString: Untagged
+  m_TagString: Coin
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -167,9 +167,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8570b13aedb1e864eb913c09de1dae54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coin
+  value: 1
   lifeTime: 8
   blinkTime: 2
-  jumpForce: 3
+  bounceHeight: 50
+  bounceDuration: 50
+  scatterDistance: 0.5
+  pickupDelay: 0.5
+  magnetRange: 1
+  flySpeed: 5
 --- !u!50 &621940577112531017
 Rigidbody2D:
   serializedVersion: 5
@@ -178,14 +184,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3873854246568973965}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2

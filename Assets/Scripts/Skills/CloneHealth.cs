@@ -7,11 +7,14 @@ public class CloneHealth : MonoBehaviour
 
     public Canvas hpCanvas;
     private Animator animator;
-
+    private Rigidbody2D rb;
+    private CloneAudio cloneAudio;
     float hpTimer;
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
+        cloneAudio = GetComponent<CloneAudio>();
         animator = GetComponent<Animator>();
         currentHealth = maxHealth;
 
@@ -42,7 +45,8 @@ public class CloneHealth : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-
+        if (cloneAudio != null)
+            cloneAudio.PlayHurt();
         ShowHP();
         animator.SetTrigger("Hurt");
 
@@ -56,7 +60,12 @@ public class CloneHealth : MonoBehaviour
     public void Die()
     {
         animator.SetTrigger("Death");
-        DestroyClone();
+        rb.linearVelocity = Vector2.zero;
+
+        if (cloneAudio != null)
+            cloneAudio.PlayDeath();
+
+        Destroy(gameObject, 0.5f);
     }
 
     public void DestroyClone()
