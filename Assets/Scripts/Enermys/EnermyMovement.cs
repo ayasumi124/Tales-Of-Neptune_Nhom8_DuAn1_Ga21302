@@ -198,9 +198,6 @@ public class EnermyMovement : MonoBehaviour
 
         sr.flipX = dir.x < 0;
     }
-<<<<<<< HEAD
-}
-=======
 
     public void StopMove()
     {
@@ -241,4 +238,3 @@ public class EnermyMovement : MonoBehaviour
 
 
 }
->>>>>>> main

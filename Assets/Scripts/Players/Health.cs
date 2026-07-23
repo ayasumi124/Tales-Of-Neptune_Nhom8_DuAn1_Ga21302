@@ -23,7 +23,7 @@ public class Health : MonoBehaviour
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
-        
+
         onPlayerDamaged?.Invoke();
         animator.SetTrigger("Hurt");
         audioPlayer.PlayHurt();
@@ -32,19 +32,6 @@ public class Health : MonoBehaviour
             currentHealth = 0;
             animator.SetTrigger("Death");
             audioPlayer.PlayDeath();
-            onPlayerDeath?.Invoke();
-
-            Debug.Log("Player is dead");
-
-            GameOverManagement gameOver =
-                FindFirstObjectByType<GameOverManagement>();
-
-            if (gameOver != null)
-            {
-                gameOver.ShowGameOver();
-            }
-
-
         }
 
     }
@@ -55,4 +42,17 @@ public class Health : MonoBehaviour
 
     }
 
+    public void OnDeathAnimationFinished()
+    {
+        onPlayerDeath?.Invoke();
+
+        GameOverManagement gameOver =
+            FindFirstObjectByType<GameOverManagement>();
+
+        if (gameOver != null)
+            gameOver.ShowGameOver();
+    }
 }
+
+
+
