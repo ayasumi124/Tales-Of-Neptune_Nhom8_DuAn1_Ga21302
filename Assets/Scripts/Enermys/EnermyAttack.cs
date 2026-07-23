@@ -100,20 +100,24 @@ public class EnermyAttack : MonoBehaviour
             ((Vector2)movement.target.position -
             (Vector2)transform.position).normalized;
 
-        Vector2 attackDir;
 
         if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
         {
-            attackDir = new Vector2(Mathf.Sign(dir.x), 0);
-            sr.flipX = dir.x < 0;
+
+            attackPoint.localPosition =
+                new Vector2(
+                    Mathf.Sign(dir.x) * attackDistance,
+                    0
+                );
         }
         else
         {
-            attackDir = new Vector2(0, Mathf.Sign(dir.y));
+            attackPoint.localPosition =
+                new Vector2(
+                    0,
+                    Mathf.Sign(dir.y) * attackDistance
+                );
         }
-
-        attackPoint.localPosition =
-            attackDir * attackDistance;
     }
     // Animation Event
     public void DealDamage()

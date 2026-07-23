@@ -231,7 +231,11 @@ public class EnermyMovement : MonoBehaviour
 
         enemyAudio.PlayFootstep(true);
 
-        sr.flipX = dir.x < 0;
+        transform.localScale = new Vector3(
+    dir.x < 0 ? -1 : 1,
+    1,
+    1
+);
     }
 
     public void StopMove()
