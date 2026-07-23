@@ -28,8 +28,14 @@ public class Health : MonoBehaviour
             return;
 
         currentHealth -= amount;
-
         onPlayerDamaged?.Invoke();
+        Attack attack = GetComponent<Attack>();
+
+        if (attack != null)
+        {
+            attack.CancelAttack();
+        }
+
         animator.SetTrigger("Hurt");
         audioPlayer.PlayHurt();
 
@@ -43,8 +49,6 @@ public class Health : MonoBehaviour
             audioPlayer.PlayDeath();
 
             Debug.Log("Player is dead");
-
-            Attack attack = GetComponent<Attack>();
 
             if (attack != null)
                 attack.enabled = false;
@@ -70,9 +74,6 @@ public class Health : MonoBehaviour
         {
             currentHealth = 0;
             IsDead = true;
-
-            animator.SetTrigger("Death");
-            audioPlayer.PlayDeath();
 
             // Dừng di chuyển
             Rigidbody2D rb = GetComponent<Rigidbody2D>();

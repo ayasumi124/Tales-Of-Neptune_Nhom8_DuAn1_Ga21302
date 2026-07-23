@@ -39,7 +39,10 @@ public class Attack : MonoBehaviour
             AttackEnemy();
         }
     }
-
+    public void CancelAttack()
+    {
+        isAttacking = false;
+    }
     void AttackEnemy()
     {
         isAttacking = true;
@@ -47,6 +50,7 @@ public class Attack : MonoBehaviour
 
         animator.SetInteger("Combo", combo);
         animator.ResetTrigger("Attack");
+
         animator.SetTrigger("Attack");
 
         combo = (combo + 1) % 2;
