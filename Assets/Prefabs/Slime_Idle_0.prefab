@@ -40,8 +40,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6268556560499626042}
   - {fileID: 7080322646557343773}
+  - {fileID: 6268556560499626042}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6623282602567172577
@@ -150,7 +150,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!70 &2316177514167046164
 CapsuleCollider2D:
@@ -207,7 +207,7 @@ MonoBehaviour:
   hpCanvas: {fileID: 4441943256739025041}
   coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
   dropRate: 0.8
-  knockbackForce: 15
+  knockbackForce: 25
   knockbackTime: 0.1
 --- !u!114 &1103410256815555851
 MonoBehaviour:
@@ -255,7 +255,7 @@ MonoBehaviour:
   player: {fileID: 0}
   moveSpeed: 0.7
   detectRange: 2
-  attackRange: 0.5
+  attackRange: 0.35
   target: {fileID: 0}
   targetTags:
   - Player
@@ -281,8 +281,8 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  attackDistance: 0.2
-  attackRadius: 0.15
+  attackDistance: 0.25
+  attackRadius: 0.2
   attackCooldown: 1
   damage: 1
 --- !u!82 &7947812308503660795
@@ -742,8 +742,8 @@ Transform:
   m_GameObject: {fileID: 7408988982405328463}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.163, y: -0.022, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 1.5798}
+  m_LocalPosition: {x: 0.2, y: 0, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7262725974297968102}
