@@ -25,37 +25,38 @@ public class Attack : MonoBehaviour
     }
 
     void Update()
-    {
-        // Đánh khi đang di chuyển
-        if (Input.GetKeyDown(KeyCode.J) && isAttacking || Input.GetKeyDown(KeyCode.Mouse0))
         {
-            isAttacking = true;
+            
+            // Đánh khi đang di chuyển
+            if (Input.GetKeyDown(KeyCode.J) && isAttacking || Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                isAttacking = true;
 
-            UpdateAttackPoint();
+                UpdateAttackPoint();
 
-            animator.SetInteger("Combo", combo);
-            animator.SetTrigger("Attack");
+                animator.SetInteger("Combo", combo);
+                animator.SetTrigger("Attack");
 
-            combo = (combo + 1) % 2;
+                combo = (combo + 1) % 2;
 
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
+            }
+
+            // Đánh khi đứng yên
+            if (Input.GetKeyDown(KeyCode.J) && !isAttacking)
+            {
+                isAttacking = true;
+
+                UpdateAttackPoint();
+
+                animator.SetInteger("Combo", combo);
+                animator.SetTrigger("Attack");
+
+                combo = (combo + 1) % 2;
+
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
+            }
         }
-
-        // Đánh khi đứng yên
-        if (Input.GetKeyDown(KeyCode.J) && !isAttacking)
-        {
-            isAttacking = true;
-
-            UpdateAttackPoint();
-
-            animator.SetInteger("Combo", combo);
-            animator.SetTrigger("Attack");
-
-            combo = (combo + 1) % 2;
-
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
-        }
-    }
 
     public void EndAttack()
     {

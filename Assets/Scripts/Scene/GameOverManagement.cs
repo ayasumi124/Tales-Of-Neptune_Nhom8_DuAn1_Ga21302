@@ -19,7 +19,7 @@ public class GameOverManagement : MonoBehaviour
 
     gameOverPanel.SetActive(true);
 
-    Time.timeScale = 0f;
+    //Time.timeScale = 0f;
 }
 
     public void PlayAgain()
