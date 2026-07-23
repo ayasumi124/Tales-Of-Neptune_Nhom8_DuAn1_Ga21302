@@ -207,7 +207,7 @@ MonoBehaviour:
   hpCanvas: {fileID: 4441943256739025041}
   coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
   dropRate: 0.8
-  knockbackForce: 25
+  knockbackForce: 20
   knockbackTime: 0.1
 --- !u!114 &1103410256815555851
 MonoBehaviour:
@@ -253,8 +253,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyMovement
   player: {fileID: 0}
-  moveSpeed: 0.7
-  detectRange: 2
+  moveSpeed: 1
+  detectRange: 3
   attackRange: 0.35
   target: {fileID: 0}
   targetTags:

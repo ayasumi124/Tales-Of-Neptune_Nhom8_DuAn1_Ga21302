@@ -6,6 +6,7 @@ public class Attack : MonoBehaviour
     private Rigidbody2D rb;
 
     private bool isAttacking;
+    public bool IsAttacking => isAttacking;
     private float attackTimer;
 
     public Transform[] attackPoint;
@@ -91,6 +92,7 @@ public class Attack : MonoBehaviour
     {
         Debug.Log("EndAttack");
         isAttacking = false;
+    animator.ResetTrigger("Attack");
     }
 
     void OnDrawGizmosSelected()

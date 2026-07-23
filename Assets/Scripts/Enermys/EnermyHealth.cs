@@ -57,7 +57,17 @@ public class EnermyHealth : MonoBehaviour
     }
 
 
+    IEnumerator ShowDamagePopup(int damage)
+    {
+        yield return null;
 
+        if (DamagePopupManager.Instance != null)
+        {
+            DamagePopupManager.Instance.ShowDamage(
+                damage,
+                transform.position + Vector3.up * 0.8f);
+        }
+    }
     void ShowHP()
     {
         if (hpCanvas == null) return;
@@ -75,10 +85,14 @@ public class EnermyHealth : MonoBehaviour
 
         Debug.Log(gameObject.name + " HP: " + currentHealth);
 
+        StartCoroutine(ShowDamagePopup(damage));
+        Debug.Log(gameObject.name + " HP: " + currentHealth);
+
         if (enermyAudio != null)
             enermyAudio.PlayHurt();
 
         ShowHP();
+
 
         animator.SetTrigger("Hurt");
 

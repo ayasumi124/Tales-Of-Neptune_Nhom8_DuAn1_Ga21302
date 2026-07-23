@@ -42,16 +42,25 @@ public class Players : MonoBehaviour
 
     // Update is called once per frame
     void FixedUpdate()
-    {
-        Health health = GetComponent<Health>();
+{
+    Health health = GetComponent<Health>();
 
-        if (health != null && health.IsDead)
-        {
-            rb.linearVelocity = Vector2.zero;
-            return;
-        }
-        rb.linearVelocity = new Vector2(moveX * tocDo, moveY * tocDo);
+    if (health != null && health.IsDead)
+    {
+        rb.linearVelocity = Vector2.zero;
+        return;
     }
+
+    if (attack != null && attack.IsAttacking)
+    {
+        rb.linearVelocity = Vector2.zero;
+        return;
+    }
+
+    rb.linearVelocity = new Vector2(
+        moveX * tocDo,
+        moveY * tocDo);
+}
     void Update()
     {
         Health health = GetComponent<Health>();
@@ -83,10 +92,11 @@ public class Players : MonoBehaviour
         stamina.Recover();
         bool isRunning = rb.linearVelocity.sqrMagnitude > 0.01f;
         bool canRun =
-            Input.GetKey(KeyCode.LeftShift) &&
-            !stamina.IsExhausted &&
-            stamina.currentStamina > 0 &&
-            isRunning;
+    Input.GetKey(KeyCode.LeftShift) &&
+    !stamina.IsExhausted &&
+    stamina.currentStamina > 0 &&
+    isRunning &&
+    (attack == null || !attack.IsAttacking);
         animator.SetBool("IsRunning", canRun);
 
         if (canRun)
@@ -104,6 +114,12 @@ public class Players : MonoBehaviour
         animator.SetFloat("MoveX", moveX);
         animator.SetFloat("MoveY", moveY);
         //Player Animation idle based on blend tree, Paramater MoveX and MoveY is float type, so we can use the value of moveX and moveY to set the parameter in the animator
+        if (attack != null && attack.IsAttacking)
+{
+    animator.SetBool("IsMoving", false);
+    animator.SetBool("IsRunning", false);
+    return;
+}
         bool isMoving = moveX != 0 || moveY != 0;
 
         if (isMoving)
