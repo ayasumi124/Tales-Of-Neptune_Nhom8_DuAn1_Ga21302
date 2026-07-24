@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 98b88f5422e0a1a4f985ac87773a81d9
+guid: 3bbd1bf84c0d413409e10f23a366f763
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -201,6 +201,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -208,12 +221,12 @@ TextureImporter:
       name: RPG Chests_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 104
-        width: 18
-        height: 16
+        x: 6
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -230,12 +243,12 @@ TextureImporter:
       name: RPG Chests_1
       rect:
         serializedVersion: 2
-        x: 39
-        y: 104
-        width: 18
-        height: 16
+        x: 38
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -252,12 +265,12 @@ TextureImporter:
       name: RPG Chests_2
       rect:
         serializedVersion: 2
-        x: 71
-        y: 104
-        width: 18
-        height: 16
+        x: 70
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -274,12 +287,12 @@ TextureImporter:
       name: RPG Chests_3
       rect:
         serializedVersion: 2
-        x: 103
-        y: 104
-        width: 18
-        height: 16
+        x: 102
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -296,12 +309,12 @@ TextureImporter:
       name: RPG Chests_4
       rect:
         serializedVersion: 2
-        x: 135
-        y: 104
-        width: 18
-        height: 16
+        x: 134
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -318,12 +331,12 @@ TextureImporter:
       name: RPG Chests_5
       rect:
         serializedVersion: 2
-        x: 167
-        y: 104
-        width: 18
-        height: 16
+        x: 166
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -340,12 +353,12 @@ TextureImporter:
       name: RPG Chests_6
       rect:
         serializedVersion: 2
-        x: 199
-        y: 104
-        width: 18
-        height: 16
+        x: 198
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -362,12 +375,12 @@ TextureImporter:
       name: RPG Chests_7
       rect:
         serializedVersion: 2
-        x: 231
-        y: 104
-        width: 18
-        height: 16
+        x: 230
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -384,12 +397,12 @@ TextureImporter:
       name: RPG Chests_8
       rect:
         serializedVersion: 2
-        x: 263
-        y: 104
-        width: 18
-        height: 16
+        x: 262
+        y: 103
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -406,12 +419,12 @@ TextureImporter:
       name: RPG Chests_9
       rect:
         serializedVersion: 2
-        x: 7
-        y: 72
-        width: 18
-        height: 16
+        x: 6
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -428,12 +441,12 @@ TextureImporter:
       name: RPG Chests_10
       rect:
         serializedVersion: 2
-        x: 39
-        y: 72
-        width: 18
-        height: 16
+        x: 38
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -450,12 +463,12 @@ TextureImporter:
       name: RPG Chests_11
       rect:
         serializedVersion: 2
-        x: 71
-        y: 72
-        width: 18
-        height: 16
+        x: 70
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -472,12 +485,12 @@ TextureImporter:
       name: RPG Chests_12
       rect:
         serializedVersion: 2
-        x: 103
-        y: 72
-        width: 18
-        height: 16
+        x: 102
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -494,12 +507,12 @@ TextureImporter:
       name: RPG Chests_13
       rect:
         serializedVersion: 2
-        x: 135
-        y: 72
-        width: 18
-        height: 16
+        x: 134
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -516,12 +529,12 @@ TextureImporter:
       name: RPG Chests_14
       rect:
         serializedVersion: 2
-        x: 167
-        y: 72
-        width: 18
-        height: 16
+        x: 166
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -538,12 +551,12 @@ TextureImporter:
       name: RPG Chests_15
       rect:
         serializedVersion: 2
-        x: 199
-        y: 72
-        width: 18
-        height: 16
+        x: 198
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -560,12 +573,12 @@ TextureImporter:
       name: RPG Chests_16
       rect:
         serializedVersion: 2
-        x: 231
-        y: 72
-        width: 18
-        height: 16
+        x: 230
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -582,12 +595,12 @@ TextureImporter:
       name: RPG Chests_17
       rect:
         serializedVersion: 2
-        x: 263
-        y: 72
-        width: 18
-        height: 16
+        x: 262
+        y: 71
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -604,12 +617,12 @@ TextureImporter:
       name: RPG Chests_18
       rect:
         serializedVersion: 2
-        x: 7
-        y: 40
-        width: 18
-        height: 19
+        x: 6
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -626,12 +639,12 @@ TextureImporter:
       name: RPG Chests_19
       rect:
         serializedVersion: 2
-        x: 39
-        y: 40
-        width: 18
-        height: 19
+        x: 38
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -648,12 +661,12 @@ TextureImporter:
       name: RPG Chests_20
       rect:
         serializedVersion: 2
-        x: 71
-        y: 40
-        width: 18
-        height: 19
+        x: 70
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -670,12 +683,12 @@ TextureImporter:
       name: RPG Chests_21
       rect:
         serializedVersion: 2
-        x: 103
-        y: 40
-        width: 18
-        height: 19
+        x: 102
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -692,12 +705,12 @@ TextureImporter:
       name: RPG Chests_22
       rect:
         serializedVersion: 2
-        x: 135
-        y: 40
-        width: 18
-        height: 19
+        x: 134
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -714,12 +727,12 @@ TextureImporter:
       name: RPG Chests_23
       rect:
         serializedVersion: 2
-        x: 167
-        y: 40
-        width: 18
-        height: 19
+        x: 166
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -736,12 +749,12 @@ TextureImporter:
       name: RPG Chests_24
       rect:
         serializedVersion: 2
-        x: 199
-        y: 40
-        width: 18
-        height: 19
+        x: 198
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -758,12 +771,12 @@ TextureImporter:
       name: RPG Chests_25
       rect:
         serializedVersion: 2
-        x: 231
-        y: 40
-        width: 18
-        height: 19
+        x: 230
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -780,12 +793,12 @@ TextureImporter:
       name: RPG Chests_26
       rect:
         serializedVersion: 2
-        x: 263
-        y: 40
-        width: 18
-        height: 19
+        x: 262
+        y: 39
+        width: 20
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -802,12 +815,12 @@ TextureImporter:
       name: RPG Chests_27
       rect:
         serializedVersion: 2
-        x: 7
-        y: 8
-        width: 18
-        height: 20
+        x: 6
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -824,12 +837,12 @@ TextureImporter:
       name: RPG Chests_28
       rect:
         serializedVersion: 2
-        x: 39
-        y: 8
-        width: 18
-        height: 20
+        x: 38
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -846,12 +859,12 @@ TextureImporter:
       name: RPG Chests_29
       rect:
         serializedVersion: 2
-        x: 71
-        y: 8
-        width: 18
-        height: 20
+        x: 70
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -868,12 +881,12 @@ TextureImporter:
       name: RPG Chests_30
       rect:
         serializedVersion: 2
-        x: 103
-        y: 8
-        width: 18
-        height: 20
+        x: 102
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -890,12 +903,12 @@ TextureImporter:
       name: RPG Chests_31
       rect:
         serializedVersion: 2
-        x: 135
-        y: 8
-        width: 18
-        height: 20
+        x: 134
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -912,12 +925,12 @@ TextureImporter:
       name: RPG Chests_32
       rect:
         serializedVersion: 2
-        x: 167
-        y: 8
-        width: 18
-        height: 20
+        x: 166
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -934,12 +947,12 @@ TextureImporter:
       name: RPG Chests_33
       rect:
         serializedVersion: 2
-        x: 199
-        y: 8
-        width: 18
-        height: 20
+        x: 198
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -956,12 +969,12 @@ TextureImporter:
       name: RPG Chests_34
       rect:
         serializedVersion: 2
-        x: 231
-        y: 8
-        width: 18
-        height: 20
+        x: 230
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -978,12 +991,12 @@ TextureImporter:
       name: RPG Chests_35
       rect:
         serializedVersion: 2
-        x: 263
-        y: 8
-        width: 18
-        height: 20
+        x: 262
+        y: 7
+        width: 20
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1000,7 +1013,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 9d22f18866993554380a3e10304da585
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -1008,9 +1021,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
       RPG Chests_0: -5801566434257123781
       RPG Chests_1: 2144573220763516131
