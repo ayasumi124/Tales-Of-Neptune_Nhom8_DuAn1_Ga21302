@@ -52,6 +52,8 @@ GameObject:
   - component: {fileID: 8460627641359223920}
   - component: {fileID: 7679339183036857776}
   - component: {fileID: 6223604995423097975}
+  - component: {fileID: 8772684339908272889}
+  - component: {fileID: 2574351753208449971}
   m_Layer: 3
   m_Name: idle_down_0
   m_TagString: Player
@@ -272,8 +274,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   attackRadius: 0.2
-  attackCooldown: 1
   attackDistance: 0.5
+  attackCooldown: 1
   damage: 10
 --- !u!114 &8161544903992188369
 MonoBehaviour:
@@ -448,6 +450,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPickup
   coinUI: {fileID: 0}
+--- !u!114 &8772684339908272889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437690232275256694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ebd8e8deff65a4ab3bd5c977688f00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
+  hasClone: 0
+  hasDash: 0
+  hasFireball: 0
+--- !u!114 &2574351753208449971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437690232275256694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f7a91489573d534791fc4b9c3d4015e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
+  dashSpeed: 12
+  dashDuration: 0.15
+  dashCooldown: 0.8
+  dashStaminaCost: 35
 --- !u!1 &606477516252739539
 GameObject:
   m_ObjectHideFlags: 0
