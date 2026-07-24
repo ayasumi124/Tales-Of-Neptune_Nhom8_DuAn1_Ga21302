@@ -41,12 +41,12 @@ public class PlayerDash : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.L) &&
     cooldownTimer <= 0 &&
     !stamina.IsExhausted)
-{
-    if (stamina.UseStamina(dashStaminaCost))
-    {
-        StartCoroutine(Dash());
-    }
-}
+        {
+            if (stamina.UseStamina(dashStaminaCost))
+            {
+                StartCoroutine(Dash());
+            }
+        }
     }
 
     IEnumerator Dash()
@@ -55,6 +55,7 @@ public class PlayerDash : MonoBehaviour
         cooldownTimer = dashCooldown;
 
         Vector2 dir = player.LastDirection;
+
 
         rb.linearVelocity = dir * dashSpeed;
 
@@ -72,5 +73,13 @@ public class PlayerDash : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
 
         IsDashing = false;
+    }
+
+    public void PlayDashSound()
+    {
+        AudioManager.Instance.PlaySFX(
+            AudioManager.Instance.dashSound,
+            20f
+        );
     }
 }

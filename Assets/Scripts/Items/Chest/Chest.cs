@@ -50,6 +50,11 @@ public class Chest : MonoBehaviour
 
         opened = true;
 
+        // Âm thanh mở rương
+        AudioManager.Instance.PlaySFX(
+            AudioManager.Instance.chestOpenSound
+        );
+
         FreezeGame();
 
         animator.SetBool("IsOpened", true);
