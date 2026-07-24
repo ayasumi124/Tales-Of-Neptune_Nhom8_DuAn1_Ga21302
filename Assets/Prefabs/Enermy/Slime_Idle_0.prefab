@@ -209,6 +209,7 @@ MonoBehaviour:
   dropRate: 0.8
   knockbackForce: 20
   knockbackTime: 0.1
+  manaReward: 10
 --- !u!114 &1103410256815555851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,7 +255,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnermyMovement
   player: {fileID: 0}
   moveSpeed: 1
-  detectRange: 3
+  detectRange: 2
   attackRange: 0.35
   target: {fileID: 0}
   targetTags:
