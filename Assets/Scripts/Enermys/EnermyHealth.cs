@@ -33,6 +33,8 @@ public class EnermyHealth : MonoBehaviour
     private bool isDead;
     private EnermyAudio enermyAudio;
     private EnermyHealthBar enermyHealthBar;
+    [Header("Mana Reward")]
+    public float manaReward = 10f;
 
 
     void Start()
@@ -123,6 +125,8 @@ public class EnermyHealth : MonoBehaviour
 
         Debug.Log(gameObject.name + " Dead");
 
+
+
         EnermyMovement movement = GetComponent<EnermyMovement>();
         if (movement != null)
             movement.enabled = false;
@@ -138,11 +142,20 @@ public class EnermyHealth : MonoBehaviour
 
         if (enermyAudio != null)
             enermyAudio.PlayDeath();
+
+        
     }
 
     // Animation Event
     public void OnDeathFinished()
     {
+
+        PlayerMana mana = FindFirstObjectByType<PlayerMana>();
+
+if (mana != null)
+{
+    mana.RestoreMana(2);
+}
         if (Random.value <= dropRate)
         {
             Instantiate(

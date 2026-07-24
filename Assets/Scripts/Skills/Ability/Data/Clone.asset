@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Clone
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
   type: 0
+  manaCost: 100
+  cooldown: 60
   skillName: Clone Summon
-  description: Summon a clone to fight with you.
+  description: Summon a clone to fight with you. Press K to use
   icon: {fileID: 9128384846270689552, guid: 523572cf0bc453446b348c736ef382c1, type: 3}

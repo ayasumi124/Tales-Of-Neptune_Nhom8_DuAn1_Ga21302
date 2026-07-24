@@ -54,6 +54,7 @@ GameObject:
   - component: {fileID: 6223604995423097975}
   - component: {fileID: 8772684339908272889}
   - component: {fileID: 2574351753208449971}
+  - component: {fileID: 7518505730027222568}
   m_Layer: 3
   m_Name: idle_down_0
   m_TagString: Player
@@ -247,7 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Players
   rb: {fileID: 7990163645947627234}
   animator: {fileID: 164601872866270197}
-  pickupPoint: {fileID: 0}
+  pickupPoint: {fileID: 301186943132381571}
 --- !u!114 &8459480266853851217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,11 +290,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5dd5c7214e1be34e8f3173113fc2af0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloneSkill
-  skillCooldown: 60
   cloneLifeTime: 30
   cooldownText: {fileID: 0}
   durationText: {fileID: 0}
   clonePrefab: {fileID: 8576532584680407823, guid: 99b9accec9bab8840a3aa994a81689ab, type: 3}
+  skillData: {fileID: 11400000, guid: b9e033b7a03ba994ea5602fe8d18eb32, type: 2}
 --- !u!114 &8186096020419718719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,7 +325,7 @@ MonoBehaviour:
   currentStamina: 0
   drainSpeed: 60
   recoverSpeed: 15
-  exhaustRecover: 150
+  exhaustRecover: 50
 --- !u!114 &8460627641359223920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,10 +478,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f7a91489573d534791fc4b9c3d4015e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
-  dashSpeed: 12
+  dashSpeed: 15
   dashDuration: 0.15
   dashCooldown: 0.8
-  dashStaminaCost: 35
+  dashStaminaCost: 50
+--- !u!114 &7518505730027222568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437690232275256694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 126eb6050fa5ffb47bf529f408c1c7bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMana
+  maxMana: 100
+  currentMana: 0
+  manaRecoverEffect: {fileID: 0}
 --- !u!1 &606477516252739539
 GameObject:
   m_ObjectHideFlags: 0
