@@ -6,7 +6,7 @@ public class PlayerStamina : MonoBehaviour
     public float maxStamina = 100;
     public float currentStamina;
 
-    public float drainSpeed = 50f;
+    public float drainSpeed = 20f;
     public float recoverSpeed = 20f;
 
     public bool IsExhausted { get; private set; }
@@ -36,6 +36,15 @@ public class PlayerStamina : MonoBehaviour
 
         OnStaminaChanged?.Invoke();
     }
+
+    public bool UseStamina(float amount)
+{
+    if (currentStamina < amount)
+        return false;
+
+    currentStamina -= amount;
+    return true;
+}
 
     public void Recover()
     {

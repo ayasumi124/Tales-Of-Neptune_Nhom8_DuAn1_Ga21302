@@ -31,6 +31,10 @@ public class Attack : MonoBehaviour
 
     void Update()
     {
+        PlayerDash dash = GetComponent<PlayerDash>();
+
+        if (dash != null && dash.IsDashing)
+            return;
         attackTimer -= Time.deltaTime;
 
         if ((Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.Mouse0))
@@ -92,7 +96,7 @@ public class Attack : MonoBehaviour
     {
         Debug.Log("EndAttack");
         isAttacking = false;
-    animator.ResetTrigger("Attack");
+        animator.ResetTrigger("Attack");
     }
 
     void OnDrawGizmosSelected()

@@ -15,7 +15,7 @@ public class Players : MonoBehaviour
     public Vector2 LastDirection { get; private set; } = Vector2.down;
 
     private Attack attack;
-
+    private PlayerDash dash;
     public static Players Instance;
     public Transform pickupPoint;
 
@@ -28,6 +28,7 @@ public class Players : MonoBehaviour
     }
     void Start()
     {
+        dash = GetComponent<PlayerDash>();
         if (GameManager.Instance != null)
         {
             GameManager.Instance.SetPlayer(gameObject);
@@ -42,27 +43,42 @@ public class Players : MonoBehaviour
 
     // Update is called once per frame
     void FixedUpdate()
-{
-    Health health = GetComponent<Health>();
-
-    if (health != null && health.IsDead)
     {
-        rb.linearVelocity = Vector2.zero;
-        return;
-    }
 
-    if (attack != null && attack.IsAttacking)
-    {
-        rb.linearVelocity = Vector2.zero;
-        return;
-    }
+        Health health = GetComponent<Health>();
 
-    rb.linearVelocity = new Vector2(
-        moveX * tocDo,
-        moveY * tocDo);
-}
+        if (health != null && health.IsDead)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (attack != null && attack.IsAttacking)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (dash != null && dash.IsDashing)
+            return;
+
+        rb.linearVelocity = new Vector2(moveX * tocDo, moveY * tocDo);
+
+        rb.linearVelocity = new Vector2(
+            moveX * tocDo,
+            moveY * tocDo);
+    }
     void Update()
     {
+
+        PlayerDash dash = GetComponent<PlayerDash>();
+
+        if (dash != null && dash.IsDashing)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         Health health = GetComponent<Health>();
 
         if (health != null && health.IsDead)
@@ -115,11 +131,11 @@ public class Players : MonoBehaviour
         animator.SetFloat("MoveY", moveY);
         //Player Animation idle based on blend tree, Paramater MoveX and MoveY is float type, so we can use the value of moveX and moveY to set the parameter in the animator
         if (attack != null && attack.IsAttacking)
-{
-    animator.SetBool("IsMoving", false);
-    animator.SetBool("IsRunning", false);
-    return;
-}
+        {
+            animator.SetBool("IsMoving", false);
+            animator.SetBool("IsRunning", false);
+            return;
+        }
         bool isMoving = moveX != 0 || moveY != 0;
 
         if (isMoving)
