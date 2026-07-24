@@ -57,7 +57,17 @@ public class EnermyHealth : MonoBehaviour
     }
 
 
+    IEnumerator ShowDamagePopup(int damage)
+    {
+        yield return null;
 
+        if (DamagePopupManager.Instance != null)
+        {
+            DamagePopupManager.Instance.ShowDamage(
+                damage,
+                transform.position + Vector3.up * 0.8f);
+        }
+    }
     void ShowHP()
     {
         if (hpCanvas == null) return;
@@ -75,10 +85,14 @@ public class EnermyHealth : MonoBehaviour
 
         Debug.Log(gameObject.name + " HP: " + currentHealth);
 
+        StartCoroutine(ShowDamagePopup(damage));
+        Debug.Log(gameObject.name + " HP: " + currentHealth);
+
         if (enermyAudio != null)
             enermyAudio.PlayHurt();
 
         ShowHP();
+
 
         animator.SetTrigger("Hurt");
 
@@ -104,33 +118,31 @@ public class EnermyHealth : MonoBehaviour
     void Die()
     {
         isDead = true;
+
         animator.SetTrigger("Death");
+
         Debug.Log(gameObject.name + " Dead");
 
-
-        // Tắt AI
         EnermyMovement movement = GetComponent<EnermyMovement>();
-
         if (movement != null)
             movement.enabled = false;
 
-        // Tắt đánh
         EnermyAttack attack = GetComponent<EnermyAttack>();
-
         if (attack != null)
             attack.enabled = false;
 
-        // Tắt Collider
         foreach (Collider2D col in GetComponents<Collider2D>())
         {
             col.enabled = false;
         }
-        // Nếu sau này có animation chết thì thay Destroy bằng Trigger
 
         if (enermyAudio != null)
             enermyAudio.PlayDeath();
+    }
 
-        Destroy(gameObject, deathDelay);
+    // Animation Event
+    public void OnDeathFinished()
+    {
         if (Random.value <= dropRate)
         {
             Instantiate(
@@ -138,6 +150,7 @@ public class EnermyHealth : MonoBehaviour
                 transform.position,
                 Quaternion.identity);
         }
-    }
 
+        Destroy(gameObject);
+    }
 }
