@@ -324,7 +324,7 @@ MonoBehaviour:
   currentStamina: 0
   drainSpeed: 60
   recoverSpeed: 15
-  exhaustRecover: 150
+  exhaustRecover: 50
 --- !u!114 &8460627641359223920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,7 +480,7 @@ MonoBehaviour:
   dashSpeed: 12
   dashDuration: 0.15
   dashCooldown: 0.8
-  dashStaminaCost: 35
+  dashStaminaCost: 50
 --- !u!1 &606477516252739539
 GameObject:
   m_ObjectHideFlags: 0
