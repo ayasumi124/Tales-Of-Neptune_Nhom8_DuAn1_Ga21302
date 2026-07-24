@@ -33,6 +33,6 @@ public class GameOverManagement : MonoBehaviour
     {
         Time.timeScale = 1f;
 
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("MainMenu");
     }
 }

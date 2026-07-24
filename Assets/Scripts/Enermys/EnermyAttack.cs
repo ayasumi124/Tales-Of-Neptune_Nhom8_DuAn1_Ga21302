@@ -9,8 +9,8 @@ public class EnermyAttack : MonoBehaviour
     public LayerMask playerLayer;
     private bool isAttacking;
 
-    public float attackDistance = 0.8f;
-    public float attackRadius = 0.25f;
+    public float attackDistance = 0.6f;
+    public float attackRadius = 0.35f;
     public float attackCooldown = 1f;
 
     public int damage = 1;
@@ -27,7 +27,7 @@ public class EnermyAttack : MonoBehaviour
         animator = GetComponent<Animator>();
         enemyAudio = GetComponent<EnermyAudio>();
         sr = GetComponent<SpriteRenderer>();
-        
+
         playerHealth = FindFirstObjectByType<Health>();
         if (movement == null)
             movement = GetComponent<EnermyMovement>();
@@ -51,8 +51,8 @@ public class EnermyAttack : MonoBehaviour
         }
 
         float dis = Vector2.Distance(
-            transform.position,
-            movement.target.position);
+    transform.position,
+    movement.target.position);
 
         if (dis > movement.attackRange)
         {
@@ -93,24 +93,32 @@ public class EnermyAttack : MonoBehaviour
     }
     private void FacePlayer()
     {
-        Vector2 dir = movement.LastMoveDirection;
+        if (movement.target == null)
+            return;
 
-        // Chỉ lật sprite khi đi trái/phải
-        if (Mathf.Abs(dir.x) > 0.01f)
-        {
-            sr.flipX = dir.x < 0;
-        }
+        Vector2 dir =
+            ((Vector2)movement.target.position -
+            (Vector2)transform.position).normalized;
 
-        Vector2 attackDir;
 
         if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-            attackDir = new Vector2(Mathf.Sign(dir.x), 0);
+        {
+
+            attackPoint.localPosition =
+                new Vector2(
+                    Mathf.Sign(dir.x) * attackDistance,
+                    0
+                );
+        }
         else
-            attackDir = new Vector2(0, Mathf.Sign(dir.y));
-
-        attackPoint.localPosition = attackDir * attackDistance;
+        {
+            attackPoint.localPosition =
+                new Vector2(
+                    0,
+                    Mathf.Sign(dir.y) * attackDistance
+                );
+        }
     }
-
     // Animation Event
     public void DealDamage()
     {
@@ -156,6 +164,12 @@ public class EnermyAttack : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(
+            transform.position,
+            attackPoint.position
+        );
         if (attackPoint == null)
             return;
 
