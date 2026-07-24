@@ -3,9 +3,6 @@ using TMPro;
 
 public class CloneSkill : MonoBehaviour
 {
-
-
-    public float skillCooldown = 60f;
     public float cloneLifeTime = 30f;
     public TextMeshProUGUI cooldownText;
     public TextMeshProUGUI durationText;
@@ -13,12 +10,18 @@ public class CloneSkill : MonoBehaviour
     private float cooldownTimer = 0f;
     private float durationTimer = 0f;
     public GameObject clonePrefab;
+    public AbilityData skillData;
+    PlayerMana mana;
 
+    void Start()
+    {
+        mana = GetComponent<PlayerMana>();
+    }
 
     void Update()
-    {   
-         if (!AbilityManager.Instance.HasAbility(AbilityType.Clone))
-     return;
+    {
+        if (!AbilityManager.Instance.HasAbility(AbilityType.Clone))
+            return;
         // Cooldown
         if (cooldownTimer > 0)
             cooldownTimer -= Time.deltaTime;
@@ -40,23 +43,32 @@ public class CloneSkill : MonoBehaviour
             durationText.text = "Clone: --";
 
         // Dùng skill
-        if (Input.GetKeyDown(KeyCode.K) && cooldownTimer <= 0)
+        if (Input.GetKeyDown(KeyCode.K) &&
+     cooldownTimer <= 0)
         {
+            if (!mana.UseMana(skillData.manaCost))
+            {
+                ManaUI.Instance.ShowNoMana();
+                return;
+            }
+
             SpawnClone();
+
+            cooldownTimer = skillData.cooldown;
         }
     }
 
-    void SpawnClone(){
+    void SpawnClone()
+    {
         GameObject clone = Instantiate(
-                clonePrefab,
-                transform.position,
-                Quaternion.identity);
+            clonePrefab,
+            transform.position,
+            Quaternion.identity);
 
-            clone.GetComponent<CloneFollow>().player = transform;
+        clone.GetComponent<CloneFollow>().player = transform;
 
-            Destroy(clone, cloneLifeTime);
+        Destroy(clone, cloneLifeTime);
 
-            cooldownTimer = skillCooldown;
-            durationTimer = cloneLifeTime;
+        durationTimer = cloneLifeTime;
     }
 }

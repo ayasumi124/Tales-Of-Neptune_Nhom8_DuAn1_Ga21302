@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 
 public class SkillUnlockUI : MonoBehaviour
 {
@@ -9,9 +10,15 @@ public class SkillUnlockUI : MonoBehaviour
 
     public static Action OnSkillPanelClosed;
 
+    [Header("UI")]
+    public GameObject dimBackground;
+    public GameObject panel;
+
     public Image icon;
     public TextMeshProUGUI skillName;
     public TextMeshProUGUI description;
+
+    Animator animator;
 
     bool waitingForClose;
 
@@ -22,7 +29,10 @@ public class SkillUnlockUI : MonoBehaviour
 
     void Start()
     {
-        gameObject.SetActive(false);
+        animator = panel.GetComponent<Animator>();
+
+        dimBackground.SetActive(false);
+        panel.SetActive(false);
     }
 
     void Update()
@@ -34,20 +44,36 @@ public class SkillUnlockUI : MonoBehaviour
         {
             waitingForClose = false;
 
-            gameObject.SetActive(false);
+            animator.SetTrigger("Hide");
 
-            OnSkillPanelClosed?.Invoke();
+            StartCoroutine(ClosePanel());
         }
     }
 
     public void ShowSkill(AbilityData data)
     {
-        gameObject.SetActive(true);
+        dimBackground.SetActive(true);
+        panel.SetActive(true);
 
         icon.sprite = data.icon;
         skillName.text = data.skillName;
         description.text = data.description;
 
+        animator.ResetTrigger("Hide");
+        animator.SetTrigger("Show");
+
         waitingForClose = true;
+
+        // AudioManager.Instance.PlaySFX(AudioManager.Instance.skillUnlockSound);
+    }
+
+    IEnumerator ClosePanel()
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        dimBackground.SetActive(false);
+        panel.SetActive(false);
+
+        OnSkillPanelClosed?.Invoke();
     }
 }

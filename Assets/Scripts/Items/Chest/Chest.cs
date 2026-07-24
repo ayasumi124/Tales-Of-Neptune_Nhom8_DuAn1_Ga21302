@@ -43,6 +43,8 @@ public class Chest : MonoBehaviour
 
     public void OpenChest()
     {
+        Debug.Log("Open Chest");
+
         if (opened)
             return;
 
@@ -114,6 +116,8 @@ public class Chest : MonoBehaviour
     // Animation Event
     public void GiveReward()
     {
+        Debug.Log("GiveReward");
+
         if (rewardGiven)
             return;
 
