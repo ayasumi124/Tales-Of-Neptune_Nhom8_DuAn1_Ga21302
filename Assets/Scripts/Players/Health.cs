@@ -24,6 +24,10 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        PlayerDash dash = GetComponent<PlayerDash>();
+
+if (dash != null && dash.IsDashing)
+    return;
         if (IsDead)
             return;
 
