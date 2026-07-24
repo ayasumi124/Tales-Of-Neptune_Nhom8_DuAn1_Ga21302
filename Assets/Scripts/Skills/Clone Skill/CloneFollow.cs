@@ -70,7 +70,7 @@ public class CloneFollow : MonoBehaviour
         footstepSource.loop = true;
 
         EnterIdle();
-        isAttacking = true;
+        isAttacking = false;
 
         if (player != null)
             playerHealth = player.GetComponent<Health>();
@@ -198,6 +198,19 @@ public class CloneFollow : MonoBehaviour
         {
             targetEnemy = null;
             EnterIdle();
+            return;
+        }
+
+        // Nếu player đi quá xa thì bỏ đánh và quay về
+        float playerDistance = Vector2.Distance(
+            transform.position,
+            player.position
+        );
+
+        if (playerDistance > followDistance)
+        {
+            targetEnemy = null;
+            state = State.Follow;
             return;
         }
 

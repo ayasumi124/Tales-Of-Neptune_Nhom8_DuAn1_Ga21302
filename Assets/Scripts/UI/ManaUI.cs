@@ -7,30 +7,30 @@ public class ManaUI : MonoBehaviour
 {
     public static ManaUI Instance;
 
+    [Header("Reference")]
     public PlayerMana mana;
 
     public Image fill;
-
+    public Image manaIcon;
     public RectTransform manaBar;
-
     public TextMeshProUGUI warningText;
-    private bool showing;
-    float targetFill;
 
+    [Header("Animation")]
     public float speed = 6f;
 
-    public Image manaIcon;
+    float targetFill;
 
-    Color normalColor = Color.white;
+    Vector2 startPos;
+
+    Color normalColor;
     Color errorColor = new Color(1f, 0.35f, 0.35f);
 
     Color fillNormal;
     Color fillFlash = new Color(0.6f, 1f, 1f);
 
-    Vector2 startPos;
-
     Coroutine shakeCoroutine;
     Coroutine warningCoroutine;
+    Coroutine flashFillCoroutine;
     Coroutine flashIconCoroutine;
 
     void Awake()
@@ -51,10 +51,16 @@ public class ManaUI : MonoBehaviour
     void Start()
     {
         normalColor = manaIcon.color;
-        fillNormal = fill.color;
+        fillNormal = new Color(
+    fill.color.r,
+    fill.color.g,
+    fill.color.b,
+    fill.color.a
+);
+
         startPos = manaBar.anchoredPosition;
 
-        warningText.alpha = 0;
+        warningText.gameObject.SetActive(false);
 
         UpdateTarget();
 
@@ -64,22 +70,38 @@ public class ManaUI : MonoBehaviour
     void Update()
     {
         fill.fillAmount =
-            Mathf.Lerp(fill.fillAmount,
-                       targetFill,
-                       speed * Time.deltaTime);
+            Mathf.Lerp(
+                fill.fillAmount,
+                targetFill,
+                speed * Time.deltaTime);
     }
 
     void UpdateTarget()
     {
-        targetFill =
-            mana.currentMana / mana.maxMana;
+        targetFill = Mathf.Clamp01(
+            (float)mana.currentMana / mana.maxMana
+        );
 
-        StartCoroutine(FlashFill());
+        // Chỉ flash khi mana tăng
+        if (targetFill > fill.fillAmount)
+        {
+            if (flashFillCoroutine != null)
+                StopCoroutine(flashFillCoroutine);
+
+            flashFillCoroutine = StartCoroutine(FlashFill());
+        }
     }
+
+
+
 
     public void ShowNoMana()
     {
-        AudioManager.Instance.PlaySFX(AudioManager.Instance.errorSound);
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.errorSound);
+        }
 
         if (shakeCoroutine != null)
             StopCoroutine(shakeCoroutine);
@@ -87,12 +109,37 @@ public class ManaUI : MonoBehaviour
         if (warningCoroutine != null)
             StopCoroutine(warningCoroutine);
 
-        showing = false;
+        if (flashIconCoroutine != null)
+            StopCoroutine(flashIconCoroutine);
 
-        shakeCoroutine = StartCoroutine(Shake());
-        warningCoroutine = StartCoroutine(Warning());
+        shakeCoroutine =
+            StartCoroutine(Shake());
 
-        StartCoroutine(FlashIcon());
+        warningCoroutine =
+            StartCoroutine(Warning());
+
+        flashIconCoroutine =
+            StartCoroutine(FlashIcon());
+    }
+
+    IEnumerator Shake()
+    {
+        float timer = 0;
+
+        while (timer < 0.2f)
+        {
+            manaBar.anchoredPosition =
+                startPos +
+                Random.insideUnitCircle * 4f;
+
+            timer += Time.deltaTime;
+
+            yield return null;
+        }
+
+        manaBar.anchoredPosition = startPos;
+
+        shakeCoroutine = null;
     }
 
     IEnumerator FlashIcon()
@@ -102,54 +149,43 @@ public class ManaUI : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
 
         manaIcon.color = normalColor;
-    }
-    IEnumerator Shake()
-    {
-        float timer = 0;
 
-        while (timer < 0.2f)
-        {
-            manaBar.anchoredPosition =
-                startPos + Random.insideUnitCircle * 4f;
-
-            timer += Time.deltaTime;
-
-            yield return null;
-        }
-
-        manaBar.anchoredPosition = startPos;
+        flashIconCoroutine = null;
     }
 
     IEnumerator FlashFill()
     {
         fill.color = fillFlash;
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.15f);
 
         fill.color = fillNormal;
+
+        flashFillCoroutine = null;
     }
+
     IEnumerator Warning()
     {
-        
         warningText.gameObject.SetActive(true);
 
         warningText.text = "Not Enough Mana";
 
         warningText.alpha = 1;
-        showing = true;
 
         warningText.rectTransform.localScale = Vector3.zero;
 
-        while (warningText.rectTransform.localScale.x < 1f)
+        while (warningText.rectTransform.localScale.x < 0.98f)
         {
             warningText.rectTransform.localScale =
                 Vector3.Lerp(
                     warningText.rectTransform.localScale,
                     Vector3.one,
-                    15 * Time.deltaTime);
+                    18f * Time.deltaTime);
 
             yield return null;
         }
+
+        warningText.rectTransform.localScale = Vector3.one;
 
         yield return new WaitForSeconds(0.8f);
 
@@ -161,8 +197,6 @@ public class ManaUI : MonoBehaviour
         }
 
         warningText.gameObject.SetActive(false);
-
-        showing = false;
 
         warningCoroutine = null;
     }
