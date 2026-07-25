@@ -17,6 +17,9 @@ public class GameOverManagement : MonoBehaviour
 
     gameOver = true;
 
+    if (SkillUnlockUI.Instance != null)
+        SkillUnlockUI.Instance.ForceHide();
+
     gameOverPanel.SetActive(true);
 
     Time.timeScale = 0f;
