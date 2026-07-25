@@ -11,7 +11,7 @@ public class PlayerStamina : MonoBehaviour
 
     public bool IsExhausted { get; private set; }
 
-    public float exhaustRecover = 80f;
+    public float exhaustRecover = 40f;
     public static event Action OnStaminaChanged;
 
     void Start()

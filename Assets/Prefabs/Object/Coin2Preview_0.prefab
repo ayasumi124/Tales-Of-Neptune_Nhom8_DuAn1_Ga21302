@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3379087169992436770}
   - component: {fileID: 621940577112531017}
   - component: {fileID: 369389188057268899}
+  - component: {fileID: 5433742705310050107}
   m_Layer: 0
   m_Name: Coin2Preview_0
   m_TagString: Coin
@@ -170,9 +171,6 @@ MonoBehaviour:
   value: 1
   lifeTime: 8
   blinkTime: 2
-  bounceHeight: 50
-  bounceDuration: 50
-  scatterDistance: 0.5
   pickupDelay: 0.5
   magnetRange: 1
   flySpeed: 5
@@ -191,7 +189,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 2
+  m_GravityScale: 4
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -300,3 +298,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5433742705310050107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3873854246568973965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c007077ab41a8c64cae4b4dce14e4741, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
+  scatterDistance: 0.8
+  jumpHeight: 1
+  jumpDuration: 0.45
+  bounceCount: 5
+  bounceHeight: 0.35
+  bounceDuration: 0.18
+  rotateSpeed: 0

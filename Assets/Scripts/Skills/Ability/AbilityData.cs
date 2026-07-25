@@ -5,6 +5,10 @@ public class AbilityData : ScriptableObject
 {
     public AbilityType type;
 
+    [Header("Skill")]
+    public float manaCost;
+    public float cooldown;
+
     public string skillName;
 
     [TextArea]

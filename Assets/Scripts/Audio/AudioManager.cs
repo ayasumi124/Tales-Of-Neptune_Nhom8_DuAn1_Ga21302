@@ -8,13 +8,16 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource musicSource;   // Dùng để phát nhạc nền (BGM) - luôn Loop
     [SerializeField] private AudioSource footstepSource;
-    [SerializeField] private AudioSource sfxSource;     // Dùng để phát hiệu ứng âm thanh (SFX) - dùng PlayOneShot
+    [SerializeField]
+    private AudioSource sfxSource;
+    public AudioSource SFXSource => sfxSource;    // Dùng để phát hiệu ứng âm thanh (SFX) - dùng PlayOneShot
 
     [Header("Audio Clips")]
     [Header("Player")]
     public AudioClip footstepSound;
     public AudioClip attackSound;
     public AudioClip jumpSound;
+    public AudioClip dashSound;
     [Header("Audio Music")]
     public AudioClip backgroundMusic; // Nhạc nền của trò chơi
     // Bạn có thể thêm nhiều clip khác ở đây (ví dụ: coinSound, hitSound...)
@@ -22,11 +25,16 @@ public class AudioManager : MonoBehaviour
     public AudioClip coinPickupSound;
     public AudioClip coinDropSound;
     public AudioClip coinBounceSound;
-    
+
     [Header("UI")]
     public AudioClip buttonSound;
     public AudioClip openInventorySound;
+    public AudioClip skillUnlockSound;
+    public AudioClip skillCloseSound;
+    public AudioClip errorSound;
 
+    [Header("Chest")]
+    public AudioClip chestOpenSound;
     private void Awake()
     {
         // Kiểm tra và thiết lập Singleton
@@ -63,10 +71,27 @@ public class AudioManager : MonoBehaviour
     // Hàm dùng để phát âm thanh hiệu ứng (bước chân, đánh, ăn vàng...)
     public void PlaySFX(AudioClip clip)
     {
-        if (clip != null)
+        Debug.Log("PlaySFX");
+
+        if (clip == null)
         {
-            sfxSource.PlayOneShot(clip);
+            Debug.Log("Clip NULL");
+            return;
         }
+
+        if (sfxSource == null)
+        {
+            Debug.Log("SFX Source NULL");
+            return;
+        }
+
+        sfxSource.PlayOneShot(clip);
+    }
+
+    public void PlaySFX(AudioClip clip, float volume)
+    {
+        if (clip != null)
+            sfxSource.PlayOneShot(clip, volume);
     }
 
     // Hàm riêng cho tiếng bước chân để có thể dừng lại khi nhân vật đứng yên
