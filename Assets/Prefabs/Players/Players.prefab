@@ -290,11 +290,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5dd5c7214e1be34e8f3173113fc2af0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloneSkill
-  cloneLifeTime: 30
-  cooldownText: {fileID: 0}
-  durationText: {fileID: 0}
   clonePrefab: {fileID: 8576532584680407823, guid: 99b9accec9bab8840a3aa994a81689ab, type: 3}
   skillData: {fileID: 11400000, guid: b9e033b7a03ba994ea5602fe8d18eb32, type: 2}
+  slotUI: {fileID: 0}
 --- !u!114 &8186096020419718719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,9 +461,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11ebd8e8deff65a4ab3bd5c977688f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
-  hasClone: 0
-  hasDash: 0
-  hasFireball: 0
+  clone:
+    unlocked: 0
+    cooldown: 0
+    duration: 0
+  dash:
+    unlocked: 0
+    cooldown: 0
+    duration: 0
+  fireball:
+    unlocked: 0
+    cooldown: 0
+    duration: 0
 --- !u!114 &2574351753208449971
 MonoBehaviour:
   m_ObjectHideFlags: 0

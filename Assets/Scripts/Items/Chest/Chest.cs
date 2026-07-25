@@ -128,8 +128,9 @@ public class Chest : MonoBehaviour
 
         rewardGiven = true;
 
-        AbilityManager.Instance.UnlockAbility(reward);
+        AbilityManager.Instance.UnlockAbility(reward.type);
 
         SkillUnlockUI.Instance.ShowSkill(reward);
+        Debug.Log(reward.type);
     }
 }
