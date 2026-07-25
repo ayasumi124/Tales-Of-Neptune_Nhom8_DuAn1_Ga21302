@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b4060c58b1a49240a6a392494da72c2, type: 3}
   m_Name: Dash
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
-  type: 0
+  type: 1
+  manaCost: 0
+  cooldown: 2
+  duration: 0
   skillName: 
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 76a82f035249dc146a397e02781e82c5, type: 3}

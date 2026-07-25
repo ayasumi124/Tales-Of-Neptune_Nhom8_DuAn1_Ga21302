@@ -121,8 +121,6 @@ public class Chest : MonoBehaviour
     // Animation Event
     public void GiveReward()
     {
-        Debug.Log("GiveReward");
-
         if (rewardGiven)
             return;
 
@@ -130,7 +128,12 @@ public class Chest : MonoBehaviour
 
         AbilityManager.Instance.UnlockAbility(reward.type);
 
+        SkillInventoryUI.Instance.AddSkill(reward);
+
+        EquipmentManager.Instance.EquipSkill(reward, 3);
+
         SkillUnlockUI.Instance.ShowSkill(reward);
-        Debug.Log(reward.type);
+
+        
     }
 }

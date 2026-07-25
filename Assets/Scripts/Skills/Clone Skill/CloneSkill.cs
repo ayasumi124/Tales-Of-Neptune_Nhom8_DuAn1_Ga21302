@@ -15,7 +15,7 @@ public class CloneSkill : MonoBehaviour
     {
         mana = GetComponent<PlayerMana>();
 
-        slotUI.Setup(skillData);
+        //slotUI.Setup(skillData);
 
         slotUI.abilityType = skillData.type;
     }

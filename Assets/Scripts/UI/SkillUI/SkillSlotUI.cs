@@ -20,6 +20,7 @@ public class SkillSlotUI : MonoBehaviour
 
 
 
+
     void Start()
     {
         if (skillData != null)
@@ -34,17 +35,30 @@ public class SkillSlotUI : MonoBehaviour
     }
 
     public void Setup(AbilityData data)
-{
-    skillData = data;
+    {
+        skillData = data;
 
-    if (icon != null)
+        if (data == null)
+        {
+            Clear();
+            return;
+        }
+
+        icon.enabled = true;
         icon.sprite = data.icon;
-}
+
+        abilityType = data.type;
+    }
 
     void UpdateCooldown()
     {
+
         if (skillData == null)
+        {
+            cooldownMask.fillAmount = 0;
+            cooldownText.text = "";
             return;
+        }
 
         AbilityManager.AbilityState state =
             AbilityManager.Instance.GetState(abilityType);
@@ -70,7 +84,10 @@ public class SkillSlotUI : MonoBehaviour
     void UpdateDuration()
     {
         if (skillData == null)
+        {
+            durationMask.fillAmount = 0;
             return;
+        }
 
         AbilityManager.AbilityState state =
             AbilityManager.Instance.GetState(abilityType);
@@ -87,5 +104,18 @@ public class SkillSlotUI : MonoBehaviour
         {
             durationMask.fillAmount = 0;
         }
+    }
+
+    public void Clear()
+    {
+        skillData = null;
+
+        if (icon != null)
+            icon.enabled = false;
+
+        cooldownMask.fillAmount = 0;
+        durationMask.fillAmount = 0;
+
+        cooldownText.text = "";
     }
 }

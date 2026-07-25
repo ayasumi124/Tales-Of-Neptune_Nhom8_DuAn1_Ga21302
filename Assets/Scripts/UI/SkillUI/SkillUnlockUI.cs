@@ -6,6 +6,9 @@ using System.Collections;
 
 public class SkillUnlockUI : MonoBehaviour
 {
+    public AbilityData skillData;
+
+    public AbilityType abilityType;
     public static SkillUnlockUI Instance;
 
     public static Action OnSkillPanelClosed;
@@ -83,8 +86,10 @@ public class SkillUnlockUI : MonoBehaviour
     }
 
     public void ForceHide()
-{
-    waitingForClose = false;
-    gameObject.SetActive(false);
-}
+    {
+        waitingForClose = false;
+        gameObject.SetActive(false);
+    }
+
+    
 }

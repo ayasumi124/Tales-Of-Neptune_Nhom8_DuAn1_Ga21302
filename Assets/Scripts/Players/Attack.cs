@@ -19,9 +19,12 @@ public class Attack : MonoBehaviour
     public int damage = 20;
 
     private int combo = 0;
+    public AbilityData skillData;
 
+    public SkillSlotUI slotUI;
     void Start()
     {
+        slotUI.Setup(skillData);
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
 
@@ -52,6 +55,9 @@ public class Attack : MonoBehaviour
     {
         isAttacking = true;
         attackTimer = attackCooldown;
+
+        AbilityManager.Instance.attack.cooldown =
+            skillData.cooldown;
 
         animator.SetInteger("Combo", combo);
         animator.ResetTrigger("Attack");

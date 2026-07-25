@@ -21,9 +21,13 @@ public class PlayerDash : MonoBehaviour
 
     float cooldownTimer;
 
+    public AbilityData skillData;
+
+    public SkillSlotUI slotUI;
 
     void Start()
     {
+        slotUI.Setup(skillData);
         rb = GetComponent<Rigidbody2D>();
         player = GetComponent<Players>();
         animator = GetComponent<Animator>();
@@ -53,6 +57,12 @@ public class PlayerDash : MonoBehaviour
     {
         IsDashing = true;
         cooldownTimer = dashCooldown;
+
+        AbilityManager.Instance.dash.cooldown =
+            skillData.cooldown;
+
+        AbilityManager.Instance.dash.duration =
+            skillData.duration;
 
         Vector2 dir = player.LastDirection;
 
