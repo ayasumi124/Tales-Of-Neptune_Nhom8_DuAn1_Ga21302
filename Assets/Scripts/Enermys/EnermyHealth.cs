@@ -154,7 +154,7 @@ public class EnermyHealth : MonoBehaviour
 
 if (mana != null)
 {
-    mana.RestoreMana(2);
+    mana.RestoreMana(5);
 }
         if (Random.value <= dropRate)
         {

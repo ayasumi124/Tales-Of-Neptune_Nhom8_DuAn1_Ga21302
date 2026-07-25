@@ -9,14 +9,15 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource musicSource;   // Dùng để phát nhạc nền (BGM) - luôn Loop
     [SerializeField] private AudioSource footstepSource;
     [SerializeField]
-private AudioSource sfxSource;
-public AudioSource SFXSource => sfxSource;    // Dùng để phát hiệu ứng âm thanh (SFX) - dùng PlayOneShot
+    private AudioSource sfxSource;
+    public AudioSource SFXSource => sfxSource;    // Dùng để phát hiệu ứng âm thanh (SFX) - dùng PlayOneShot
 
     [Header("Audio Clips")]
     [Header("Player")]
     public AudioClip footstepSound;
     public AudioClip attackSound;
     public AudioClip jumpSound;
+    public AudioClip dashSound;
     [Header("Audio Music")]
     public AudioClip backgroundMusic; // Nhạc nền của trò chơi
     // Bạn có thể thêm nhiều clip khác ở đây (ví dụ: coinSound, hitSound...)
@@ -29,7 +30,11 @@ public AudioSource SFXSource => sfxSource;    // Dùng để phát hiệu ứng 
     public AudioClip buttonSound;
     public AudioClip openInventorySound;
     public AudioClip skillUnlockSound;
+    public AudioClip skillCloseSound;
     public AudioClip errorSound;
+
+    [Header("Chest")]
+    public AudioClip chestOpenSound;
     private void Awake()
     {
         // Kiểm tra và thiết lập Singleton
@@ -84,10 +89,10 @@ public AudioSource SFXSource => sfxSource;    // Dùng để phát hiệu ứng 
     }
 
     public void PlaySFX(AudioClip clip, float volume)
-{
-    if (clip != null)
-        sfxSource.PlayOneShot(clip, volume);
-}
+    {
+        if (clip != null)
+            sfxSource.PlayOneShot(clip, volume);
+    }
 
     // Hàm riêng cho tiếng bước chân để có thể dừng lại khi nhân vật đứng yên
     public void PlayFootstep(bool isMoving)

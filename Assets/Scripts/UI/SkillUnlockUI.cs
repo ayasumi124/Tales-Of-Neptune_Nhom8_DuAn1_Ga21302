@@ -44,6 +44,11 @@ public class SkillUnlockUI : MonoBehaviour
         {
             waitingForClose = false;
 
+            // Âm thanh đóng skill panel
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.skillCloseSound
+            );
+
             animator.SetTrigger("Hide");
 
             StartCoroutine(ClosePanel());
@@ -64,7 +69,7 @@ public class SkillUnlockUI : MonoBehaviour
 
         waitingForClose = true;
 
-        // AudioManager.Instance.PlaySFX(AudioManager.Instance.skillUnlockSound);
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.skillUnlockSound);
     }
 
     IEnumerator ClosePanel()
