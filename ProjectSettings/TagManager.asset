@@ -9,6 +9,7 @@ TagManager:
   - Clone
   - Ground
   - Coin
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -20,11 +21,11 @@ TagManager:
   - Obstacle
   - Coin
   - Ground
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Foreground
+  - Player
+  - Clone
+  - Wall
+  - Enemy
   - 
   - 
   - 

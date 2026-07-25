@@ -52,9 +52,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        // Phát nhạc nền khi bắt đầu trò chơi
-        if (backgroundMusic != null)
-            PlayMusic(backgroundMusic);
+
     }
 
     // Hàm dùng để phát nhạc nền
@@ -119,10 +117,12 @@ public class AudioManager : MonoBehaviour
     {
         if (clip == null)
             return;
+
         if (musicSource.clip == clip)
             return;
 
         musicSource.Stop();
+
         musicSource.clip = clip;
         musicSource.loop = true;
         musicSource.Play();

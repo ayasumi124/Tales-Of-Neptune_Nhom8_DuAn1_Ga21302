@@ -278,6 +278,8 @@ MonoBehaviour:
   attackDistance: 0.5
   attackCooldown: 1
   damage: 10
+  skillData: {fileID: 11400000, guid: 612da40b345219d4796733404d9556dd, type: 2}
+  slotUI: {fileID: 0}
 --- !u!114 &8161544903992188369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,14 +465,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
   clone:
     unlocked: 0
+    equipped: 0
     cooldown: 0
     duration: 0
   dash:
     unlocked: 0
+    equipped: 0
     cooldown: 0
     duration: 0
   fireball:
     unlocked: 0
+    equipped: 0
+    cooldown: 0
+    duration: 0
+  attack:
+    unlocked: 0
+    equipped: 0
     cooldown: 0
     duration: 0
 --- !u!114 &2574351753208449971
@@ -487,8 +497,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
   dashSpeed: 12
   dashDuration: 0.15
-  dashCooldown: 0.8
+  dashCooldown: 2
   dashStaminaCost: 50
+  skillData: {fileID: 11400000, guid: 064575889a55fc64cb8bae392ba752c0, type: 2}
+  slotUI: {fileID: 0}
 --- !u!114 &7518505730027222568
 MonoBehaviour:
   m_ObjectHideFlags: 0
