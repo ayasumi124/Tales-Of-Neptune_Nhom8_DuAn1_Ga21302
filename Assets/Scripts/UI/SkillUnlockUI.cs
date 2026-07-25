@@ -81,4 +81,10 @@ public class SkillUnlockUI : MonoBehaviour
 
         OnSkillPanelClosed?.Invoke();
     }
+
+    public void ForceHide()
+{
+    waitingForClose = false;
+    gameObject.SetActive(false);
+}
 }
