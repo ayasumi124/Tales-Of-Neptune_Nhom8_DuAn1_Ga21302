@@ -15,6 +15,7 @@ MonoBehaviour:
   type: 0
   manaCost: 100
   cooldown: 60
+  duration: 30
   skillName: Clone Summon
   description: Summon a clone to fight with you. Press K to use
-  icon: {fileID: 9128384846270689552, guid: 523572cf0bc453446b348c736ef382c1, type: 3}
+  icon: {fileID: 21300000, guid: 0873a8f4b976bc541a5ac54f534a8345, type: 3}

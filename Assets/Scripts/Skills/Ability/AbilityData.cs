@@ -9,6 +9,8 @@ public class AbilityData : ScriptableObject
     public float manaCost;
     public float cooldown;
 
+    public float duration;
+
     public string skillName;
 
     [TextArea]
