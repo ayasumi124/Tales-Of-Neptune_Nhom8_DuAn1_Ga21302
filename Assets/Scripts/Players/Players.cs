@@ -9,6 +9,7 @@ public class Players : MonoBehaviour
     float moveX;
     float moveY;
     public Rigidbody2D rb;
+    
     public Animator animator;
     private PlayerStamina stamina;
     public float FacingDirection { get; private set; } = 1;
@@ -22,15 +23,13 @@ public class Players : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        if (Instance != null && Instance != this)
+
         {
-            Destroy(gameObject);
-            return;
+            if (GameManager.Instance != null)
+                GameManager.Instance.SetPlayer(gameObject);
+
+            DontDestroyOnLoad(gameObject);
         }
-
-        Instance = this;
-
-        DontDestroyOnLoad(gameObject);
 
         tocDo = 1.5f;
     }
@@ -62,10 +61,10 @@ public class Players : MonoBehaviour
         }
 
         if (attack != null && attack.IsAttacking)
-{
-    rb.linearVelocity *= 0.9f;
-    return;
-}
+        {
+            rb.linearVelocity *= 0.9f;
+            return;
+        }
 
         if (dash != null && dash.IsDashing)
             return;

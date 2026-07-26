@@ -1,66 +1,46 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Unity.Cinemachine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Player")]
-    public GameObject playerPrefab;
+    public GameObject player;
 
-    private GameObject player;
+    public string nextSpawnPoint;
 
-    public Transform Player => player != null ? player.transform : null;
-
-    public Transform PickupPoint
-    {
-        get
-        {
-            if (player == null)
-                return null;
-
-            return player.transform.Find("PickupPoint");
-        }
-    }
-
-    private void Awake()
+    void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
-
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            DontDestroyOnLoad(transform.root.gameObject);
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(transform.root.gameObject);
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void SetPlayer(GameObject p)
     {
-        FindOrSpawnPlayer();
+        player = p;
     }
 
-    void FindOrSpawnPlayer()
-    {
-        player = GameObject.FindGameObjectWithTag("Player");
-    }
+    public void MovePlayerToSpawn()
+{
+    SpawnPoint[] points = FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None);
 
-    public Health PlayerHealth
+    foreach (SpawnPoint p in points)
     {
-        get
+        if (p.spawnID == nextSpawnPoint)
         {
-            if (Player == null)
-                return null;
-
-            return Player.GetComponent<Health>();
+            player.transform.position = p.transform.position;
+            Debug.Log("Spawn tại: " + p.spawnID);
+            return;
         }
     }
 
-    public void SetPlayer(GameObject newPlayer)
-    {
-        player = newPlayer;
-    }
+    Debug.LogWarning("Không tìm thấy SpawnPoint: " + nextSpawnPoint);
+}
 }
