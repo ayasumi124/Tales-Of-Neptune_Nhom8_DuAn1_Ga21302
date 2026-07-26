@@ -201,13 +201,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fff177ad658515e429a36faa80a759e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyHealth
-  maxHealth: 100
+  maxHealth: 400
   currentHealth: 0
   deathDelay: 1
   hpCanvas: {fileID: 4441943256739025041}
   coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
   dropRate: 0.8
-  knockbackForce: 20
+  knockbackForce: 10
   knockbackTime: 0.1
   manaReward: 10
 --- !u!114 &1103410256815555851
@@ -265,6 +265,7 @@ MonoBehaviour:
   idleTime: 2
   CanMove: 1
   externalVelocity: {x: 0, y: 0}
+  knockbackDecay: 4
 --- !u!114 &7450391081814005210
 MonoBehaviour:
   m_ObjectHideFlags: 0

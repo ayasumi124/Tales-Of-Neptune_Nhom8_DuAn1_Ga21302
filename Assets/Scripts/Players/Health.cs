@@ -10,7 +10,14 @@ public class Health : MonoBehaviour
     public static event System.Action onPlayerDamaged;
     private PlayerAudio audioPlayer;
     private Animator animator;
+    private bool isHurting;
+    public bool IsHurting => isHurting;
     public static event System.Action onPlayerDeath;
+
+    [Header("Invincible")]
+    public float invincibleTime = 0.2f;
+
+    private bool isInvincible;
 
     public bool IsDead { get; private set; } = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,42 +33,50 @@ public class Health : MonoBehaviour
     {
         PlayerDash dash = GetComponent<PlayerDash>();
 
-if (dash != null && dash.IsDashing)
-    return;
+        if (dash != null && dash.IsDashing)
+            return;
         if (IsDead)
             return;
 
-        currentHealth -= amount;
-        onPlayerDamaged?.Invoke();
+        if (isHurting || isInvincible)
+            return;
+
+        StartCoroutine(HurtRoutine(amount));
+
         Attack attack = GetComponent<Attack>();
 
         if (attack != null)
         {
             attack.CancelAttack();
+            animator.speed = 1f;
         }
 
-        animator.SetTrigger("Hurt");
-        audioPlayer.PlayHurt();
 
-        if (currentHealth <= 0)
-        {
-            currentHealth = 0;
-            IsDead = true;
-
-            animator.ResetTrigger("Hurt");
-            animator.SetTrigger("Death");
-            audioPlayer.PlayDeath();
-
-            Debug.Log("Player is dead");
-
-            if (attack != null)
-                attack.enabled = false;
-        }
     }
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    void Die()
+    {
+        if (IsDead)
+            return;
+
+        IsDead = true;
+        isHurting = false;
+        isInvincible = true;
+
+        animator.ResetTrigger("Attack");
+        animator.ResetTrigger("Hurt");
+        animator.SetTrigger("Death");
+
+        audioPlayer.PlayDeath();
+
+        Attack attack = GetComponent<Attack>();
+        if (attack != null)
+            attack.enabled = false;
     }
 
     public void OnDeathAnimationFinished()
@@ -96,6 +111,36 @@ if (dash != null && dash.IsDashing)
 
             Debug.Log("Player is dead");
         }
+    }
+
+    IEnumerator HurtRoutine(float damage)
+    {
+        isHurting = true;
+        isInvincible = true;
+
+        currentHealth -= damage;
+
+        onPlayerDamaged?.Invoke();
+
+        animator.ResetTrigger("Attack");
+        animator.ResetTrigger("Dash");
+        animator.SetTrigger("Hurt");
+
+        audioPlayer.PlayHurt();
+
+        yield return new WaitForSeconds(0.25f);
+
+        isHurting = false;
+
+        if (currentHealth <= 0)
+        {
+            Die();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(invincibleTime);
+
+        isInvincible = false;
     }
 }
 

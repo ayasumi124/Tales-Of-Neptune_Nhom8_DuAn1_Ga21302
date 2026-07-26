@@ -56,13 +56,15 @@ public class PlayerDash : MonoBehaviour
     IEnumerator Dash()
     {
         IsDashing = true;
-        cooldownTimer = dashCooldown;
+
+        AbilityManager.Instance.dash.maxCooldown =
+    dashCooldown;
 
         AbilityManager.Instance.dash.cooldown =
-            skillData.cooldown;
+            dashCooldown;
 
         AbilityManager.Instance.dash.duration =
-            skillData.duration;
+            dashDuration;
 
         Vector2 dir = player.LastDirection;
 

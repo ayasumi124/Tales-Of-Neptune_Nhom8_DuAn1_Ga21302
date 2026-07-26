@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
   type: 0
   manaCost: 0
-  cooldown: 1
+  cooldown: 0.35
   duration: 0
   skillName: 
   description: 
