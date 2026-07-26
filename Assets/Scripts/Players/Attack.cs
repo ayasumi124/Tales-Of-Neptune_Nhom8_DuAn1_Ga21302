@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections;
 public class Attack : MonoBehaviour
 {
     private Animator animator;
@@ -27,6 +27,19 @@ public class Attack : MonoBehaviour
     private bool queueNextAttack;
 
     private bool comboWindowOpen;
+
+    [Header("Lunge")]
+    public float lungeForce = 2f;
+    public float lungeTime = 0.06f;
+    public float[] comboLunge =
+{
+    3.5f,
+    5f,
+    8f // hit cuối
+};
+
+
+
 
 
     [Header("Combo Speed")]
@@ -64,6 +77,21 @@ public class Attack : MonoBehaviour
     public AbilityData skillData;
 
     public SkillSlotUI slotUI;
+
+    IEnumerator Lunge(Vector2 dir, float speed)
+    {
+        float t = 0.08f;
+
+        while (t > 0)
+        {
+            rb.linearVelocity = dir * speed;
+            t -= Time.deltaTime;
+            yield return null;
+        }
+
+        rb.linearVelocity = Vector2.zero;
+    }
+
     void Start()
     {
         slotUI.Setup(skillData);
@@ -141,6 +169,19 @@ public class Attack : MonoBehaviour
     // Animation Event
     public void DealDamage()
     {
+        Players player = GetComponent<Players>();
+
+        int currentCombo = Mathf.Clamp(
+            combo,
+            0,
+            comboLunge.Length - 1
+        );
+
+        StopAllCoroutines();
+        StartCoroutine(
+            Lunge(player.LastDirection, comboLunge[currentCombo])
+        );
+
         foreach (Transform point in attackPoint)
         {
             if (point == null)
@@ -155,23 +196,15 @@ public class Attack : MonoBehaviour
             {
                 EnermyHealth hp = hit.GetComponent<EnermyHealth>();
 
-                if (hp != null)
-                {
-                    int currentCombo = Mathf.Clamp(
-                        animator.GetInteger("Combo"),
-                        0,
-                        comboDamage.Length - 1);
+                if (hp == null)
+                    continue;
 
-                    Vector2 dir =
-                        (hp.transform.position - transform.position).normalized;
+                Vector2 dir =
+                    (hp.transform.position - transform.position).normalized;
 
-                    hp.knockbackForce =
-                        comboKnockback[currentCombo];
+                hp.knockbackForce = comboKnockback[currentCombo];
 
-                    hp.TakeDamage(
-                        comboDamage[currentCombo],
-                        dir);
-                }
+                hp.TakeDamage(comboDamage[currentCombo], dir);
             }
         }
     }
@@ -223,4 +256,6 @@ public class Attack : MonoBehaviour
     {
         comboWindowOpen = false;
     }
+
+
 }

@@ -278,6 +278,27 @@ MonoBehaviour:
   attackDistance: 0.5
   attackCooldown: 1
   damage: 10
+  maxCombo: 3
+  lungeForce: 9
+  lungeTime: 0.06
+  comboLunge:
+  - 5
+  - 7
+  - 10
+  comboCooldown:
+  - 0.22
+  - 0.16
+  - 0.12
+  comboAnimationSpeed:
+  - 1.4
+  - 1.7
+  - 2
+  comboDamage: 140000001900000023000000
+  comboKnockback:
+  - 4
+  - 6
+  - 8
+  comboFinishDelay: 0.45
   skillData: {fileID: 11400000, guid: 612da40b345219d4796733404d9556dd, type: 2}
   slotUI: {fileID: 0}
 --- !u!114 &8161544903992188369
@@ -309,6 +330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 8
   currentHealth: 8
+  invincibleTime: 0.2
 --- !u!114 &2379962776103713919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,21 +489,25 @@ MonoBehaviour:
     unlocked: 0
     equipped: 0
     cooldown: 0
+    maxCooldown: 0
     duration: 0
   dash:
     unlocked: 0
     equipped: 0
     cooldown: 0
+    maxCooldown: 0
     duration: 0
   fireball:
     unlocked: 0
     equipped: 0
     cooldown: 0
+    maxCooldown: 0
     duration: 0
   attack:
     unlocked: 0
     equipped: 0
     cooldown: 0
+    maxCooldown: 0
     duration: 0
 --- !u!114 &2574351753208449971
 MonoBehaviour:
