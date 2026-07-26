@@ -18,9 +18,6 @@ public class PlayerDash : MonoBehaviour
     Rigidbody2D rb;
     Players player;
     Animator animator;
-
-    float cooldownTimer;
-
     public AbilityData skillData;
 
     public SkillSlotUI slotUI;
@@ -36,14 +33,12 @@ public class PlayerDash : MonoBehaviour
 
     void Update()
     {
-        if (cooldownTimer > 0)
-            cooldownTimer -= Time.deltaTime;
 
         if (IsDashing)
             return;
 
         if (Input.GetKeyDown(KeyCode.L) &&
-    cooldownTimer <= 0 &&
+    AbilityManager.Instance.dash.cooldown <= 0 &&
     !stamina.IsExhausted)
         {
             if (stamina.UseStamina(dashStaminaCost))

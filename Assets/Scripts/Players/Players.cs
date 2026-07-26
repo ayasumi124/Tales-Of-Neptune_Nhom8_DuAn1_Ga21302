@@ -22,9 +22,17 @@ public class Players : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        tocDo = 1.5f;
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+
         DontDestroyOnLoad(gameObject);
+
+        tocDo = 1.5f;
     }
     void Start()
     {
@@ -54,10 +62,10 @@ public class Players : MonoBehaviour
         }
 
         if (attack != null && attack.IsAttacking)
-        {
-            rb.linearVelocity = Vector2.zero;
-            return;
-        }
+{
+    rb.linearVelocity *= 0.9f;
+    return;
+}
 
         if (dash != null && dash.IsDashing)
             return;
@@ -71,7 +79,10 @@ public class Players : MonoBehaviour
     void Update()
     {
 
-        PlayerDash dash = GetComponent<PlayerDash>();
+        if (attack != null && attack.IsAttacking)
+        {
+            return;
+        }
 
         if (dash != null && dash.IsDashing)
         {
