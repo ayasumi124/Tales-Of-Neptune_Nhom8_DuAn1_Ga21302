@@ -119,9 +119,12 @@ public class EnermyHealth : MonoBehaviour
 
     void Die()
     {
+        if (isDead)
+            return;
         isDead = true;
 
         animator.SetTrigger("Death");
+        Invoke(nameof(ForceDestroy), 2f);
 
         Debug.Log(gameObject.name + " Dead");
 
@@ -143,19 +146,24 @@ public class EnermyHealth : MonoBehaviour
         if (enermyAudio != null)
             enermyAudio.PlayDeath();
 
-        
-    }
 
+    }
+    void ForceDestroy()
+    {
+        if (gameObject != null)
+            Destroy(gameObject);
+    }
     // Animation Event
     public void OnDeathFinished()
     {
+        Destroy(gameObject);
 
         PlayerMana mana = FindFirstObjectByType<PlayerMana>();
 
-if (mana != null)
-{
-    mana.RestoreMana(5);
-}
+        if (mana != null)
+        {
+            mana.RestoreMana(5);
+        }
         if (Random.value <= dropRate)
         {
             Instantiate(
@@ -164,6 +172,6 @@ if (mana != null)
                 Quaternion.identity);
         }
 
-        Destroy(gameObject);
+
     }
 }

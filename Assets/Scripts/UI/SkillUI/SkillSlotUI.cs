@@ -52,7 +52,6 @@ public class SkillSlotUI : MonoBehaviour
 
     void UpdateCooldown()
     {
-
         if (skillData == null)
         {
             cooldownMask.fillAmount = 0;
@@ -68,8 +67,13 @@ public class SkillSlotUI : MonoBehaviour
 
         if (state.cooldown > 0)
         {
+            float maxCd =
+                state.maxCooldown > 0
+                ? state.maxCooldown
+                : skillData.cooldown;
+
             cooldownMask.fillAmount =
-                state.cooldown / skillData.cooldown;
+                state.cooldown / maxCd;
 
             cooldownText.text =
                 Mathf.Ceil(state.cooldown).ToString();
@@ -80,7 +84,6 @@ public class SkillSlotUI : MonoBehaviour
             cooldownText.text = "";
         }
     }
-
     void UpdateDuration()
     {
         if (skillData == null)

@@ -15,9 +15,9 @@ public class CloneSkill : MonoBehaviour
     {
         mana = GetComponent<PlayerMana>();
 
-        //slotUI.Setup(skillData);
+        slotUI.Setup(skillData);
 
-        slotUI.abilityType = skillData.type;
+        //slotUI.abilityType = skillData.type;
     }
 
     void Update()
@@ -43,6 +43,8 @@ public class CloneSkill : MonoBehaviour
 
             AbilityManager.Instance.clone.cooldown = skillData.cooldown;
             AbilityManager.Instance.clone.duration = skillData.duration;
+            AbilityManager.Instance.clone.maxCooldown = skillData.cooldown;
+
         }
     }
 

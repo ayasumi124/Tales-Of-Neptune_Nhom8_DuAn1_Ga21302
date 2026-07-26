@@ -45,6 +45,9 @@ public class EnermyMovement : MonoBehaviour
 
     private SpriteRenderer sr;
 
+    [Header("Knockback")]
+    public float knockbackDecay = 5f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -84,9 +87,9 @@ public class EnermyMovement : MonoBehaviour
         }
 
         externalVelocity = Vector2.Lerp(
-            externalVelocity,
-            Vector2.zero,
-            12f * Time.deltaTime);
+          externalVelocity,
+          Vector2.zero,
+          knockbackDecay * Time.deltaTime);
 
         if (!CanMove)
         {

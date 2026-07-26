@@ -34,7 +34,7 @@ public LayerMask obstacleLayer;
 public float avoidDistance = 0.6f;
 
 
-    public int damage = 20;
+    public int damage = 35;
 
     private bool isAttacking;
 

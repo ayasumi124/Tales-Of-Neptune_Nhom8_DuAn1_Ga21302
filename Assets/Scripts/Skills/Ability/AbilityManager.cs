@@ -16,10 +16,12 @@ public class AbilityManager : MonoBehaviour
     {
         public bool unlocked;
         public bool equipped;
+
         public float cooldown;
 
-        public float duration;
+        public float maxCooldown;
 
+        public float duration;
     }
     void InitializeDefaultAbilities()
     {
@@ -72,10 +74,20 @@ public class AbilityManager : MonoBehaviour
     void UpdateAbility(AbilityState state)
     {
         if (state.cooldown > 0)
+        {
             state.cooldown -= Time.deltaTime;
 
+            if (state.cooldown < 0)
+                state.cooldown = 0;
+        }
+
         if (state.duration > 0)
+        {
             state.duration -= Time.deltaTime;
+
+            if (state.duration < 0)
+                state.duration = 0;
+        }
     }
 
     public void UnlockAbility(AbilityType type)
