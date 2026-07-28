@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Unity.Cinemachine;
+
 
 public class SceneLoader : MonoBehaviour
 {
@@ -22,20 +24,27 @@ public class SceneLoader : MonoBehaviour
     }
 
     IEnumerator Load(string sceneName, string spawnID)
-{
-    GameManager.Instance.nextSpawnPoint = spawnID;
+    {
+        GameManager.Instance.nextSpawnPoint = spawnID;
 
-    yield return FadeUI.Instance.FadeOut();
+        yield return FadeUI.Instance.FadeOut();
 
-    AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
+        AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
 
-    while (!op.isDone)
+        while (!op.isDone)
+            yield return null;
         yield return null;
 
-    yield return null; // đợi Awake/Start của scene
+        GameManager.Instance.MovePlayerToSpawn();
+        CinemachineCamera cam = FindFirstObjectByType<CinemachineCamera>();
 
-    GameManager.Instance.MovePlayerToSpawn();
+        if (cam != null)
+        {
+            cam.Target.TrackingTarget = GameManager.Instance.player.transform;
+        }
 
-    yield return FadeUI.Instance.FadeIn();
-}
+        yield return null;
+
+        yield return FadeUI.Instance.FadeIn();
+    }
 }
