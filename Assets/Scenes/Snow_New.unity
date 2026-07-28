@@ -88311,7 +88311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74bd87ecab5684090e11ff8588b029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnID: Up
+  spawnID: FromSouthValley
 --- !u!1 &1616255089
 GameObject:
   m_ObjectHideFlags: 0
@@ -112023,7 +112023,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
   sceneToLoad: Valley
-  spawnPointID: Down
+  spawnPointID: FromSnow
 --- !u!61 &1792405522
 BoxCollider2D:
   m_ObjectHideFlags: 0
