@@ -25,22 +25,11 @@ public class Players : MonoBehaviour
     void Awake()
     {
 
-        {
-            if (GameManager.Instance != null)
-                GameManager.Instance.SetPlayer(gameObject);
-
-            DontDestroyOnLoad(gameObject);
-        }
-
         tocDo = 1.5f;
     }
     void Start()
     {
         dash = GetComponent<PlayerDash>();
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.SetPlayer(gameObject);
-        }
         Debug.Log("Players script is running.");
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -71,10 +60,6 @@ public class Players : MonoBehaviour
             return;
 
         rb.linearVelocity = new Vector2(moveX * tocDo, moveY * tocDo);
-
-        rb.linearVelocity = new Vector2(
-            moveX * tocDo,
-            moveY * tocDo);
     }
     void Update()
     {

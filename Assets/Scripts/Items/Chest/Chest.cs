@@ -2,32 +2,54 @@ using UnityEngine;
 
 public class Chest : MonoBehaviour
 {
+    [Header("Reward")]
     public AbilityData reward;
 
-    [SerializeField]
-    private bool opened;
-    bool rewardGiven = false;
-    Players player;
+    [SerializeField] private bool opened;
 
-    EnermyMovement[] enemies;
+    private bool rewardGiven;
 
-    CloneFollow[] clones;
-    Animator animator;
+    private Players player;
+    private EnermyMovement[] enemies;
+    private CloneFollow[] clones;
+    private Animator animator;
 
-    void Start()
+    private void Awake()
     {
         animator = GetComponent<Animator>();
-        player = FindFirstObjectByType<Players>();
+    }
+
+    private void Start()
+    {
+        FindObjects();
+
+        SkillUnlockUI.OnSkillPanelClosed += ResumeGame;
+    }
+
+    private void OnDestroy()
+    {
+        SkillUnlockUI.OnSkillPanelClosed -= ResumeGame;
+    }
+
+    void FindObjects()
+    {
+        if (GameManager.Instance != null &&
+            GameManager.Instance.Player != null)
+        {
+            player = GameManager.Instance.Player.GetComponent<Players>();
+        }
+
+        if (player == null)
+            player = FindFirstObjectByType<Players>();
 
         enemies = FindObjectsByType<EnermyMovement>(
             FindObjectsSortMode.None);
 
         clones = FindObjectsByType<CloneFollow>(
             FindObjectsSortMode.None);
-        SkillUnlockUI.OnSkillPanelClosed += ResumeGame;
     }
 
-    void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         if (opened)
             return;
@@ -36,75 +58,79 @@ public class Chest : MonoBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.E))
-        {
             OpenChest();
-        }
     }
 
     public void OpenChest()
     {
-        Debug.Log("Open Chest");
-
         if (opened)
             return;
 
         opened = true;
 
-        // Âm thanh mở rương
-        AudioManager.Instance.PlaySFX(
-            AudioManager.Instance.chestOpenSound
-        );
+        Debug.Log("Open Chest");
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.chestOpenSound);
+        }
 
         FreezeGame();
 
-        animator.SetBool("IsOpened", true);
+        if (animator != null)
+            animator.SetBool("IsOpened", true);
+
+        // Không gọi GiveReward ở đây.
+        // Animation Event sẽ gọi GiveReward().
     }
+
     void FreezeGame()
     {
-        player.enabled = false;
+        FindObjects();
+
+        if (player != null)
+            player.enabled = false;
 
         foreach (EnermyMovement e in enemies)
         {
-            if (e != null)
-            {
-                e.enabled = false;
+            if (e == null)
+                continue;
 
-                Rigidbody2D rb = e.GetComponent<Rigidbody2D>();
+            e.enabled = false;
 
-                if (rb != null)
-                    rb.linearVelocity = Vector2.zero;
-            }
+            Rigidbody2D rb = e.GetComponent<Rigidbody2D>();
+
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
         }
 
         foreach (CloneFollow c in clones)
         {
-            if (c != null)
-            {
-                c.enabled = false;
+            if (c == null)
+                continue;
 
-                Rigidbody2D rb = c.GetComponent<Rigidbody2D>();
+            c.enabled = false;
 
-                if (rb != null)
-                    rb.linearVelocity = Vector2.zero;
-            }
+            Rigidbody2D rb = c.GetComponent<Rigidbody2D>();
+
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
         }
     }
 
     void ResumeGame()
     {
-        player.enabled = true;
+        FindObjects();
 
-        enemies = FindObjectsByType<EnermyMovement>(
-            FindObjectsSortMode.None);
+        if (player != null)
+            player.enabled = true;
 
         foreach (EnermyMovement e in enemies)
         {
             if (e != null)
                 e.enabled = true;
         }
-
-        clones = FindObjectsByType<CloneFollow>(
-            FindObjectsSortMode.None);
 
         foreach (CloneFollow c in clones)
         {
@@ -113,12 +139,7 @@ public class Chest : MonoBehaviour
         }
     }
 
-    void OnDestroy()
-    {
-        SkillUnlockUI.OnSkillPanelClosed -= ResumeGame;
-    }
-
-    // Animation Event
+    // ===== Animation Event =====
     public void GiveReward()
     {
         if (rewardGiven)
@@ -126,14 +147,32 @@ public class Chest : MonoBehaviour
 
         rewardGiven = true;
 
-        AbilityManager.Instance.UnlockAbility(reward.type);
+        if (reward == null)
+        {
+            Debug.LogError("Reward chưa được gán.");
 
-        SkillInventoryUI.Instance.AddSkill(reward);
+            ResumeGame();
+            return;
+        }
 
-        EquipmentManager.Instance.EquipSkill(reward, 3);
+        if (AbilityManager.Instance != null)
+            AbilityManager.Instance.UnlockAbility(reward.type);
 
-        SkillUnlockUI.Instance.ShowSkill(reward);
+        if (SkillInventoryUI.Instance != null)
+            SkillInventoryUI.Instance.AddSkill(reward);
 
-        
+        if (EquipmentManager.Instance != null)
+            EquipmentManager.Instance.EquipSkill(reward, 3);
+
+        if (SkillUnlockUI.Instance != null)
+        {
+            SkillUnlockUI.Instance.ShowSkill(reward);
+        }
+        else
+        {
+            Debug.LogError("Không tìm thấy SkillUnlockUI.");
+
+            ResumeGame();
+        }
     }
 }

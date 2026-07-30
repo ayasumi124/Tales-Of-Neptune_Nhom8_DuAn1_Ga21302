@@ -44,10 +44,29 @@ public class SkillSlotUI : MonoBehaviour
             return;
         }
 
-        icon.enabled = true;
-        icon.sprite = data.icon;
+        gameObject.SetActive(true);
 
         abilityType = data.type;
+
+        if (icon != null)
+        {
+            icon.gameObject.SetActive(true);
+            icon.enabled = true;
+            icon.sprite = data.icon;
+
+            Color iconColor = icon.color;
+            iconColor.a = 1f;
+            icon.color = iconColor;
+        }
+
+        if (cooldownMask != null)
+            cooldownMask.fillAmount = 0f;
+
+        if (durationMask != null)
+            durationMask.fillAmount = 0f;
+
+        if (cooldownText != null)
+            cooldownText.text = "";
     }
 
     void UpdateCooldown()
@@ -86,27 +105,33 @@ public class SkillSlotUI : MonoBehaviour
     }
     void UpdateDuration()
     {
-        if (skillData == null)
-        {
-            durationMask.fillAmount = 0;
+        if (durationMask == null ||
+            skillData == null ||
+            AbilityManager.Instance == null)
             return;
-        }
 
         AbilityManager.AbilityState state =
             AbilityManager.Instance.GetState(abilityType);
 
-        if (state == null)
+        if (state == null || state.duration <= 0f)
+        {
+            durationMask.fillAmount = 0f;
             return;
+        }
 
-        if (state.duration > 0)
+        float totalDuration = state.maxDuration > 0f
+            ? state.maxDuration
+            : skillData.duration;
+
+        if (totalDuration <= 0f)
         {
-            durationMask.fillAmount =
-                state.duration / skillData.duration;
+            durationMask.fillAmount = 0f;
+            return;
         }
-        else
-        {
-            durationMask.fillAmount = 0;
-        }
+
+        durationMask.fillAmount = Mathf.Clamp01(
+            state.duration / totalDuration
+        );
     }
 
     public void Clear()
@@ -114,11 +139,18 @@ public class SkillSlotUI : MonoBehaviour
         skillData = null;
 
         if (icon != null)
+        {
+            icon.sprite = null;
             icon.enabled = false;
+        }
 
-        cooldownMask.fillAmount = 0;
-        durationMask.fillAmount = 0;
+        if (cooldownMask != null)
+            cooldownMask.fillAmount = 0f;
 
-        cooldownText.text = "";
+        if (durationMask != null)
+            durationMask.fillAmount = 0f;
+
+        if (cooldownText != null)
+            cooldownText.text = "";
     }
 }

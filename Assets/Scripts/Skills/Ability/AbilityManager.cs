@@ -18,10 +18,10 @@ public class AbilityManager : MonoBehaviour
         public bool equipped;
 
         public float cooldown;
-
         public float maxCooldown;
 
         public float duration;
+        public float maxDuration;
     }
     void InitializeDefaultAbilities()
     {

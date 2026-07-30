@@ -679,7 +679,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8320
   avoidDistance: 0.6
-  damage: 10
+  damage: 25
   footstepSound: {fileID: 8300000, guid: 50105f5c63c24b6408bc16360f9b9ed6, type: 3}
   attackSound: {fileID: 8300000, guid: ba7f26e2931f0d747971fb2ba6361432, type: 3}
 --- !u!82 &-3323019700602753708
