@@ -69,6 +69,7 @@ public class EnermyHealth : MonoBehaviour
                 damage,
                 transform.position + Vector3.up * 0.8f);
         }
+        
     }
     void ShowHP()
     {

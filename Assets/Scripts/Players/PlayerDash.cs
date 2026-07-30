@@ -6,7 +6,7 @@ public class PlayerDash : MonoBehaviour
     [Header("Dash")]
     public float dashSpeed = 8f;
     public float dashDuration = 0.15f;
-    public float dashCooldown = 0.8f;
+    public float dashCooldown = 2f;
 
     [Header("Stamina")]
     public float dashStaminaCost = 50f;
@@ -33,13 +33,18 @@ public class PlayerDash : MonoBehaviour
 
     void Update()
     {
-
         if (IsDashing)
             return;
 
-        if (Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Mouse1) &&
-    AbilityManager.Instance.dash.cooldown <= 0 &&
-    !stamina.IsExhausted)
+        bool pressDash =
+            Input.GetKeyDown(KeyCode.L) ||
+            Input.GetKeyDown(KeyCode.Mouse1);
+
+        if (pressDash &&
+            AbilityManager.Instance != null &&
+            AbilityManager.Instance.HasAbility(AbilityType.Dash) &&
+            AbilityManager.Instance.dash.cooldown <= 0f &&
+            !stamina.IsExhausted)
         {
             if (stamina.UseStamina(dashStaminaCost))
             {
@@ -53,32 +58,33 @@ public class PlayerDash : MonoBehaviour
         IsDashing = true;
 
         AbilityManager.Instance.dash.maxCooldown =
-    dashCooldown;
+            dashCooldown;
 
         AbilityManager.Instance.dash.cooldown =
             dashCooldown;
+
+        AbilityManager.Instance.dash.maxDuration =
+            dashDuration;
 
         AbilityManager.Instance.dash.duration =
             dashDuration;
 
         Vector2 dir = player.LastDirection;
 
-
         rb.linearVelocity = dir * dashSpeed;
-
         animator.SetTrigger("Dash");
 
         float timer = dashDuration;
 
-        while (timer > 0)
+        while (timer > 0f)
         {
             rb.linearVelocity = dir * dashSpeed;
+
             timer -= Time.deltaTime;
             yield return null;
         }
 
         rb.linearVelocity = Vector2.zero;
-
         IsDashing = false;
     }
 

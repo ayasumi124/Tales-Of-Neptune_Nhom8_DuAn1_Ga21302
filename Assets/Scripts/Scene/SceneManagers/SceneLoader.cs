@@ -1,49 +1,72 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using Unity.Cinemachine;
-
 
 public class SceneLoader : MonoBehaviour
 {
-    public static SceneLoader Instance;
+    public static SceneLoader Instance { get; private set; }
 
-    bool loading;
+    private bool isLoading;
 
-    void Awake()
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
     }
 
     public void LoadScene(string sceneName, string spawnID)
     {
-        if (loading)
+        if (isLoading)
             return;
 
-        StartCoroutine(Load(sceneName, spawnID));
+        StartCoroutine(LoadRoutine(sceneName, spawnID));
     }
 
-    IEnumerator Load(string sceneName, string spawnID)
-{
-    GameManager.Instance.nextSpawnPoint = spawnID;
+    private IEnumerator LoadRoutine(
+        string sceneName,
+        string spawnID)
+    {
+        isLoading = true;
+        Time.timeScale = 1f;
 
-    yield return FadeUI.Instance.FadeOut();
+        Debug.Log("1. Fade Out");
 
-    AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
+        if (FadeUI.Instance != null)
+            yield return FadeUI.Instance.FadeOut();
 
-    while (!op.isDone)
+        AsyncOperation operation =
+            SceneManager.LoadSceneAsync(sceneName);
+
+        while (!operation.isDone)
+            yield return null;
+
+        yield return null;
         yield return null;
 
-    // đợi 2 frame
-    yield return null;
-    yield return null;
+        if (GameManager.Instance != null)
+        {
+            yield return GameManager.Instance
+                .MovePlayerToSpawn(spawnID);
+        }
 
-    GameManager.Instance.MovePlayerToSpawn();
+        yield return new WaitForEndOfFrame();
 
-    yield return new WaitForEndOfFrame();
+        if (FadeUI.Instance != null)
+            yield return FadeUI.Instance.FadeIn();
 
-    Debug.Log("Player sau spawn = " + GameManager.Instance.player.transform.position);
+        isLoading = false;
+    }
 
-    yield return FadeUI.Instance.FadeIn();
-}
+    public void ReloadCurrentScene(string spawnID)
+    {
+        LoadScene(
+            SceneManager.GetActiveScene().name,
+            spawnID
+        );
+    }
 }

@@ -2,65 +2,132 @@ using UnityEngine;
 
 public class EquipmentManager : MonoBehaviour
 {
-    public static EquipmentManager Instance;
+    public static EquipmentManager Instance { get; private set; }
 
-    public SkillSlotUI slot3;
-    public SkillSlotUI slot4;
-    public SkillSlotUI slot5;
+    [Header("Taskbar")]
+    [SerializeField] private GameObject skillTaskbar;
 
-    void Awake()
+    [Header("Skill Slots")]
+    [SerializeField] private SkillSlotUI slot3;
+    [SerializeField] private SkillSlotUI slot4;
+    [SerializeField] private SkillSlotUI slot5;
+
+    private bool initialized;
+
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+
+        InitializeSlots();
     }
 
-    void Start()
+    private void InitializeSlots()
     {
-        slot3.Clear();
-        slot4.Clear();
-        slot5.Clear();
-        slot3.gameObject.SetActive(false);
-        slot4.gameObject.SetActive(false);
-        slot5.gameObject.SetActive(false);
+        if (initialized)
+            return;
+
+        initialized = true;
+
+        InitializeSlot(slot3);
+        InitializeSlot(slot4);
+        InitializeSlot(slot5);
     }
-    public void EquipSkill(AbilityData data, int slot)
+
+    private void InitializeSlot(SkillSlotUI slot)
     {
-        switch (slot)
+        if (slot == null)
+            return;
+
+        slot.Clear();
+        slot.gameObject.SetActive(false);
+    }
+
+    public void EquipSkill(AbilityData data, int slotNumber)
+    {
+        if (data == null)
         {
-            case 3:
-                slot3.gameObject.SetActive(true);
-                slot3.Setup(data);
-                break;
+            Debug.LogError("AbilityData truyền vào EquipSkill đang null.");
+            return;
+        }
 
-            case 4:
-                slot4.gameObject.SetActive(true);
-                slot4.Setup(data);
-                break;
+        SkillSlotUI targetSlot = GetSlot(slotNumber);
 
-            case 5:
-                slot5.gameObject.SetActive(true);
-                slot5.Setup(data);
-                break;
+        if (targetSlot == null)
+        {
+            Debug.LogError(
+                $"Không tìm thấy SkillSlotUI của slot {slotNumber}."
+            );
+            return;
+        }
+
+        // Bật Taskbar trước.
+        if (skillTaskbar != null)
+            skillTaskbar.SetActive(true);
+
+        // Bật toàn bộ cha của Slot nếu đang bị tắt.
+        ActivateParents(targetSlot.transform);
+
+        targetSlot.gameObject.SetActive(true);
+        targetSlot.Setup(data);
+
+        Debug.Log(
+            $"Đã trang bị {data.skillName} vào Slot {slotNumber}. " +
+            $"Slot active: {targetSlot.gameObject.activeInHierarchy}"
+        );
+    }
+
+    private void ActivateParents(Transform target)
+    {
+        Transform current = target.parent;
+
+        while (current != null && current != transform.root)
+        {
+            if (!current.gameObject.activeSelf)
+                current.gameObject.SetActive(true);
+
+            current = current.parent;
         }
     }
 
-    public void UnequipSkill(int slot)
+    public void UnequipSkill(int slotNumber)
     {
-        switch (slot)
+        SkillSlotUI targetSlot = GetSlot(slotNumber);
+
+        if (targetSlot == null)
+            return;
+
+        targetSlot.Clear();
+        targetSlot.gameObject.SetActive(false);
+    }
+
+    private SkillSlotUI GetSlot(int slotNumber)
+    {
+        switch (slotNumber)
         {
             case 3:
-                slot3.Clear();
-                slot3.gameObject.SetActive(false);
-                break;
+                return slot3;
 
             case 4:
-                slot4.Clear();
-                slot4.gameObject.SetActive(false);
-                break;
+                return slot4;
 
             case 5:
-                slot5.Clear();
-                slot5.gameObject.SetActive(false);
-                break;
+                return slot5;
+
+            default:
+                Debug.LogError("Số slot không hợp lệ: " + slotNumber);
+                return null;
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 }

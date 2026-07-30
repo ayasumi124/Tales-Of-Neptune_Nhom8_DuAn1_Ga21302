@@ -1,53 +1,88 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 
 public class FadeUI : MonoBehaviour
 {
-    public static FadeUI Instance;
+    public static FadeUI Instance { get; private set; }
 
-    public Image fadeImage;
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private float fadeDuration = 0.4f;
 
-    public float fadeTime=0.4f;
-
-    void Awake()
+    private void Awake()
     {
-        Instance=this;
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
+
+        if (canvasGroup == null)
+        {
+            Debug.LogError("FadeCanvas chưa có CanvasGroup.");
+            return;
+        }
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.blocksRaycasts = false;
+        canvasGroup.interactable = false;
     }
 
     public IEnumerator FadeOut()
     {
-        Color c=fadeImage.color;
+        Debug.Log("FadeOut bắt đầu");
 
-        float t=0;
+        canvasGroup.blocksRaycasts = true;
 
-        while(t<fadeTime)
-        {
-            t+=Time.deltaTime;
+        yield return FadeTo(1f);
 
-            c.a=Mathf.Lerp(0,1,t/fadeTime);
-
-            fadeImage.color=c;
-
-            yield return null;
-        }
+        Debug.Log("FadeOut xong, alpha = " + canvasGroup.alpha);
     }
 
     public IEnumerator FadeIn()
     {
-        Color c=fadeImage.color;
+        Debug.Log("FadeIn bắt đầu");
 
-        float t=0;
+        yield return FadeTo(0f);
 
-        while(t<fadeTime)
+        canvasGroup.blocksRaycasts = false;
+
+        Debug.Log("FadeIn xong, alpha = " + canvasGroup.alpha);
+    }
+
+    private IEnumerator FadeTo(float targetAlpha)
+    {
+        float startAlpha = canvasGroup.alpha;
+        float timer = 0f;
+
+        while (timer < fadeDuration)
         {
-            t+=Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
 
-            c.a=Mathf.Lerp(1,0,t/fadeTime);
+            float t = Mathf.Clamp01(timer / fadeDuration);
 
-            fadeImage.color=c;
+            canvasGroup.alpha = Mathf.Lerp(
+                startAlpha,
+                targetAlpha,
+                t
+            );
 
             yield return null;
         }
+
+        canvasGroup.alpha = targetAlpha;
+    }
+
+    public void ForceTransparent()
+    {
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.blocksRaycasts = false;
     }
 }

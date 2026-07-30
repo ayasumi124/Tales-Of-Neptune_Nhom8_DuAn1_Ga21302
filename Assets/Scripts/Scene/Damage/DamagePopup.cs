@@ -3,56 +3,83 @@ using UnityEngine;
 
 public class DamagePopup : MonoBehaviour
 {
+    [Header("Text")]
     [SerializeField] private TextMeshPro text;
 
-    public float moveSpeed = 1.5f;
-    public float fadeSpeed = 2f;
-    public float lifeTime = 1f;
+    [Header("Movement")]
+    [SerializeField] private float moveSpeed = 1.5f;
+
+    [Header("Fade")]
+    [SerializeField] private float fadeSpeed = 2f;
+    [SerializeField] private float lifeTime = 1f;
+
+    [Header("Spawn")]
+    [SerializeField] private float randomOffsetX = 0.2f;
+    [SerializeField] private float offsetY = 0.1f;
+    [SerializeField] private float popupScale = 0.5f;
 
     private Color color;
+    private float remainingLifeTime;
 
-    void Awake()
+    private void Awake()
     {
-        text = GetComponent<TextMeshPro>();
+        if (text == null)
+            text = GetComponent<TextMeshPro>();
 
         if (text == null)
         {
-            Debug.LogError("DamagePopup thiếu TextMeshPro!");
+            Debug.LogError(
+                "DamagePopup thiếu component TextMeshPro."
+            );
+
+            enabled = false;
+            return;
         }
+
+        remainingLifeTime = lifeTime;
     }
 
-    void Start()
+    private void Start()
     {
-        color = text.color;
-
-
-        transform.localScale = Vector3.one * 0.5f;
+        transform.localScale =
+            Vector3.one * popupScale;
 
         transform.position += new Vector3(
-            Random.Range(-0.2f, 0.2f),
-            0.1f,
-            0);
+            Random.Range(-randomOffsetX, randomOffsetX),
+            offsetY,
+            0f
+        );
+
+        color = text.color;
     }
 
-    void Update()
+    private void Update()
     {
-        transform.position += Vector3.up * moveSpeed * Time.deltaTime;
+        transform.position +=
+            Vector3.up * moveSpeed * Time.deltaTime;
+
+        remainingLifeTime -= Time.deltaTime;
 
         color.a -= fadeSpeed * Time.deltaTime;
+        color.a = Mathf.Clamp01(color.a);
+
         text.color = color;
 
-        lifeTime -= Time.deltaTime;
-
-        if (lifeTime <= 0)
+        if (remainingLifeTime <= 0f)
             Destroy(gameObject);
     }
 
     public void SetDamage(int damage, bool critical)
-{
-    text.text = damage.ToString();
+    {
+        if (text == null)
+            return;
 
-    text.color = critical ? Color.yellow : Color.white;
+        text.text = damage.ToString();
 
-    color = text.color;
-}
+        text.color = critical
+            ? Color.yellow
+            : Color.white;
+
+        color = text.color;
+    }
 }

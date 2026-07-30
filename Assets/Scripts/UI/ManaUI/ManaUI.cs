@@ -5,126 +5,229 @@ using System.Collections;
 
 public class ManaUI : MonoBehaviour
 {
-    public static ManaUI Instance;
+    public static ManaUI Instance { get; private set; }
 
     [Header("Reference")]
-    public PlayerMana mana;
+    [SerializeField] private PlayerMana mana;
 
-    public Image fill;
-    public Image manaIcon;
-    public RectTransform manaBar;
-    public TextMeshProUGUI warningText;
+    [SerializeField] private Image fill;
+    [SerializeField] private Image manaIcon;
+    [SerializeField] private RectTransform manaBar;
+    [SerializeField] private TextMeshProUGUI warningText;
 
     [Header("Animation")]
-    public float speed = 6f;
+    [SerializeField] private float speed = 6f;
 
-    float targetFill;
+    private float targetFill;
 
-    Vector2 startPos;
+    private Vector2 startPos;
 
-    Color normalColor;
-    Color errorColor = new Color(1f, 0.35f, 0.35f);
+    private Color normalColor;
+    private readonly Color errorColor =
+        new Color(1f, 0.35f, 0.35f);
 
-    Color fillNormal;
-    Color fillFlash = new Color(0.6f, 1f, 1f);
+    private Color fillNormal;
+    private readonly Color fillFlash =
+        new Color(0.6f, 1f, 1f);
 
-    Coroutine shakeCoroutine;
-    Coroutine warningCoroutine;
-    Coroutine flashFillCoroutine;
-    Coroutine flashIconCoroutine;
+    private Coroutine shakeCoroutine;
+    private Coroutine warningCoroutine;
+    private Coroutine flashFillCoroutine;
+    private Coroutine flashIconCoroutine;
 
-    void Awake()
+    private bool initialized;
+
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning(
+                "Phát hiện ManaUI bị trùng, xóa object: " +
+                gameObject.name
+            );
+
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+
+        InitializeUI();
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
+        PlayerMana.OnManaChanged -= UpdateTarget;
         PlayerMana.OnManaChanged += UpdateTarget;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         PlayerMana.OnManaChanged -= UpdateTarget;
     }
 
-    void Start()
+    private void InitializeUI()
     {
-        normalColor = manaIcon.color;
-        fillNormal = new Color(
-    fill.color.r,
-    fill.color.g,
-    fill.color.b,
-    fill.color.a
-);
+        if (initialized)
+            return;
 
-        startPos = manaBar.anchoredPosition;
+        initialized = true;
 
-        warningText.gameObject.SetActive(false);
+        if (manaIcon != null)
+            normalColor = manaIcon.color;
+
+        if (fill != null)
+            fillNormal = fill.color;
+
+        if (manaBar != null)
+            startPos = manaBar.anchoredPosition;
+
+        if (warningText != null)
+        {
+            warningText.alpha = 0f;
+            warningText.gameObject.SetActive(false);
+        }
+
+        FindMana();
 
         UpdateTarget();
 
-        fill.fillAmount = targetFill;
+        if (fill != null)
+            fill.fillAmount = targetFill;
     }
 
-    void Update()
+    private void FindMana()
     {
-        fill.fillAmount =
-            Mathf.Lerp(
-                fill.fillAmount,
-                targetFill,
-                speed * Time.deltaTime);
+        if (mana != null)
+            return;
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.Player != null)
+        {
+            mana = GameManager.Instance.Player
+                .GetComponent<PlayerMana>();
+        }
+
+        if (mana == null)
+        {
+            mana = FindFirstObjectByType<PlayerMana>();
+        }
+
+        if (mana == null)
+        {
+            Debug.LogError(
+                "ManaUI không tìm thấy PlayerMana."
+            );
+        }
     }
 
-    void UpdateTarget()
+    private void Update()
     {
+        if (fill == null)
+            return;
+
+        fill.fillAmount = Mathf.Lerp(
+            fill.fillAmount,
+            targetFill,
+            speed * Time.unscaledDeltaTime
+        );
+    }
+
+    private void UpdateTarget()
+    {
+        if (mana == null)
+            FindMana();
+
+        if (mana == null || fill == null)
+            return;
+
+        float oldFill = targetFill;
+
         targetFill = Mathf.Clamp01(
             (float)mana.currentMana / mana.maxMana
         );
 
-        // Chỉ flash khi mana tăng
-        if (targetFill > fill.fillAmount)
+        if (targetFill > oldFill)
         {
             if (flashFillCoroutine != null)
                 StopCoroutine(flashFillCoroutine);
 
-            flashFillCoroutine = StartCoroutine(FlashFill());
+            flashFillCoroutine =
+                StartCoroutine(FlashFill());
         }
     }
-
-
-
 
     public void ShowNoMana()
     {
+        Debug.Log(
+            "ManaUI ShowNoMana được gọi. Instance: " +
+            Instance
+        );
+
+        if (!gameObject.activeInHierarchy)
+        {
+            Debug.LogError(
+                "ManaUI đang bị inactive trong Hierarchy."
+            );
+            return;
+        }
+
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.errorSound);
+                AudioManager.Instance.errorSound
+            );
         }
 
-        if (shakeCoroutine != null)
-            StopCoroutine(shakeCoroutine);
+        StopEffectCoroutines();
 
-        if (warningCoroutine != null)
-            StopCoroutine(warningCoroutine);
+        if (manaBar != null)
+            manaBar.anchoredPosition = startPos;
 
-        if (flashIconCoroutine != null)
-            StopCoroutine(flashIconCoroutine);
-
-        shakeCoroutine =
-            StartCoroutine(Shake());
-
-        warningCoroutine =
-            StartCoroutine(Warning());
-
-        flashIconCoroutine =
-            StartCoroutine(FlashIcon());
+        shakeCoroutine = StartCoroutine(Shake());
+        warningCoroutine = StartCoroutine(Warning());
+        flashIconCoroutine = StartCoroutine(FlashIcon());
     }
 
-    IEnumerator Shake()
+    private void StopEffectCoroutines()
     {
-        float timer = 0;
+        if (shakeCoroutine != null)
+        {
+            StopCoroutine(shakeCoroutine);
+            shakeCoroutine = null;
+        }
+
+        if (warningCoroutine != null)
+        {
+            StopCoroutine(warningCoroutine);
+            warningCoroutine = null;
+        }
+
+        if (flashIconCoroutine != null)
+        {
+            StopCoroutine(flashIconCoroutine);
+            flashIconCoroutine = null;
+        }
+
+        if (manaBar != null)
+            manaBar.anchoredPosition = startPos;
+
+        if (manaIcon != null)
+            manaIcon.color = normalColor;
+
+        if (warningText != null)
+        {
+            warningText.alpha = 0f;
+            warningText.gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator Shake()
+    {
+        if (manaBar == null)
+            yield break;
+
+        float timer = 0f;
 
         while (timer < 0.2f)
         {
@@ -132,7 +235,7 @@ public class ManaUI : MonoBehaviour
                 startPos +
                 Random.insideUnitCircle * 4f;
 
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
 
             yield return null;
         }
@@ -142,62 +245,84 @@ public class ManaUI : MonoBehaviour
         shakeCoroutine = null;
     }
 
-    IEnumerator FlashIcon()
+    private IEnumerator FlashIcon()
     {
+        if (manaIcon == null)
+            yield break;
+
         manaIcon.color = errorColor;
 
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSecondsRealtime(0.15f);
 
         manaIcon.color = normalColor;
 
         flashIconCoroutine = null;
     }
 
-    IEnumerator FlashFill()
+    private IEnumerator FlashFill()
     {
+        if (fill == null)
+            yield break;
+
         fill.color = fillFlash;
 
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSecondsRealtime(0.15f);
 
         fill.color = fillNormal;
 
         flashFillCoroutine = null;
     }
 
-    IEnumerator Warning()
+    private IEnumerator Warning()
     {
+        if (warningText == null)
+            yield break;
+
         warningText.gameObject.SetActive(true);
 
         warningText.text = "Not Enough Mana";
+        warningText.alpha = 1f;
+        warningText.rectTransform.localScale =
+            Vector3.zero;
 
-        warningText.alpha = 1;
-
-        warningText.rectTransform.localScale = Vector3.zero;
-
-        while (warningText.rectTransform.localScale.x < 0.98f)
+        while (
+            warningText.rectTransform.localScale.x <
+            0.98f)
         {
             warningText.rectTransform.localScale =
                 Vector3.Lerp(
                     warningText.rectTransform.localScale,
                     Vector3.one,
-                    18f * Time.deltaTime);
+                    18f * Time.unscaledDeltaTime
+                );
 
             yield return null;
         }
 
-        warningText.rectTransform.localScale = Vector3.one;
+        warningText.rectTransform.localScale =
+            Vector3.one;
 
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSecondsRealtime(0.8f);
 
-        while (warningText.alpha > 0)
+        while (warningText.alpha > 0f)
         {
-            warningText.alpha -= Time.deltaTime * 2.5f;
+            warningText.alpha -=
+                Time.unscaledDeltaTime * 2.5f;
 
             yield return null;
         }
 
+        warningText.alpha = 0f;
         warningText.gameObject.SetActive(false);
 
         warningCoroutine = null;
+    }
+
+    private void OnDestroy()
+    {
+        PlayerMana.OnManaChanged -= UpdateTarget;
+
+        if (Instance == this)
+            Instance = null;
     }
 }

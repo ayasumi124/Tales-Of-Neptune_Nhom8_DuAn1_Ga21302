@@ -1,33 +1,34 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
     public int maxHealth;
     public float currentHealth = 7;
+
     public static event System.Action onPlayerDamaged;
+    public static event System.Action onPlayerDeath;
+
     private PlayerAudio audioPlayer;
     private Animator animator;
+
     private bool isHurting;
     public bool IsHurting => isHurting;
-    public static event System.Action onPlayerDeath;
 
     [Header("Invincible")]
     public float invincibleTime = 0.2f;
 
     private bool isInvincible;
 
-    public bool IsDead { get; private set; } = false;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public bool IsDead { get; private set; }
+
     void Start()
     {
         currentHealth = maxHealth;
+
         audioPlayer = GetComponent<PlayerAudio>();
         animator = GetComponent<Animator>();
     }
-
 
     public void TakeDamage(float amount)
     {
@@ -35,6 +36,7 @@ public class Health : MonoBehaviour
 
         if (dash != null && dash.IsDashing)
             return;
+
         if (IsDead)
             return;
 
@@ -48,15 +50,10 @@ public class Health : MonoBehaviour
         if (attack != null)
         {
             attack.CancelAttack();
-            animator.speed = 1f;
+
+            if (animator != null)
+                animator.speed = 1f;
         }
-
-
-    }
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     void Die()
@@ -68,13 +65,18 @@ public class Health : MonoBehaviour
         isHurting = false;
         isInvincible = true;
 
-        animator.ResetTrigger("Attack");
-        animator.ResetTrigger("Hurt");
-        animator.SetTrigger("Death");
+        if (animator != null)
+        {
+            animator.ResetTrigger("Attack");
+            animator.ResetTrigger("Hurt");
+            animator.SetTrigger("Death");
+        }
 
-        audioPlayer.PlayDeath();
+        if (audioPlayer != null)
+            audioPlayer.PlayDeath();
 
         Attack attack = GetComponent<Attack>();
+
         if (attack != null)
             attack.enabled = false;
     }
@@ -89,28 +91,53 @@ public class Health : MonoBehaviour
         if (gameOver != null)
             gameOver.ShowGameOver();
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0f)
         {
-            currentHealth = 0;
+            currentHealth = 0f;
             IsDead = true;
 
-            // Dừng di chuyển
             Rigidbody2D rb = GetComponent<Rigidbody2D>();
+
             if (rb != null)
                 rb.linearVelocity = Vector2.zero;
 
-            // Tắt điều khiển
             Players players = GetComponent<Players>();
+
             if (players != null)
                 players.enabled = false;
 
-            // Tắt đánh
             Attack attack = GetComponent<Attack>();
+
             if (attack != null)
                 attack.enabled = false;
 
             Debug.Log("Player is dead");
         }
+    }
+
+    public void ResetHealth()
+    {
+        StopAllCoroutines();
+
+        currentHealth = maxHealth;
+
+        IsDead = false;
+        isHurting = false;
+        isInvincible = false;
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
+        if (animator != null)
+        {
+            animator.speed = 1f;
+            animator.ResetTrigger("Death");
+            animator.ResetTrigger("Hurt");
+            animator.ResetTrigger("Attack");
+            animator.ResetTrigger("Dash");
+        }
+
+        onPlayerDamaged?.Invoke();
     }
 
     IEnumerator HurtRoutine(float damage)
@@ -120,19 +147,26 @@ public class Health : MonoBehaviour
 
         currentHealth -= damage;
 
+        if (currentHealth < 0f)
+            currentHealth = 0f;
+
         onPlayerDamaged?.Invoke();
 
-        animator.ResetTrigger("Attack");
-        animator.ResetTrigger("Dash");
-        animator.SetTrigger("Hurt");
+        if (animator != null)
+        {
+            animator.ResetTrigger("Attack");
+            animator.ResetTrigger("Dash");
+            animator.SetTrigger("Hurt");
+        }
 
-        audioPlayer.PlayHurt();
+        if (audioPlayer != null)
+            audioPlayer.PlayHurt();
 
         yield return new WaitForSeconds(0.25f);
 
         isHurting = false;
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0f)
         {
             Die();
             yield break;
@@ -143,6 +177,3 @@ public class Health : MonoBehaviour
         isInvincible = false;
     }
 }
-
-
-

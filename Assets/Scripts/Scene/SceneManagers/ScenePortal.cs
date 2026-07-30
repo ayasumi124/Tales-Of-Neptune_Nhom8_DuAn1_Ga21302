@@ -2,20 +2,23 @@ using UnityEngine;
 
 public class ScenePortal : MonoBehaviour
 {
+    [Header("Destination")]
     public string sceneToLoad;
     public string spawnPointID;
 
-    bool loading;
-
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (loading) return;
-
         if (!other.CompareTag("Player"))
             return;
 
-        loading = true;
+        if (SceneLoader.Instance == null)
+        {
+            Debug.LogError("Không tìm thấy SceneLoader.");
+            return;
+        }
 
-        SceneLoader.Instance.LoadScene(sceneToLoad, spawnPointID);
+        SceneLoader.Instance.LoadScene(
+            sceneToLoad,
+            spawnPointID);
     }
 }
