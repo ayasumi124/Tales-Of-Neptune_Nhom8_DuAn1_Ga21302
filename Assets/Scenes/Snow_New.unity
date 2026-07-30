@@ -363,11 +363,11 @@ Transform:
   m_GameObject: {fileID: 296937193}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.5530014, y: -0.16999912, z: 0}
+  m_LocalPosition: {x: 46.2, y: -37.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1450975675}
+  m_Father: {fileID: 1460226572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &296937195
 MonoBehaviour:
@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74bd87ecab5684090e11ff8588b029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnID: Right
+  spawnID: FromCaveSnow
 --- !u!1 &327024761
 GameObject:
   m_ObjectHideFlags: 0
@@ -13345,11 +13345,11 @@ Transform:
   m_GameObject: {fileID: 1179912192}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.7500019, y: -0.9799986, z: 0}
+  m_LocalPosition: {x: 10.22, y: -28.94, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1527798740}
+  m_Father: {fileID: 1460226572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1179912194
 MonoBehaviour:
@@ -13363,7 +13363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74bd87ecab5684090e11ff8588b029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnID: Left
+  spawnID: FromSnow2
 --- !u!1001 &1257933663
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13712,11 +13712,10 @@ Transform:
   m_GameObject: {fileID: 1450975674}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 17.003, y: -15.39, z: 0}
+  m_LocalPosition: {x: 46.92, y: -36.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 296937194}
+  m_Children: []
   m_Father: {fileID: 1460226572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1450975676
@@ -13731,8 +13730,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: CaveSnow
-  spawnPointID: Left
+  targetScene: CaveSnow
+  targetSpawnID: FromRightSnow1
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &1450975677
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -13767,7 +13768,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.022945404, y: -0.12057209}
+  m_Offset: {x: 0.022945404, y: -5.5680256}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -13777,7 +13778,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.60043335, y: 2.3390293}
+  m_Size: {x: 0.60043335, y: 16.96339}
   m_EdgeRadius: 0
 --- !u!1 &1460226571
 GameObject:
@@ -13804,12 +13805,15 @@ Transform:
   m_GameObject: {fileID: 1460226571}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.93492, y: -14.00165, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1569942519}
   - {fileID: 1792405520}
+  - {fileID: 1179912193}
   - {fileID: 1527798740}
+  - {fileID: 296937194}
   - {fileID: 1450975675}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -87630,11 +87634,10 @@ Transform:
   m_GameObject: {fileID: 1527798739}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.64, y: -14.56, z: 0}
+  m_LocalPosition: {x: 9.29, y: -28.46, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1179912193}
+  m_Children: []
   m_Father: {fileID: 1460226572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1527798741
@@ -87649,8 +87652,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: Snow2
-  spawnPointID: Right
+  targetScene: Snow2
+  targetSpawnID: FromLeftSnow1
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &1527798742
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -88293,11 +88298,11 @@ Transform:
   m_GameObject: {fileID: 1569942518}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.015000939, y: -0.50100005, z: 0}
+  m_LocalPosition: {x: 31.73, y: -13.56, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1792405520}
+  m_Father: {fileID: 1460226572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1569942520
 MonoBehaviour:
@@ -88311,7 +88316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74bd87ecab5684090e11ff8588b029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnID: FromSouthValley
+  spawnID: FromDownValley
 --- !u!1 &1616255089
 GameObject:
   m_ObjectHideFlags: 0
@@ -112003,11 +112008,10 @@ Transform:
   m_GameObject: {fileID: 1792405519}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.411, y: 1.291, z: 0}
+  m_LocalPosition: {x: 31.2, y: -12.73, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1569942519}
+  m_Children: []
   m_Father: {fileID: 1460226572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1792405521
@@ -112022,8 +112026,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: Valley
-  spawnPointID: FromSnow
+  targetScene: Valley
+  targetSpawnID: FromUpSnow1
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &1792405522
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -165,8 +165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: Castle
-  spawnPointID: Down
+  targetScene: Castle
+  targetSpawnID: FromUpTown
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &7469131
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -600015,7 +600017,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74bd87ecab5684090e11ff8588b029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnID: Up
+  spawnID: FromCastle
 --- !u!1 &727193229
 GameObject:
   m_ObjectHideFlags: 0
@@ -600062,8 +600064,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: Valley
-  spawnPointID: FromDownTown
+  targetScene: Valley
+  targetSpawnID: FromDownTown
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &727193232
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -605998,8 +606002,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: River
-  spawnPointID: Right
+  targetScene: River
+  targetSpawnID: FromLeftTown
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &1116427598
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -606090,7 +606096,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74bd87ecab5684090e11ff8588b029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnID: Left
+  spawnID: FromRiver
 --- !u!1 &1131509942
 GameObject:
   m_ObjectHideFlags: 0
@@ -606170,7 +606176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74bd87ecab5684090e11ff8588b029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnID: Right
+  spawnID: FromCave
 --- !u!1 &1337675957
 GameObject:
   m_ObjectHideFlags: 0
@@ -606217,8 +606223,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: Cave
-  spawnPointID: Left
+  targetScene: Cave
+  targetSpawnID: FromRIghtTown
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &1337675960
 BoxCollider2D:
   m_ObjectHideFlags: 0

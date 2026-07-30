@@ -572,7 +572,7 @@ Transform:
   m_GameObject: {fileID: 537797234}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 15.33781, y: 4.83038, z: 0}
+  m_LocalPosition: {x: -0.3, y: -0.38, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -618,7 +618,7 @@ Transform:
   m_GameObject: {fileID: 562019422}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.282, y: 5.677, z: 0}
+  m_LocalPosition: {x: -0.37, y: 0.606, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -636,8 +636,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: Forest
-  spawnPointID: Down
+  targetScene: 
+  targetSpawnID: 
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &562019425
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10545,7 +10547,7 @@ Transform:
   m_GameObject: {fileID: 831376739}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.09780979, y: 0.089380264, z: 0}
+  m_LocalPosition: {x: -15.38, y: -4.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16271,7 +16273,7 @@ Transform:
   m_GameObject: {fileID: 985654619}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.57852, y: -5.2174, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16303,8 +16305,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1048080835}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -15.57852, y: -5.2174, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -36376,7 +36378,7 @@ Transform:
   m_GameObject: {fileID: 1136734321}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.785, y: 0, z: 0}
+  m_LocalPosition: {x: -16.37, y: -5.18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36394,8 +36396,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  sceneToLoad: Valley
-  spawnPointID: FromEastValley
+  targetScene: Valley
+  targetSpawnID: FromLeftEastValley
+  requireKey: 0
+  interactKey: 101
 --- !u!61 &1136734324
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -37799,6 +37803,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 786832104070709001, guid: 74002de70607a234d880abc9f9d0d474, type: 3}
+      propertyPath: chestID
+      value: Chest_01
+      objectReference: {fileID: 0}
     - target: {fileID: 3879122675296968507, guid: 74002de70607a234d880abc9f9d0d474, type: 3}
       propertyPath: m_LocalPosition.x
       value: -13.79

@@ -1,11 +1,18 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Chest : MonoBehaviour
 {
     [Header("Reward")]
     public AbilityData reward;
 
+    [Header("Chest Save")]
+    [SerializeField] private string chestID;
+
     [SerializeField] private bool opened;
+
+    [Header("Animator States")]
+    [SerializeField] private string openedStateName = "Chest1_opened";
 
     private bool rewardGiven;
 
@@ -13,6 +20,9 @@ public class Chest : MonoBehaviour
     private EnermyMovement[] enemies;
     private CloneFollow[] clones;
     private Animator animator;
+
+    private string FullChestID =>
+        SceneManager.GetActiveScene().name + "_" + chestID;
 
     private void Awake()
     {
@@ -24,6 +34,8 @@ public class Chest : MonoBehaviour
         FindObjects();
 
         SkillUnlockUI.OnSkillPanelClosed += ResumeGame;
+
+        LoadChestState();
     }
 
     private void OnDestroy()
@@ -31,22 +43,57 @@ public class Chest : MonoBehaviour
         SkillUnlockUI.OnSkillPanelClosed -= ResumeGame;
     }
 
-    void FindObjects()
+    private void LoadChestState()
+    {
+        if (GameSessionManager.Instance == null)
+            return;
+
+        if (!GameSessionManager.Instance.IsChestOpened(FullChestID))
+            return;
+
+        opened = true;
+        rewardGiven = true;
+
+        if (animator != null)
+        {
+            animator.SetBool("IsOpened", true);
+
+            animator.Play(
+                openedStateName,
+                0,
+                0f
+            );
+
+            animator.Update(0f);
+        }
+
+        Debug.Log(
+            $"Chest đã mở trước đó: {FullChestID}"
+        );
+    }
+
+    private void FindObjects()
     {
         if (GameManager.Instance != null &&
             GameManager.Instance.Player != null)
         {
-            player = GameManager.Instance.Player.GetComponent<Players>();
+            player =
+                GameManager.Instance.Player
+                    .GetComponent<Players>();
         }
 
         if (player == null)
             player = FindFirstObjectByType<Players>();
 
-        enemies = FindObjectsByType<EnermyMovement>(
-            FindObjectsSortMode.None);
+        enemies =
+            FindObjectsByType<EnermyMovement>(
+                FindObjectsSortMode.None
+            );
 
-        clones = FindObjectsByType<CloneFollow>(
-            FindObjectsSortMode.None);
+        clones =
+            FindObjectsByType<CloneFollow>(
+                FindObjectsSortMode.None
+            );
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -66,14 +113,32 @@ public class Chest : MonoBehaviour
         if (opened)
             return;
 
+        if (string.IsNullOrWhiteSpace(chestID))
+        {
+            Debug.LogError(
+                $"Chest {gameObject.name} chưa được gán Chest ID."
+            );
+            return;
+        }
+
         opened = true;
 
-        Debug.Log("Open Chest");
+        if (GameSessionManager.Instance != null)
+        {
+            GameSessionManager.Instance.MarkChestOpened(
+                FullChestID
+            );
+        }
+
+        Debug.Log(
+            $"Open Chest: {FullChestID}"
+        );
 
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.chestOpenSound);
+                AudioManager.Instance.chestOpenSound
+            );
         }
 
         FreezeGame();
@@ -81,65 +146,67 @@ public class Chest : MonoBehaviour
         if (animator != null)
             animator.SetBool("IsOpened", true);
 
-        // Không gọi GiveReward ở đây.
+        // Không gọi GiveReward tại đây.
         // Animation Event sẽ gọi GiveReward().
     }
 
-    void FreezeGame()
+    private void FreezeGame()
     {
         FindObjects();
 
         if (player != null)
             player.enabled = false;
 
-        foreach (EnermyMovement e in enemies)
+        foreach (EnermyMovement enemy in enemies)
         {
-            if (e == null)
+            if (enemy == null)
                 continue;
 
-            e.enabled = false;
+            enemy.enabled = false;
 
-            Rigidbody2D rb = e.GetComponent<Rigidbody2D>();
+            Rigidbody2D rb =
+                enemy.GetComponent<Rigidbody2D>();
 
             if (rb != null)
                 rb.linearVelocity = Vector2.zero;
         }
 
-        foreach (CloneFollow c in clones)
+        foreach (CloneFollow clone in clones)
         {
-            if (c == null)
+            if (clone == null)
                 continue;
 
-            c.enabled = false;
+            clone.enabled = false;
 
-            Rigidbody2D rb = c.GetComponent<Rigidbody2D>();
+            Rigidbody2D rb =
+                clone.GetComponent<Rigidbody2D>();
 
             if (rb != null)
                 rb.linearVelocity = Vector2.zero;
         }
     }
 
-    void ResumeGame()
+    private void ResumeGame()
     {
         FindObjects();
 
         if (player != null)
             player.enabled = true;
 
-        foreach (EnermyMovement e in enemies)
+        foreach (EnermyMovement enemy in enemies)
         {
-            if (e != null)
-                e.enabled = true;
+            if (enemy != null)
+                enemy.enabled = true;
         }
 
-        foreach (CloneFollow c in clones)
+        foreach (CloneFollow clone in clones)
         {
-            if (c != null)
-                c.enabled = true;
+            if (clone != null)
+                clone.enabled = true;
         }
     }
 
-    // ===== Animation Event =====
+    // Animation Event gọi hàm này
     public void GiveReward()
     {
         if (rewardGiven)
@@ -149,30 +216,57 @@ public class Chest : MonoBehaviour
 
         if (reward == null)
         {
-            Debug.LogError("Reward chưa được gán.");
+            Debug.LogError(
+                $"Reward của chest {FullChestID} chưa được gán."
+            );
 
             ResumeGame();
             return;
         }
 
         if (AbilityManager.Instance != null)
-            AbilityManager.Instance.UnlockAbility(reward.type);
+        {
+            AbilityManager.Instance.UnlockAbility(
+                reward.type
+            );
+        }
 
         if (SkillInventoryUI.Instance != null)
-            SkillInventoryUI.Instance.AddSkill(reward);
+        {
+            SkillInventoryUI.Instance.AddSkill(
+                reward
+            );
+        }
 
         if (EquipmentManager.Instance != null)
-            EquipmentManager.Instance.EquipSkill(reward, 3);
+        {
+            EquipmentManager.Instance.EquipSkill(
+                reward,
+                3
+            );
+        }
 
         if (SkillUnlockUI.Instance != null)
         {
-            SkillUnlockUI.Instance.ShowSkill(reward);
+            SkillUnlockUI.Instance.ShowSkill(
+                reward
+            );
         }
         else
         {
-            Debug.LogError("Không tìm thấy SkillUnlockUI.");
+            Debug.LogError(
+                "Không tìm thấy SkillUnlockUI."
+            );
 
             ResumeGame();
+        }
+    }
+
+    private void OnValidate()
+    {
+        if (string.IsNullOrWhiteSpace(chestID))
+        {
+            chestID = gameObject.name;
         }
     }
 }
