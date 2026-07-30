@@ -37,7 +37,7 @@ public class PlayerDash : MonoBehaviour
         if (IsDashing)
             return;
 
-        if (Input.GetKeyDown(KeyCode.L) &&
+        if (Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Mouse1) &&
     AbilityManager.Instance.dash.cooldown <= 0 &&
     !stamina.IsExhausted)
         {
