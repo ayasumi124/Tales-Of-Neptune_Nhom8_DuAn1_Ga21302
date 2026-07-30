@@ -10,10 +10,6 @@ public class Coin : MonoBehaviour
     public float blinkTime = 2f;
 
 
-    [Header("Bounce")]
-    public float bounceHeight = 5f;
-    public float bounceDuration = 10f;
-    public float scatterDistance = 0.7f;
 
 
     [Header("Magnet")]
@@ -22,7 +18,7 @@ public class Coin : MonoBehaviour
     public float flySpeed = 8f;
 
 
-    private Rigidbody2D rb;
+
     private SpriteRenderer sr;
 
     private Transform player;
@@ -31,144 +27,87 @@ public class Coin : MonoBehaviour
 
     private bool canPickup;
     private bool flying;
-    private Coroutine bounceCoroutine;
 
 
 
 
     void Start()
+{
+    sr = GetComponent<SpriteRenderer>();
+
+    if (GameManager.Instance != null &&
+        GameManager.Instance.player != null)
     {
-        rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
+        Players p = GameManager.Instance.player.GetComponent<Players>();
 
-        if (GameManager.Instance != null)
-        {
-            pickupPoint = GameManager.Instance.PickupPoint;
-        }
-
-        StartCoroutine(FindPickupPoint());
-        // Không dùng physics để nảy
-        if (rb != null)
-        {
-            rb.bodyType = RigidbodyType2D.Kinematic;
-            rb.gravityScale = 0;
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0;
-        }
-
-
-        // Vị trí coin sau khi văng ra
-        Vector2 random =
-            Random.insideUnitCircle * scatterDistance;
-
-
-        Vector3 target =
-            transform.position + (Vector3)random;
-
-
-        bounceCoroutine = StartCoroutine(BounceRoutine(target));
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.coinDropSound);
-
-        Debug.Log("PickupPoint = " + pickupPoint);
-
-        StartCoroutine(PickupDelay());
-
-
-        StartCoroutine(BlinkRoutine());
-
-
-        Destroy(gameObject, lifeTime);
+        if (p != null)
+            pickupPoint = p.pickupPoint;
     }
 
+    StartCoroutine(FindPickupPoint());
+
+    if (AudioManager.Instance != null)
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.coinDropSound);
+
+    StartCoroutine(PickupDelay());
+    StartCoroutine(BlinkRoutine());
+
+    Destroy(gameObject, lifeTime);
+}
 
 
-    IEnumerator BounceRoutine(Vector3 target)
-    {
-        Vector3 start = transform.position;
-
-        float[] heights = { 0.80f, 0.70f, 0.60f, 0.50f, 0.40f, 0.30f, 0.20f, 0.10f, 0.05f };
-        float[] durations = { 0.80f, 0.70f, 0.60f, 0.50f, 0.40f, 0.30f, 0.20f, 0.10f, 0.05f };
-
-        Vector3 currentStart = start;
-
-        for (int bounce = 0; bounce < heights.Length; bounce++)
-        {
-            float t = 0f;
-
-            while (t < 1f)
-            {
-                t += Time.deltaTime / durations[bounce];
-
-                Vector3 pos = Vector3.Lerp(currentStart, target, t);
-
-                float height =
-                    Mathf.Sin(t * Mathf.PI) * heights[bounce];
-
-                pos.y += height;
-
-                transform.position = pos;
-
-                yield return null;
-            }
-
-            transform.position = target;
-
-            // Phát âm thanh khi chạm đất
-            if (AudioManager.Instance != null)
-                AudioManager.Instance.PlaySFX(AudioManager.Instance.coinBounceSound);
-
-            currentStart = target;
-        }
-    }
 
 
     IEnumerator FindPickupPoint()
+{
+    while (pickupPoint == null)
     {
-        while (pickupPoint == null)
+        if (GameManager.Instance != null &&
+            GameManager.Instance.player != null)
         {
-            if (GameManager.Instance != null)
-            {
-                pickupPoint = GameManager.Instance.PickupPoint;
-            }
+            Players p = GameManager.Instance.player.GetComponent<Players>();
 
-            yield return null;
+            if (p != null)
+                pickupPoint = p.pickupPoint;
         }
 
-        Debug.Log("Đã tìm thấy PickupPoint!");
+        yield return null;
     }
+}
 
     void Update()
+{
+    if (!canPickup)
+        return;
+
+    if (pickupPoint == null &&
+        GameManager.Instance != null &&
+        GameManager.Instance.player != null)
     {
+        Players p = GameManager.Instance.player.GetComponent<Players>();
 
-        if (!canPickup)
-            return;
-        if (pickupPoint == null && GameManager.Instance != null)
-            pickupPoint = GameManager.Instance.PickupPoint;
-
-        if (pickupPoint == null)
-            return;
-
-        float distance = Vector2.Distance(transform.position, pickupPoint.position);
-
-        // Chỉ bật hút khi ở trong phạm vi
-        if (!flying && distance <= magnetRange)
-        {
-            flying = true;
-
-            if (bounceCoroutine != null)
-                StopCoroutine(bounceCoroutine);
-        }
-
-        if (!flying)
-            return;
-
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            pickupPoint.position,
-            flySpeed * Time.deltaTime);
+        if (p != null)
+            pickupPoint = p.pickupPoint;
     }
 
+    if (pickupPoint == null)
+        return;
+
+    float distance = Vector2.Distance(transform.position, pickupPoint.position);
+
+    if (!flying && distance <= magnetRange)
+    {
+        flying = true;
+    }
+
+    if (!flying)
+        return;
+
+    transform.position = Vector3.MoveTowards(
+        transform.position,
+        pickupPoint.position,
+        flySpeed * Time.deltaTime);
+}
 
 
 

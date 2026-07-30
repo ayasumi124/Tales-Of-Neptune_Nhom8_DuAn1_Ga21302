@@ -7,7 +7,7 @@ public class CloneFollow : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 2.5f;
     public float roamRadius = 2f;
-    public float followDistance = 5f;
+    public float followDistance = 4f;
     public float stopFollowDistance = 1f;
 
     [Header("Combat")]
@@ -19,11 +19,22 @@ public class CloneFollow : MonoBehaviour
     public Transform[] attackPoints;
     public LayerMask enermyLayer;
 
-    [Header("Obstacle")]
-    public LayerMask obstacleLayer;
-    public float avoidDistance = 0.4f;
+    [Header("Follow")]
 
-    public int damage = 20;
+    public float emergencyFollowDistance = 6f;
+
+    public float teleportDistance = 14f;
+
+    public float teleportDelay = 2f;
+
+    float teleportTimer;
+    [Header("Obstacle")]
+public LayerMask obstacleLayer;
+
+public float avoidDistance = 0.6f;
+
+
+    public int damage = 35;
 
     private bool isAttacking;
 
@@ -70,7 +81,7 @@ public class CloneFollow : MonoBehaviour
         footstepSource.loop = true;
 
         EnterIdle();
-        isAttacking = true;
+        isAttacking = false;
 
         if (player != null)
             playerHealth = player.GetComponent<Health>();
@@ -83,15 +94,45 @@ public class CloneFollow : MonoBehaviour
             Die();
             return;
         }
+        // Luôn ưu tiên theo player nếu ở quá xa
+        float playerDistance =
+    Vector2.Distance(transform.position, player.position);
 
-        if (player == null)
-            return;
+if (playerDistance > followDistance)
+{
+    targetEnemy = null;
+    state = State.Follow;
+}
+
+        // Teleport nếu bị bỏ quá xa
+        if (playerDistance > teleportDistance)
+        {
+            teleportTimer += Time.deltaTime;
+
+            if (teleportTimer >= teleportDelay)
+            {
+                transform.position = player.position;
+
+                rb.linearVelocity = Vector2.zero;
+
+                targetEnemy = null;
+
+                state = State.Follow;
+
+                teleportTimer = 0;
+            }
+        }
+        else
+        {
+            teleportTimer = 0;
+        }
 
         searchTimer -= Time.deltaTime;
 
         if (searchTimer <= 0)
         {
-            searchTimer = 0.25f;
+            searchTimer = 0.15f;
+
             FindNearestEnemy();
         }
 
@@ -125,12 +166,11 @@ public class CloneFollow : MonoBehaviour
 
         float dis = Vector2.Distance(transform.position, player.position);
 
-        if (dis > followDistance)
+        if (dis > stopFollowDistance)
         {
             state = State.Follow;
             return;
         }
-
         rb.linearVelocity = Vector2.zero;
         animator.SetBool("IsRunning", false);
         StopFootstep();
@@ -176,9 +216,12 @@ public class CloneFollow : MonoBehaviour
             return;
         }
 
+        targetEnemy = null;
+
         MoveTo(player.position);
 
-        if (Vector2.Distance(transform.position, player.position) <= stopFollowDistance)
+        if (Vector2.Distance(transform.position, player.position)
+    <= stopFollowDistance)
         {
             EnterIdle();
         }
@@ -201,6 +244,17 @@ public class CloneFollow : MonoBehaviour
             return;
         }
 
+        // Nếu player đi quá xa thì bỏ đánh và quay về
+        float playerDistance =
+    Vector2.Distance(transform.position, player.position);
+
+        // Player quá xa -> bỏ combat ngay
+        if (playerDistance > followDistance)
+        {
+            targetEnemy = null;
+            state = State.Follow;
+            return;
+        }
         // Chưa đủ gần thì tiếp tục đuổi
         if (dis > attackRange)
         {
@@ -239,73 +293,95 @@ public class CloneFollow : MonoBehaviour
         attackSource.PlayOneShot(attackSound);
     }
     void MoveTo(Vector2 target)
+{
+    Vector2 dir = (target - rb.position);
+
+    float distance = dir.magnitude;
+
+    if (distance < 0.08f)
     {
-        Vector2 offset = target - rb.position;
+        rb.linearVelocity = Vector2.zero;
 
-        // Giữ khoảng dừng nhỏ để không chồng collider
-        if (offset.magnitude < 0.1f)
-        {
-            rb.linearVelocity = Vector2.zero;
-            animator.SetBool("IsRunning", false);
-            StopFootstep();
-            return;
-        }
+        animator.SetBool("IsRunning", false);
 
-        Vector2 dir = offset.normalized;
+        StopFootstep();
 
-        // Nếu phía trước có vật cản thì đổi hướng
-        RaycastHit2D hit = Physics2D.Raycast(
-            rb.position,
-            dir,
-            avoidDistance,
-            obstacleLayer);
-
-        if (hit.collider != null)
-        {
-            // thử rẽ trái
-            Vector2 left = new Vector2(-dir.y, dir.x);
-
-            if (!Physics2D.Raycast(rb.position, left, avoidDistance, obstacleLayer))
-            {
-                dir = left;
-            }
-            else
-            {
-                // thử rẽ phải
-                Vector2 right = new Vector2(dir.y, -dir.x);
-
-                if (!Physics2D.Raycast(rb.position, right, avoidDistance, obstacleLayer))
-                {
-                    dir = right;
-                }
-                else
-                {
-                    // cả hai đều bị chặn thì lùi một chút
-                    dir = -dir;
-                }
-            }
-        }
-
-        rb.linearVelocity = dir * moveSpeed;
-
-        animator.SetBool("IsRunning", true);
-
-        Vector2 face;
-
-        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-            face = new Vector2(Mathf.Sign(dir.x), 0);
-        else
-            face = new Vector2(0, Mathf.Sign(dir.y));
-
-        animator.SetFloat("MoveX", face.x);
-        animator.SetFloat("MoveY", face.y);
-
-        animator.SetFloat("LastMoveX", face.x);
-        animator.SetFloat("LastMoveY", face.y);
-
-        if (!footstepSource.isPlaying)
-            footstepSource.Play();
+        return;
     }
+
+    dir.Normalize();
+
+    // ====== Né vật cản ======
+
+    RaycastHit2D hit = Physics2D.Raycast(
+        rb.position,
+        dir,
+        avoidDistance,
+        obstacleLayer);
+
+    if (hit.collider != null)
+    {
+        Vector2 left = new Vector2(-dir.y, dir.x);
+
+        Vector2 right = new Vector2(dir.y, -dir.x);
+
+        bool leftBlocked =
+            Physics2D.Raycast(
+                rb.position,
+                left,
+                avoidDistance,
+                obstacleLayer);
+
+        bool rightBlocked =
+            Physics2D.Raycast(
+                rb.position,
+                right,
+                avoidDistance,
+                obstacleLayer);
+
+        if (!leftBlocked)
+        {
+            dir = Vector2.Lerp(dir, left, 0.8f).normalized;
+        }
+        else if (!rightBlocked)
+        {
+            dir = Vector2.Lerp(dir, right, 0.8f).normalized;
+        }
+        else
+        {
+            dir = -dir;
+        }
+    }
+
+    // =======================
+
+    Vector2 desiredVelocity =
+        dir * moveSpeed;
+
+    rb.linearVelocity =
+        Vector2.Lerp(
+            rb.linearVelocity,
+            desiredVelocity,
+            Time.deltaTime * 12f);
+
+    animator.SetBool("IsRunning", true);
+
+    Vector2 face;
+
+    if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+        face = new Vector2(Mathf.Sign(dir.x), 0);
+    else
+        face = new Vector2(0, Mathf.Sign(dir.y));
+
+    animator.SetFloat("MoveX", face.x);
+    animator.SetFloat("MoveY", face.y);
+
+    animator.SetFloat("LastMoveX", face.x);
+    animator.SetFloat("LastMoveY", face.y);
+
+    if (!footstepSource.isPlaying)
+        footstepSource.Play();
+}
 
     void ChooseRandomTarget()
     {
@@ -324,14 +400,31 @@ public class CloneFollow : MonoBehaviour
 
     void FindNearestEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enermy");
+        if (player == null)
+            return;
+
+        float playerDistance =
+            Vector2.Distance(transform.position, player.position);
+
+        // Player quá xa -> KHÔNG tìm quái
+        if (playerDistance > followDistance)
+{
+    targetEnemy = null;
+    return;
+}
+
+        GameObject[] enemies =
+            GameObject.FindGameObjectsWithTag("Enermy");
 
         float min = Mathf.Infinity;
         targetEnemy = null;
 
         foreach (GameObject enemy in enemies)
         {
-            float dis = Vector2.Distance(transform.position, enemy.transform.position);
+            float dis =
+                Vector2.Distance(
+                    transform.position,
+                    enemy.transform.position);
 
             if (dis < detectRange && dis < min)
             {
@@ -372,12 +465,6 @@ public class CloneFollow : MonoBehaviour
     {
         if (footstepSource.isPlaying)
             footstepSource.Stop();
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (state == State.Wander)
-            ChooseRandomTarget();
     }
 
     public void Die()

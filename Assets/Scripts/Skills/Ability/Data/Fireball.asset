@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b4060c58b1a49240a6a392494da72c2, type: 3}
   m_Name: Fireball
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
-  type: 0
+  type: 3
+  manaCost: 0
+  cooldown: 0
+  duration: 0
   skillName: 
   description: 
   icon: {fileID: 0}

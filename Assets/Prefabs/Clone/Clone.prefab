@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8490548452305239510}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: P1
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 3769986063978951652}
   - component: {fileID: 7710693860806359712}
   - component: {fileID: 1783332800671237915}
-  m_Layer: 5
+  m_Layer: 12
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,7 +143,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6462867712578536884}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: P3
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -176,7 +176,7 @@ GameObject:
   - component: {fileID: 6614130523261861847}
   - component: {fileID: 6755200620836493922}
   - component: {fileID: 311144657213085424}
-  m_Layer: 5
+  m_Layer: 12
   m_Name: HP_Bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +249,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2427342103473778476}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: P4
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -280,7 +280,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 233570788019097120}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: P5
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -311,7 +311,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3667557546507582870}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 7422848464349959988, guid: 0000000000000000d000000000000000, type: 0}
@@ -347,7 +347,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5458579195397344184}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: P2
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -380,7 +380,7 @@ GameObject:
   - component: {fileID: 4696973911818410976}
   - component: {fileID: 7521557445078376261}
   - component: {fileID: 1046639741363428071}
-  m_Layer: 5
+  m_Layer: 12
   m_Name: HP_Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -464,7 +464,7 @@ GameObject:
   - component: {fileID: 3177245113687502196}
   - component: {fileID: 8329077641344224767}
   - component: {fileID: 253028568277951143}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Clone
   m_TagString: Clone
   m_Icon: {fileID: 0}
@@ -672,10 +672,13 @@ MonoBehaviour:
   enermyLayer:
     serializedVersion: 2
     m_Bits: 64
+  emergencyFollowDistance: 6
+  teleportDistance: 14
+  teleportDelay: 2
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 128
-  avoidDistance: 0.4
+    m_Bits: 8320
+  avoidDistance: 0.6
   damage: 10
   footstepSound: {fileID: 8300000, guid: 50105f5c63c24b6408bc16360f9b9ed6, type: 3}
   attackSound: {fileID: 8300000, guid: ba7f26e2931f0d747971fb2ba6361432, type: 3}

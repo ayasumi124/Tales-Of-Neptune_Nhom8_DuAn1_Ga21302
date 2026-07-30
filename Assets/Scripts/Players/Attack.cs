@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections;
 public class Attack : MonoBehaviour
 {
     private Animator animator;
@@ -7,7 +7,7 @@ public class Attack : MonoBehaviour
 
     private bool isAttacking;
     public bool IsAttacking => isAttacking;
-    private float attackTimer;
+
 
     public Transform[] attackPoint;
     public LayerMask enermyLayer;
@@ -18,50 +18,170 @@ public class Attack : MonoBehaviour
     public float attackCooldown = 0.35f;
     public int damage = 20;
 
+    [Header("Combo")]
     private int combo = 0;
+
+    public int maxCombo = 3;
+
+
+    private bool queueNextAttack;
+
+    private bool comboWindowOpen;
+
+    [Header("Lunge")]
+    public float lungeForce = 2f;
+    public float lungeTime = 0.06f;
+    public float[] comboLunge =
+{
+    3.5f,
+    5f,
+    8f // hit cuối
+};
+
+
+
+
+
+    [Header("Combo Speed")]
+    public float[] comboCooldown =
+{
+    0.22f,
+    0.16f,
+    0.12f
+};
+
+    public float[] comboAnimationSpeed =
+{
+    1.4f,
+    1.7f,
+    2.0f
+};
+
+    [Header("Combo Damage")]
+    public int[] comboDamage =
+    {
+    20, // Attack1
+    25, // Attack2
+    35  // Attack3
+};
+
+    [Header("Combo Knockback")]
+    public float[] comboKnockback =
+    {
+    4f, // Attack1
+    6f, // Attack2
+    8f  // Attack3
+};
+
+    public float comboFinishDelay = 0.45f;
+    public AbilityData skillData;
+
+    public SkillSlotUI slotUI;
+
+    IEnumerator Lunge(Vector2 dir, float speed)
+    {
+        float t = 0.08f;
+
+        while (t > 0)
+        {
+            rb.linearVelocity = dir * speed;
+            t -= Time.deltaTime;
+            yield return null;
+        }
+
+        rb.linearVelocity = Vector2.zero;
+    }
 
     void Start()
     {
+        slotUI.Setup(skillData);
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
 
         isAttacking = false;
-        attackTimer = 0f;
     }
 
     void Update()
     {
-        attackTimer -= Time.deltaTime;
+        Health hp = GetComponent<Health>();
 
-        if ((Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.Mouse0))
-            && !isAttacking
-            && attackTimer <= 0f)
+        if (hp != null && hp.IsHurting)
+            return;
+
+        PlayerDash dash = GetComponent<PlayerDash>();
+
+        if (dash != null && dash.IsDashing)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.J) ||
+            Input.GetKeyDown(KeyCode.Mouse0))
         {
-            AttackEnemy();
+            if (!isAttacking)
+            {
+                if (AbilityManager.Instance.attack.cooldown <= 0)
+                    StartAttack();
+            }
+            else if (comboWindowOpen)
+            {
+                queueNextAttack = true;
+            }
         }
     }
     public void CancelAttack()
     {
         isAttacking = false;
+
+        combo = 0;
+
+        queueNextAttack = false;
+
+        comboWindowOpen = false;
+
+        animator.speed = 1f;
+
+        animator.ResetTrigger("Attack");
     }
-    void AttackEnemy()
+    void StartAttack()
     {
+
+        queueNextAttack = false;
+        comboWindowOpen = false;
+
         isAttacking = true;
-        attackTimer = attackCooldown;
+
+        int index = Mathf.Clamp(combo, 0, maxCombo - 1);
+
+        animator.speed = comboAnimationSpeed[index];
 
         animator.SetInteger("Combo", combo);
-        animator.ResetTrigger("Attack");
 
+        animator.ResetTrigger("Attack");
         animator.SetTrigger("Attack");
 
-        combo = (combo + 1) % 2;
+
+        AbilityManager.Instance.attack.cooldown = comboCooldown[index];
+        AbilityManager.Instance.attack.maxCooldown = comboCooldown[index];
 
         AudioManager.Instance.PlaySFX(AudioManager.Instance.attackSound);
     }
 
+
     // Animation Event
     public void DealDamage()
     {
+        Players player = GetComponent<Players>();
+
+        int currentCombo = Mathf.Clamp(
+            combo,
+            0,
+            comboLunge.Length - 1
+        );
+
+        StopAllCoroutines();
+        StartCoroutine(
+            Lunge(player.LastDirection, comboLunge[currentCombo])
+        );
+
         foreach (Transform point in attackPoint)
         {
             if (point == null)
@@ -76,13 +196,15 @@ public class Attack : MonoBehaviour
             {
                 EnermyHealth hp = hit.GetComponent<EnermyHealth>();
 
-                if (hp != null)
-                {
-                    Vector2 dir =
-                        (hp.transform.position - transform.position).normalized;
+                if (hp == null)
+                    continue;
 
-                    hp.TakeDamage(damage, dir);
-                }
+                Vector2 dir =
+                    (hp.transform.position - transform.position).normalized;
+
+                hp.knockbackForce = comboKnockback[currentCombo];
+
+                hp.TakeDamage(comboDamage[currentCombo], dir);
             }
         }
     }
@@ -90,24 +212,50 @@ public class Attack : MonoBehaviour
     // Animation Event (đặt ở frame cuối animation)
     public void EndAttack()
     {
-        Debug.Log("EndAttack");
         isAttacking = false;
-    animator.ResetTrigger("Attack");
-    }
 
-    void OnDrawGizmosSelected()
-    {
-        if (attackPoint == null)
-            return;
+        animator.speed = 1f;
 
-        Gizmos.color = Color.red;
+        comboWindowOpen = false;
 
-        foreach (Transform point in attackPoint)
+        if (queueNextAttack)
         {
-            if (point != null)
+            queueNextAttack = false;
+
+            combo++;
+
+            if (combo >= maxCombo)
             {
-                Gizmos.DrawWireSphere(point.position, attackRadius);
+                combo = 0;
+
+                AbilityManager.Instance.attack.maxCooldown =
+                    comboFinishDelay;
+
+                AbilityManager.Instance.attack.cooldown =
+                    comboFinishDelay;
+
+                comboWindowOpen = false;
+
+                return;
             }
+
+            StartAttack();
+
+            return;
         }
+
+        combo = 0;
     }
+
+    public void OpenComboWindow()
+    {
+        comboWindowOpen = true;
+    }
+
+    public void CloseComboWindow()
+    {
+        comboWindowOpen = false;
+    }
+
+
 }

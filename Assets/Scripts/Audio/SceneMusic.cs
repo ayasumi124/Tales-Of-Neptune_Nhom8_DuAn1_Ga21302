@@ -4,9 +4,11 @@ public class SceneMusic : MonoBehaviour
 {
     public AudioClip sceneMusic;
 
-    void Start()
+    private void Start()
     {
-        if(AudioManager.Instance != null)
+        if (AudioManager.Instance != null)
+        {
             AudioManager.Instance.ChangeMusic(sceneMusic);
+        }
     }
 }

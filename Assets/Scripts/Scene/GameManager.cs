@@ -1,66 +1,78 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Unity.Cinemachine;
+using System.Collections;
+using System;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Player")]
-    public GameObject playerPrefab;
+    public GameObject player;
 
-    private GameObject player;
+    public string nextSpawnPoint;
 
-    public Transform Player => player != null ? player.transform : null;
 
-    public Transform PickupPoint
+    void Awake()
     {
-        get
-        {
-            if (player == null)
-                return null;
 
-            return player.transform.Find("PickupPoint");
-        }
-    }
-
-    private void Awake()
-    {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
-
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            DontDestroyOnLoad(transform.root.gameObject);
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(transform.root.gameObject);
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void SetPlayer(GameObject p)
     {
-        FindOrSpawnPlayer();
+        player = p;
     }
 
-    void FindOrSpawnPlayer()
+    public void MovePlayerToSpawn()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        StartCoroutine(MovePlayerRoutine());
     }
 
-    public Health PlayerHealth
+    IEnumerator MovePlayerRoutine()
     {
-        get
+        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+
+        SpawnPoint[] points =
+            FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None);
+
+        foreach (SpawnPoint p in points)
         {
-            if (Player == null)
-                return null;
+            if (p.spawnID == nextSpawnPoint)
+            {
+                // Tắt physics tạm thời
+                if (rb != null)
+                {
+                    rb.simulated = false;
+                }
 
-            return Player.GetComponent<Health>();
+                player.transform.position = p.transform.position;
+
+                Debug.Log("Spawn Player tại: " + player.transform.position);
+
+                // Đợi 2 frame cho scene ổn định
+                yield return null;
+                yield return null;
+
+                if (rb != null)
+                {
+                    rb.linearVelocity = Vector2.zero;
+                    rb.angularVelocity = 0;
+                    rb.simulated = true;
+                }
+
+                yield break;
+            }
         }
+
+        Debug.LogError("Không tìm thấy SpawnPoint: " + nextSpawnPoint);
     }
 
-    public void SetPlayer(GameObject newPlayer)
-    {
-        player = newPlayer;
-    }
 }

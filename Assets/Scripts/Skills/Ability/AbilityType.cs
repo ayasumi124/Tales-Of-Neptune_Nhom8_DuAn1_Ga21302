@@ -1,7 +1,8 @@
 
 public enum AbilityType
 {
-    Clone,
+    Attack,
     Dash,
+    Clone,
     Fireball
 }

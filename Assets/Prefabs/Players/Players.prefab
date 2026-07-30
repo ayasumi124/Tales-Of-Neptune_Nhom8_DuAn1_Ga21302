@@ -52,6 +52,9 @@ GameObject:
   - component: {fileID: 8460627641359223920}
   - component: {fileID: 7679339183036857776}
   - component: {fileID: 6223604995423097975}
+  - component: {fileID: 8772684339908272889}
+  - component: {fileID: 2574351753208449971}
+  - component: {fileID: 7518505730027222568}
   m_Layer: 3
   m_Name: idle_down_0
   m_TagString: Player
@@ -245,7 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Players
   rb: {fileID: 7990163645947627234}
   animator: {fileID: 164601872866270197}
-  pickupPoint: {fileID: 0}
+  pickupPoint: {fileID: 301186943132381571}
 --- !u!114 &8459480266853851217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,9 +275,32 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   attackRadius: 0.2
-  attackCooldown: 1
   attackDistance: 0.5
+  attackCooldown: 1
   damage: 10
+  maxCombo: 3
+  lungeForce: 9
+  lungeTime: 0.06
+  comboLunge:
+  - 5
+  - 7
+  - 10
+  comboCooldown:
+  - 0.22
+  - 0.16
+  - 0.12
+  comboAnimationSpeed:
+  - 1.4
+  - 1.7
+  - 2
+  comboDamage: 140000001900000023000000
+  comboKnockback:
+  - 4
+  - 6
+  - 8
+  comboFinishDelay: 0.45
+  skillData: {fileID: 11400000, guid: 612da40b345219d4796733404d9556dd, type: 2}
+  slotUI: {fileID: 0}
 --- !u!114 &8161544903992188369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,11 +313,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5dd5c7214e1be34e8f3173113fc2af0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloneSkill
-  skillCooldown: 60
-  cloneLifeTime: 30
-  cooldownText: {fileID: 0}
-  durationText: {fileID: 0}
   clonePrefab: {fileID: 8576532584680407823, guid: 99b9accec9bab8840a3aa994a81689ab, type: 3}
+  skillData: {fileID: 11400000, guid: b9e033b7a03ba994ea5602fe8d18eb32, type: 2}
+  slotUI: {fileID: 0}
 --- !u!114 &8186096020419718719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,6 +330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 8
   currentHealth: 8
+  invincibleTime: 0.2
 --- !u!114 &2379962776103713919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,7 +347,7 @@ MonoBehaviour:
   currentStamina: 0
   drainSpeed: 60
   recoverSpeed: 15
-  exhaustRecover: 150
+  exhaustRecover: 50
 --- !u!114 &8460627641359223920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +473,75 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPickup
   coinUI: {fileID: 0}
+--- !u!114 &8772684339908272889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437690232275256694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ebd8e8deff65a4ab3bd5c977688f00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
+  clone:
+    unlocked: 0
+    equipped: 0
+    cooldown: 0
+    maxCooldown: 0
+    duration: 0
+  dash:
+    unlocked: 0
+    equipped: 0
+    cooldown: 0
+    maxCooldown: 0
+    duration: 0
+  fireball:
+    unlocked: 0
+    equipped: 0
+    cooldown: 0
+    maxCooldown: 0
+    duration: 0
+  attack:
+    unlocked: 0
+    equipped: 0
+    cooldown: 0
+    maxCooldown: 0
+    duration: 0
+--- !u!114 &2574351753208449971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437690232275256694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f7a91489573d534791fc4b9c3d4015e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
+  dashSpeed: 12
+  dashDuration: 0.15
+  dashCooldown: 2
+  dashStaminaCost: 50
+  skillData: {fileID: 11400000, guid: 064575889a55fc64cb8bae392ba752c0, type: 2}
+  slotUI: {fileID: 0}
+--- !u!114 &7518505730027222568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437690232275256694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 126eb6050fa5ffb47bf529f408c1c7bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMana
+  maxMana: 100
+  currentMana: 0
+  manaRecoverEffect: {fileID: 0}
 --- !u!1 &606477516252739539
 GameObject:
   m_ObjectHideFlags: 0
