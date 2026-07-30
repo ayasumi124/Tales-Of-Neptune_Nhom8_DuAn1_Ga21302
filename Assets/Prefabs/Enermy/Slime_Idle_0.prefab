@@ -237,7 +237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnermyAudio
   footstepSource: {fileID: 7947812308503660795}
   sfxSource: {fileID: 6129834820399778356}
-  footstepClip: {fileID: 8300000, guid: ed2629ca8b1c1eb42950a58c47847614, type: 3}
+  footstepClip: {fileID: 0}
   attackClip: {fileID: 8300000, guid: f16fc7bea6ef85549b0513f5046263ef, type: 3}
   hurtClip: {fileID: 8300000, guid: bc73b132c56a44e4aa8d36d2c5c82d95, type: 3}
   deathClip: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}

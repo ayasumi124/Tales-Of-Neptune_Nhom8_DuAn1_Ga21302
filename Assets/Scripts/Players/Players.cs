@@ -4,12 +4,13 @@ using System.Collections.Generic;
 
 public class Players : MonoBehaviour
 {
+    private Vector3 lastPos;
     private float tocDo;
     private float tocDoChay;
     float moveX;
     float moveY;
     public Rigidbody2D rb;
-    
+
     public Animator animator;
     private PlayerStamina stamina;
     public float FacingDirection { get; private set; } = 1;
@@ -205,5 +206,20 @@ public class Players : MonoBehaviour
         //     {
         //         animator.SetTrigger("AttackRight");
         //     }
+    }
+
+    void LateUpdate()
+    {
+        if (transform.position != lastPos)
+        {
+            Debug.Log(
+                Time.frameCount +
+                " " +
+                gameObject.name +
+                " " +
+                transform.position);
+
+            lastPos = transform.position;
+        }
     }
 }
