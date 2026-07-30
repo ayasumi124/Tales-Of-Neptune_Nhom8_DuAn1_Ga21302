@@ -24,27 +24,26 @@ public class SceneLoader : MonoBehaviour
     }
 
     IEnumerator Load(string sceneName, string spawnID)
-    {
-        GameManager.Instance.nextSpawnPoint = spawnID;
+{
+    GameManager.Instance.nextSpawnPoint = spawnID;
 
-        yield return FadeUI.Instance.FadeOut();
+    yield return FadeUI.Instance.FadeOut();
 
-        AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
+    AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
 
-        while (!op.isDone)
-            yield return null;
+    while (!op.isDone)
         yield return null;
 
-        GameManager.Instance.MovePlayerToSpawn();
-        CinemachineCamera cam = FindFirstObjectByType<CinemachineCamera>();
+    // đợi 2 frame
+    yield return null;
+    yield return null;
 
-        if (cam != null)
-        {
-            cam.Target.TrackingTarget = GameManager.Instance.player.transform;
-        }
+    GameManager.Instance.MovePlayerToSpawn();
 
-        yield return null;
+    yield return new WaitForEndOfFrame();
 
-        yield return FadeUI.Instance.FadeIn();
-    }
+    Debug.Log("Player sau spawn = " + GameManager.Instance.player.transform.position);
+
+    yield return FadeUI.Instance.FadeIn();
+}
 }
