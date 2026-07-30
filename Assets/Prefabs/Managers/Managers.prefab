@@ -910,6 +910,7 @@ GameObject:
   - component: {fileID: 5212157688537651726}
   - component: {fileID: 7758244180170272507}
   - component: {fileID: 8472241677043948988}
+  - component: {fileID: 641670873780477104}
   m_Layer: 0
   m_Name: FadeCanvas
   m_TagString: Untagged
@@ -1012,8 +1013,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c536ee404e1abab43a697b4a46006681, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FadeUI
-  fadeImage: {fileID: 1127067946637880602}
+  canvasGroup: {fileID: 641670873780477104}
   fadeDuration: 0.4
+--- !u!225 &641670873780477104
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091144138214098277}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 1
 --- !u!1 &1146235526836616748
 GameObject:
   m_ObjectHideFlags: 0
@@ -4970,6 +4983,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57b2d26b686509b4b969eb502879cb46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
+  fadeCanvasGroup: {fileID: 641670873780477104}
+  fadeDuration: 0.5
 --- !u!1 &4980342896392501824
 GameObject:
   m_ObjectHideFlags: 0
@@ -6931,7 +6946,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7093,6 +7108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f07d4743bd9d0de4489c79586d37eda1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentManager
+  skillTaskbar: {fileID: 0}
   slot3: {fileID: 4255270992706263474}
   slot4: {fileID: 1846017012641741986}
   slot5: {fileID: 42347237972324912}
@@ -8473,7 +8489,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -8513,8 +8529,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8da396c8c5c7f8f488e1cb53d9fdde25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillUnlockUI
-  skillData: {fileID: 0}
-  abilityType: 0
   dimBackground: {fileID: 8978961232778313496}
   panel: {fileID: 2754213821611854000}
   icon: {fileID: 812711097674876283}
@@ -8641,7 +8655,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbc589b780805c744a60cbb45f8457e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  player: {fileID: 0}
+  player: {fileID: 3975115434059674802}
+  currentScene: 
+  currentSpawnID: 
 --- !u!1 &9092293191504916743
 GameObject:
   m_ObjectHideFlags: 0
@@ -9050,12 +9066,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3574906316501632060, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
   m_PrefabInstance: {fileID: 3546741522724581828}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3975115434059674802 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 437690232275256694, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
+  m_PrefabInstance: {fileID: 3546741522724581828}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4657377782898843643 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8186096020419718719, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
   m_PrefabInstance: {fileID: 3546741522724581828}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 3975115434059674802}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ab76584bdae5b94dac7069ecdf4aba6, type: 3}
@@ -9066,7 +9087,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7518505730027222568, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
   m_PrefabInstance: {fileID: 3546741522724581828}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 3975115434059674802}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 126eb6050fa5ffb47bf529f408c1c7bd, type: 3}

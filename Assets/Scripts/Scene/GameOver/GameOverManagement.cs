@@ -30,75 +30,67 @@ public class GameOverManagement : MonoBehaviour
     }
 
     public void PlayAgain()
+{
+    if (!gameOver)
+        return;
+
+    Time.timeScale = 1f;
+    gameOver = false;
+
+    if (gameOverPanel != null)
+        gameOverPanel.SetActive(false);
+
+    ResetPlayer();
+
+    if (GameManager.Instance != null &&
+        GameManager.Instance.Player != null)
     {
-        Time.timeScale = 1f;
-        gameOver = false;
+        Health health =
+            GameManager.Instance.Player.GetComponent<Health>();
 
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
-
-        ResetPlayer();
-
-        if (FadeUI.Instance != null)
-            FadeUI.Instance.ForceTransparent();
-
-        if (SceneLoader.Instance != null)
-        {
-            SceneLoader.Instance.ReloadCurrentScene("Start");
-        }
-        else
-        {
-            Debug.LogError("Không tìm thấy SceneLoader.");
-        }
+        if (health != null)
+            health.SetInvincible(true);
     }
+
+    if (SceneLoader.Instance != null)
+    {
+        SceneLoader.Instance.ReloadSavedScene();
+    }
+    else
+    {
+        Debug.LogError("Không tìm thấy SceneLoader.");
+    }
+}
 
     private void ResetPlayer()
     {
         if (GameManager.Instance == null ||
             GameManager.Instance.Player == null)
         {
-            Debug.LogError("Không tìm thấy Player trong GameManager.");
+            Debug.LogError(
+                "Không tìm thấy Player để reset."
+            );
             return;
         }
 
-        GameObject player = GameManager.Instance.Player;
+        GameObject player =
+            GameManager.Instance.Player;
 
-        player.SetActive(true);
-
-        Health health = player.GetComponent<Health>();
-        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-        Animator animator = player.GetComponent<Animator>();
-        Players movement = player.GetComponent<Players>();
-        PlayerDash dash = player.GetComponent<PlayerDash>();
-        Attack attack = player.GetComponent<Attack>();
+        Health health =
+            player.GetComponent<Health>();
 
         if (health != null)
+        {
             health.ResetHealth();
+        }
+
+        Rigidbody2D rb =
+            player.GetComponent<Rigidbody2D>();
 
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
-            rb.simulated = true;
-        }
-
-        if (movement != null)
-            movement.enabled = true;
-
-        if (dash != null)
-            dash.enabled = true;
-
-        if (attack != null)
-        {
-            attack.enabled = true;
-            attack.CancelAttack();
-        }
-
-        if (animator != null)
-        {
-            animator.speed = 1f;
-            animator.Rebind();
-            animator.Update(0f);
         }
     }
 
@@ -110,9 +102,13 @@ public class GameOverManagement : MonoBehaviour
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
-        if (FadeUI.Instance != null)
-            FadeUI.Instance.ForceTransparent();
-
-        SceneManager.LoadScene("MainMenu");
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.EndSessionAndReturnToMenu();
+        }
+        else
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
     }
 }
