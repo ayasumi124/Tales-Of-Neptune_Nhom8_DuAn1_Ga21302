@@ -21,6 +21,11 @@ public class Chest : MonoBehaviour
     private CloneFollow[] clones;
     private Animator animator;
 
+    [Header("UI")]
+    [SerializeField] private GameObject keyIcon;
+
+    private bool playerInside;
+
     private string FullChestID =>
         SceneManager.GetActiveScene().name + "_" + chestID;
 
@@ -36,6 +41,22 @@ public class Chest : MonoBehaviour
         SkillUnlockUI.OnSkillPanelClosed += ResumeGame;
 
         LoadChestState();
+        if (keyIcon != null)
+            keyIcon.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (!playerInside)
+            return;
+
+        if (opened)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            OpenChest();
+        }
     }
 
     private void OnDestroy()
@@ -96,7 +117,7 @@ public class Chest : MonoBehaviour
             );
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (opened)
             return;
@@ -104,8 +125,20 @@ public class Chest : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        if (Input.GetKeyDown(KeyCode.E))
-            OpenChest();
+        playerInside = true;
+
+        if (keyIcon != null)
+            keyIcon.SetActive(true);
+    }
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (!other.CompareTag("Player"))
+            return;
+
+        playerInside = false;
+
+        if (keyIcon != null)
+            keyIcon.SetActive(false);
     }
 
     public void OpenChest()
@@ -122,6 +155,10 @@ public class Chest : MonoBehaviour
         }
 
         opened = true;
+        playerInside = false;
+
+        if (keyIcon != null)
+            keyIcon.SetActive(false);
 
         if (GameSessionManager.Instance != null)
         {

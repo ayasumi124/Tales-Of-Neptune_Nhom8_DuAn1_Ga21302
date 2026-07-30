@@ -91,8 +91,8 @@ public class PlayerDash : MonoBehaviour
     public void PlayDashSound()
     {
         AudioManager.Instance.PlaySFX(
-            AudioManager.Instance.dashSound,
-            20f
-        );
+    AudioManager.Instance.dashSound,
+    AudioManager.Instance.dashVolume
+);
     }
 }
