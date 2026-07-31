@@ -1,0 +1,1677 @@
+fileFormatVersion: 2
+guid: c4c8fc710eed5ed4e820bdd29f8c7c9e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4098273558728523735
+    second: armor_white_outline_0
+  - first:
+      213: -521117972445773443
+    second: armor_white_outline_1
+  - first:
+      213: -1296254673793472142
+    second: armor_white_outline_2
+  - first:
+      213: 2959773618555007556
+    second: armor_white_outline_3
+  - first:
+      213: -695591192112178957
+    second: armor_white_outline_4
+  - first:
+      213: 8047290369627611617
+    second: armor_white_outline_5
+  - first:
+      213: 6366738643858496231
+    second: armor_white_outline_6
+  - first:
+      213: -118011831346398135
+    second: armor_white_outline_7
+  - first:
+      213: -5022872704964368335
+    second: armor_white_outline_8
+  - first:
+      213: 3584987632143339560
+    second: armor_white_outline_9
+  - first:
+      213: -8311904151057074877
+    second: armor_white_outline_10
+  - first:
+      213: -2947244093262336367
+    second: armor_white_outline_11
+  - first:
+      213: 1079578607039513145
+    second: armor_white_outline_12
+  - first:
+      213: -8399079705765913778
+    second: armor_white_outline_13
+  - first:
+      213: 8727897956436510440
+    second: armor_white_outline_14
+  - first:
+      213: 3779778579254376246
+    second: armor_white_outline_15
+  - first:
+      213: -999768942367769193
+    second: armor_white_outline_16
+  - first:
+      213: -839980753388421110
+    second: armor_white_outline_17
+  - first:
+      213: -3165589672863849892
+    second: armor_white_outline_18
+  - first:
+      213: -8978599344269377014
+    second: armor_white_outline_19
+  - first:
+      213: 5540332773311144221
+    second: armor_white_outline_20
+  - first:
+      213: 1022242401773106208
+    second: armor_white_outline_21
+  - first:
+      213: 178146722247303359
+    second: armor_white_outline_22
+  - first:
+      213: 8738867574304751227
+    second: armor_white_outline_23
+  - first:
+      213: 2028571473937696145
+    second: armor_white_outline_24
+  - first:
+      213: 5432622244303934018
+    second: armor_white_outline_25
+  - first:
+      213: -5457574178607817043
+    second: armor_white_outline_26
+  - first:
+      213: -8842817506344690639
+    second: armor_white_outline_27
+  - first:
+      213: -3442380682701423835
+    second: armor_white_outline_28
+  - first:
+      213: -7171608394300823145
+    second: armor_white_outline_29
+  - first:
+      213: 5252163995123330815
+    second: armor_white_outline_30
+  - first:
+      213: 6330274054920755526
+    second: armor_white_outline_31
+  - first:
+      213: 5395289781770001133
+    second: armor_white_outline_32
+  - first:
+      213: 5499153859417811146
+    second: armor_white_outline_33
+  - first:
+      213: 6969825310032237326
+    second: armor_white_outline_34
+  - first:
+      213: -9024289743693756901
+    second: armor_white_outline_35
+  - first:
+      213: 2683523084915131590
+    second: armor_white_outline_36
+  - first:
+      213: 1588542287186161173
+    second: armor_white_outline_37
+  - first:
+      213: -4202253316858231968
+    second: armor_white_outline_38
+  - first:
+      213: -2066959382142290534
+    second: armor_white_outline_39
+  - first:
+      213: 4716228500294599113
+    second: armor_white_outline_40
+  - first:
+      213: 6413528750642946401
+    second: armor_white_outline_41
+  - first:
+      213: 5269815816300242875
+    second: armor_white_outline_42
+  - first:
+      213: 7163855088228690134
+    second: armor_white_outline_43
+  - first:
+      213: -3451891715740451121
+    second: armor_white_outline_44
+  - first:
+      213: -799374052019676494
+    second: armor_white_outline_45
+  - first:
+      213: 4486858099888729188
+    second: armor_white_outline_46
+  - first:
+      213: -2394323635232759293
+    second: armor_white_outline_47
+  - first:
+      213: -8978317213419834427
+    second: armor_white_outline_48
+  - first:
+      213: 174812640864819388
+    second: armor_white_outline_49
+  - first:
+      213: -2023417846580675506
+    second: armor_white_outline_50
+  - first:
+      213: -1910683719354848488
+    second: armor_white_outline_51
+  - first:
+      213: 593493159411830759
+    second: armor_white_outline_52
+  - first:
+      213: -5782082103192563980
+    second: armor_white_outline_53
+  - first:
+      213: 2543589039399779510
+    second: armor_white_outline_54
+  - first:
+      213: -2168725233275494292
+    second: armor_white_outline_55
+  - first:
+      213: 6271476868100897763
+    second: armor_white_outline_56
+  - first:
+      213: -8486127994295484334
+    second: armor_white_outline_57
+  - first:
+      213: 2787436386618821621
+    second: armor_white_outline_58
+  - first:
+      213: 6281555983788852048
+    second: armor_white_outline_59
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: armor_white_outline_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 114
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9204c9379e10027c0800000000000000
+      internalID: -4098273558728523735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_1
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 113
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d714c4e07fd94c8f0800000000000000
+      internalID: -521117972445773443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_2
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 112
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 279a916fd37c20ee0800000000000000
+      internalID: -1296254673793472142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_3
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 112
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4423b8dac6a331920800000000000000
+      internalID: 2959773618555007556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_4
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 113
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f853450f73c856f0800000000000000
+      internalID: -695591192112178957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_5
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 111
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e1631e64f7bdaf60800000000000000
+      internalID: 8047290369627611617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_6
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 112
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ea10fc60133b5850800000000000000
+      internalID: 6366738643858496231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_7
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 112
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94cfd495ddcbc5ef0800000000000000
+      internalID: -118011831346398135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_8
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 96
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 138e79c13eb2b4ab0800000000000000
+      internalID: -5022872704964368335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_9
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 96
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8209212e14f60c130800000000000000
+      internalID: 3584987632143339560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_10
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 96
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 345f525863f26ac80800000000000000
+      internalID: -8311904151057074877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_11
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 80
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19eeab2cc194917d0800000000000000
+      internalID: -2947244093262336367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_12
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 96
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93283b3f50f6bfe00800000000000000
+      internalID: 1079578607039513145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_13
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 95
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4b51a10289707b80800000000000000
+      internalID: -8399079705765913778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_14
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 80
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e68141f2f8bf1970800000000000000
+      internalID: 8727897956436510440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_15
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 95
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 637761a7798747430800000000000000
+      internalID: 3779778579254376246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_16
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 79
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79d73b4a17b1022f0800000000000000
+      internalID: -999768942367769193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_17
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 79
+        width: 17
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a004e1884f9c754f0800000000000000
+      internalID: -839980753388421110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 82
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c522e4ce6f09114d0800000000000000
+      internalID: -3165589672863849892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_19
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 80
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a02c440977b956380800000000000000
+      internalID: -8978599344269377014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_20
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 79
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d116aaaad4733ec40800000000000000
+      internalID: 5540332773311144221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_21
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 80
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02437006c0cbf2e00800000000000000
+      internalID: 1022242401773106208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_22
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 65
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb063710087e87200800000000000000
+      internalID: 178146722247303359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_23
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 65
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7e3d9122c1b64970800000000000000
+      internalID: 8738867574304751227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_24
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 64
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1950c89f10fe62c10800000000000000
+      internalID: 2028571473937696145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_25
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 64
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2421f9ed52d846b40800000000000000
+      internalID: 5432622244303934018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_26
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 65
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dae9cb4333dc244b0800000000000000
+      internalID: -5457574178607817043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_27
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 64
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13c18b84450084580800000000000000
+      internalID: -8842817506344690639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_28
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 64
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52b3ae1f1053a30d0800000000000000
+      internalID: -3442380682701423835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_29
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 47
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7996d758924597c90800000000000000
+      internalID: -7171608394300823145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_30
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 64
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffe2c6f835f63e840800000000000000
+      internalID: 5252163995123330815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_31
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 49
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6495c66b6b6a9d750800000000000000
+      internalID: 6330274054920755526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_32
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 31
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dea12b6987befda40800000000000000
+      internalID: 5395289781770001133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_33
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 48
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac821d3ac4be05c40800000000000000
+      internalID: 5499153859417811146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_34
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 48
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e039ff6113bc9b060800000000000000
+      internalID: 6969825310032237326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_35
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 32
+        width: 18
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b16cee47a4843c280800000000000000
+      internalID: -9024289743693756901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_36
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 48
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c44dee170acd3520800000000000000
+      internalID: 2683523084915131590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_37
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 48
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51eea623bc2ab0610800000000000000
+      internalID: 1588542287186161173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_38
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 48
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06345707fd89ea5c0800000000000000
+      internalID: -4202253316858231968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_39
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 33
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a957f36a46fa053e0800000000000000
+      internalID: -2066959382142290534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_40
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 31
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c102a755d8637140800000000000000
+      internalID: 4716228500294599113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_41
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 31
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 161e3da1b6e610950800000000000000
+      internalID: 6413528750642946401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_42
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 31
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb7af427095222940800000000000000
+      internalID: 5269815816300242875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_43
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 31
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d8ee3c3f302b6360800000000000000
+      internalID: 7163855088228690134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_44
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 18
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fce3d2006ca6810d0800000000000000
+      internalID: -3451891715740451121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_45
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 17
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bad3b2f88d08e4f0800000000000000
+      internalID: -799374052019676494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_46
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 17
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46ca3716ba5844e30800000000000000
+      internalID: 4486858099888729188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_47
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30221a4e657a5ced0800000000000000
+      internalID: -2394323635232759293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_48
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 18
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c3f555401c966380800000000000000
+      internalID: -8978317213419834427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_49
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 16
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb8def0bb2f0d6200800000000000000
+      internalID: 174812640864819388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_50
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 16
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4c7f5660306be3e0800000000000000
+      internalID: -2023417846580675506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_51
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 18
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81b6bbdc743eb75e0800000000000000
+      internalID: -1910683719354848488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_52
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 1
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7efcd5f42e28c3800800000000000000
+      internalID: 593493159411830759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_53
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 1
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fe401146fae1cfa0800000000000000
+      internalID: -5782082103192563980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_54
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bc300c31c4ac4320800000000000000
+      internalID: 2543589039399779510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_55
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 1
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c60203704e327e1e0800000000000000
+      internalID: -2168725233275494292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_56
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 0
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ebbb3cdbf2c80750800000000000000
+      internalID: 6271476868100897763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_57
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 0
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2500585fc873b3a80800000000000000
+      internalID: -8486127994295484334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_58
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 0
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fbc96a00a6fea620800000000000000
+      internalID: 2787436386618821621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: armor_white_outline_59
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 0
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 053c67ad2e19c2750800000000000000
+      internalID: 6281555983788852048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      armor_white_outline_0: -4098273558728523735
+      armor_white_outline_1: -521117972445773443
+      armor_white_outline_10: -8311904151057074877
+      armor_white_outline_11: -2947244093262336367
+      armor_white_outline_12: 1079578607039513145
+      armor_white_outline_13: -8399079705765913778
+      armor_white_outline_14: 8727897956436510440
+      armor_white_outline_15: 3779778579254376246
+      armor_white_outline_16: -999768942367769193
+      armor_white_outline_17: -839980753388421110
+      armor_white_outline_18: -3165589672863849892
+      armor_white_outline_19: -8978599344269377014
+      armor_white_outline_2: -1296254673793472142
+      armor_white_outline_20: 5540332773311144221
+      armor_white_outline_21: 1022242401773106208
+      armor_white_outline_22: 178146722247303359
+      armor_white_outline_23: 8738867574304751227
+      armor_white_outline_24: 2028571473937696145
+      armor_white_outline_25: 5432622244303934018
+      armor_white_outline_26: -5457574178607817043
+      armor_white_outline_27: -8842817506344690639
+      armor_white_outline_28: -3442380682701423835
+      armor_white_outline_29: -7171608394300823145
+      armor_white_outline_3: 2959773618555007556
+      armor_white_outline_30: 5252163995123330815
+      armor_white_outline_31: 6330274054920755526
+      armor_white_outline_32: 5395289781770001133
+      armor_white_outline_33: 5499153859417811146
+      armor_white_outline_34: 6969825310032237326
+      armor_white_outline_35: -9024289743693756901
+      armor_white_outline_36: 2683523084915131590
+      armor_white_outline_37: 1588542287186161173
+      armor_white_outline_38: -4202253316858231968
+      armor_white_outline_39: -2066959382142290534
+      armor_white_outline_4: -695591192112178957
+      armor_white_outline_40: 4716228500294599113
+      armor_white_outline_41: 6413528750642946401
+      armor_white_outline_42: 5269815816300242875
+      armor_white_outline_43: 7163855088228690134
+      armor_white_outline_44: -3451891715740451121
+      armor_white_outline_45: -799374052019676494
+      armor_white_outline_46: 4486858099888729188
+      armor_white_outline_47: -2394323635232759293
+      armor_white_outline_48: -8978317213419834427
+      armor_white_outline_49: 174812640864819388
+      armor_white_outline_5: 8047290369627611617
+      armor_white_outline_50: -2023417846580675506
+      armor_white_outline_51: -1910683719354848488
+      armor_white_outline_52: 593493159411830759
+      armor_white_outline_53: -5782082103192563980
+      armor_white_outline_54: 2543589039399779510
+      armor_white_outline_55: -2168725233275494292
+      armor_white_outline_56: 6271476868100897763
+      armor_white_outline_57: -8486127994295484334
+      armor_white_outline_58: 2787436386618821621
+      armor_white_outline_59: 6281555983788852048
+      armor_white_outline_6: 6366738643858496231
+      armor_white_outline_7: -118011831346398135
+      armor_white_outline_8: -5022872704964368335
+      armor_white_outline_9: 3584987632143339560
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
