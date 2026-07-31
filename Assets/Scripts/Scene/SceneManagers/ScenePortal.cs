@@ -12,7 +12,8 @@ public class ScenePortal : MonoBehaviour
     [SerializeField] private KeyCode interactKey = KeyCode.E;
 
     [Header("Enter Portal")]
-    [SerializeField] private Vector2 enterDirection =
+    [SerializeField]
+    private Vector2 enterDirection =
         Vector2.up;
 
     [SerializeField] private float enterSpeed = 1.8f;
@@ -39,20 +40,79 @@ public class ScenePortal : MonoBehaviour
         if (!playerInside || used)
             return;
 
+        // Không cho Portal hoạt động khi scene vẫn đang load
+        if (SceneLoader.Instance == null ||
+            SceneLoader.Instance.IsLoading)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(interactKey))
             EnterPortal();
     }
 
-    private void OnTriggerEnter2D(
-        Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player"))
             return;
 
         playerInside = true;
 
+        // Player vừa được spawn vào Portal:
+        // không kích hoạt ngược lại khi scene còn đang load
+        if (SceneLoader.Instance == null ||
+            SceneLoader.Instance.IsLoading)
+        {
+            return;
+        }
+
         if (!requireKey && !used)
             EnterPortal();
+    }
+
+    private void EnterPortal()
+    {
+        if (used)
+            return;
+
+        if (SceneLoader.Instance == null)
+        {
+            Debug.LogError("Không tìm thấy SceneLoader.");
+            return;
+        }
+
+        // Cực kỳ quan trọng:
+        // không bắt đầu coroutine Portal trong lúc đang chuyển scene
+        if (SceneLoader.Instance.IsLoading)
+        {
+            Debug.Log(
+                $"{name}: Bỏ qua Portal vì scene đang load."
+            );
+
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(targetScene))
+        {
+            Debug.LogError(
+                $"{name}: Chưa nhập Target Scene."
+            );
+
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(targetSpawnID))
+        {
+            Debug.LogError(
+                $"{name}: Chưa nhập Target Spawn ID."
+            );
+
+            return;
+        }
+
+        used = true;
+
+        StartCoroutine(EnterPortalRoutine());
     }
 
     private void OnTriggerStay2D(
@@ -83,55 +143,7 @@ public class ScenePortal : MonoBehaviour
         used = false;
     }
 
-    private void EnterPortal()
-    {
-        if (used)
-        {
-            Debug.Log(
-                $"{name}: Portal đang bị used khóa."
-            );
 
-            return;
-        }
-
-        if (SceneLoader.Instance == null)
-        {
-            Debug.LogError(
-                "Không tìm thấy SceneLoader."
-            );
-
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(targetScene))
-        {
-            Debug.LogError(
-                $"{name}: Chưa nhập Target Scene."
-            );
-
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(targetSpawnID))
-        {
-            Debug.LogError(
-                $"{name}: Chưa nhập Target Spawn ID."
-            );
-
-            return;
-        }
-
-        Debug.Log(
-            $"{name}: Bắt đầu chuyển tới " +
-            $"{targetScene} - {targetSpawnID}"
-        );
-
-        used = true;
-
-        StartCoroutine(
-            EnterPortalRoutine()
-        );
-    }
 
     private IEnumerator EnterPortalRoutine()
     {
@@ -202,6 +214,15 @@ public class ScenePortal : MonoBehaviour
         yield return new WaitForSecondsRealtime(
             Mathf.Max(0f, enterDuration)
         );
+
+        // Nếu một quá trình load khác đã bắt đầu,
+        // không được khóa Player thêm lần nữa.
+        if (SceneLoader.Instance == null ||
+            SceneLoader.Instance.IsLoading)
+        {
+            used = false;
+            yield break;
+        }
 
         player.StopAutoWalk();
         player.LockControl();
