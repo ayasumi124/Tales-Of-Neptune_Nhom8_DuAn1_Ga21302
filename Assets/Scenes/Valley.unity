@@ -295355,6 +295355,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1532761682378635499, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
+      propertyPath: dashSound
+      value: 
+      objectReference: {fileID: 8300000, guid: c48e9adfecd02c34f8797293977e7b00, type: 3}
     - target: {fileID: 3152961894926593638, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -295370,6 +295374,14 @@ PrefabInstance:
     - target: {fileID: 3152961894926593638, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3463570311850289344, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
+      propertyPath: m_FillAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3463570311850289344, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
+      propertyPath: m_FillClockwise
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3476960432240670734, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_AnchorMax.y

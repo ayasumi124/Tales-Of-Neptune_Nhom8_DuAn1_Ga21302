@@ -112684,7 +112684,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
   sceneMusic: {fileID: 8300000, guid: a243bf6a4ee520641bb197f59f76fc45, type: 3}
-  stopMusic: 0
 --- !u!4 &2003330061
 Transform:
   m_ObjectHideFlags: 0
