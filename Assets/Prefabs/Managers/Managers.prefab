@@ -1699,7 +1699,7 @@ MonoBehaviour:
   footstepSound: {fileID: 8300000, guid: 6f9843faecbd52846824127847808081, type: 3}
   attackSound: {fileID: 8300000, guid: ba7f26e2931f0d747971fb2ba6361432, type: 3}
   jumpSound: {fileID: 0}
-  dashSound: {fileID: 8300000, guid: fe34a4b21822d5643950d55131a70b83, type: 3}
+  dashSound: {fileID: 8300000, guid: c48e9adfecd02c34f8797293977e7b00, type: 3}
   backgroundMusic: {fileID: 0}
   coinPickupSound: {fileID: 8300000, guid: 999176df302871e4ea42c558665400c7, type: 3}
   coinDropSound: {fileID: 8300000, guid: 46decedfe3d1d7d478ed4ff07a74611e, type: 3}
@@ -3171,41 +3171,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &2969690126821541177
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3800047890434972291}
-  m_Layer: 5
-  m_Name: GameplayUI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &3800047890434972291
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2969690126821541177}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 9013076239581555470}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3048949639444703316
 GameObject:
   m_ObjectHideFlags: 0
@@ -3407,7 +3372,6 @@ RectTransform:
   - {fileID: 7392847195562576161}
   - {fileID: 2463727456300616230}
   - {fileID: 3420843555613886540}
-  - {fileID: 3800047890434972291}
   m_Father: {fileID: 7347145476132200047}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5020,6 +4984,7 @@ GameObject:
   - component: {fileID: 1045258423328085381}
   - component: {fileID: 8995523275813889861}
   - component: {fileID: 7127851986103212690}
+  - component: {fileID: 7044679144507466244}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -5124,6 +5089,18 @@ MonoBehaviour:
     MaxWindowSize: 1
     Padding: 0
   m_LegacyMaxWindowSize: -2
+--- !u!114 &7044679144507466244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5118408079546440633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a5693ecd5590a94695840f414415bdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraBoundsManager
 --- !u!1 &5227105315340243261
 GameObject:
   m_ObjectHideFlags: 0
@@ -5249,7 +5226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameOverManagement
   gameplayUI: {fileID: 6184947599998681653}
   gameOverPanel: {fileID: 9092293191504916743}
-  gameOverMusic: {fileID: 8300000, guid: 22ac3a0a9cd57b6409a4180adf19741d, type: 3}
+  gameOverMusic: {fileID: 8300000, guid: 42190694815fa314da40e27c2492be99, type: 3}
   stopMusicOnGameOver: 1
 --- !u!1 &5421729795900302907
 GameObject:
@@ -9254,7 +9231,7 @@ PrefabInstance:
     - target: {fileID: 8460627641359223920, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
       propertyPath: deathSound
       value: 
-      objectReference: {fileID: 8300000, guid: e6ad30ba45d8b2a478196eaadaf5116a, type: 3}
+      objectReference: {fileID: 8300000, guid: 04dba934ce1d7994bac768ba8c99ebd6, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
