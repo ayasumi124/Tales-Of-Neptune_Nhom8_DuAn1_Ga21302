@@ -1,15 +1,12 @@
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
-using System.Collections;
 
 public class SkillUnlockUI : MonoBehaviour
 {
-    public AbilityData skillData;
-
-    public AbilityType abilityType;
-    public static SkillUnlockUI Instance;
+    public static SkillUnlockUI Instance { get; private set; }
 
     public static Action OnSkillPanelClosed;
 
@@ -21,75 +18,209 @@ public class SkillUnlockUI : MonoBehaviour
     public TextMeshProUGUI skillName;
     public TextMeshProUGUI description;
 
-    Animator animator;
+    private Animator animator;
+    private CanvasGroup panelCanvasGroup;
 
-    bool waitingForClose;
+    private bool waitingForClose;
+    private Coroutine closeCoroutine;
 
-    void Awake()
+    private void Awake()
     {
+        // Không để UI mới từ scene khác ghi đè UI persistent cũ.
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning(
+                "Phát hiện SkillUnlockUI trùng. Đã xóa bản mới: "
+                + gameObject.scene.name
+            );
+
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+
+        if (panel != null)
+        {
+            animator = panel.GetComponent<Animator>();
+            panelCanvasGroup = panel.GetComponent<CanvasGroup>();
+        }
     }
 
-    void Start()
+    private void Start()
     {
-        animator = panel.GetComponent<Animator>();
-
-        dimBackground.SetActive(false);
-        panel.SetActive(false);
+        ForceHide();
     }
 
-    void Update()
+    private void Update()
     {
         if (!waitingForClose)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return) ||
+            Input.GetKeyDown(KeyCode.KeypadEnter))
         {
-            waitingForClose = false;
-
-            // Âm thanh đóng skill panel
-            AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.skillCloseSound
-            );
-
-            animator.SetTrigger("Hide");
-
-            StartCoroutine(ClosePanel());
+            HideSkill();
         }
     }
 
     public void ShowSkill(AbilityData data)
     {
-        dimBackground.SetActive(true);
-        panel.SetActive(true);
+        if (data == null)
+        {
+            Debug.LogError("AbilityData truyền vào ShowSkill đang null.");
+            return;
+        }
 
-        icon.sprite = data.icon;
-        skillName.text = data.skillName;
-        description.text = data.description;
+        Debug.Log(
+            "ShowSkill chạy trên object: " + gameObject.name +
+            " | Scene: " + gameObject.scene.name
+        );
 
-        animator.ResetTrigger("Hide");
-        animator.SetTrigger("Show");
+        if (closeCoroutine != null)
+        {
+            StopCoroutine(closeCoroutine);
+            closeCoroutine = null;
+        }
+
+        waitingForClose = false;
+
+        // GameObject chứa script phải luôn hoạt động.
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
+
+        if (dimBackground != null)
+            dimBackground.SetActive(true);
+
+        if (panel != null)
+            panel.SetActive(true);
+
+        // Lấy lại component sau khi scene/load thay đổi.
+        if (panel != null)
+        {
+            if (animator == null)
+                animator = panel.GetComponent<Animator>();
+
+            if (panelCanvasGroup == null)
+                panelCanvasGroup = panel.GetComponent<CanvasGroup>();
+
+            // Ép Panel trở về trạng thái nhìn thấy.
+            panel.transform.localScale = Vector3.one;
+
+            if (panelCanvasGroup != null)
+            {
+                panelCanvasGroup.alpha = 1f;
+                panelCanvasGroup.interactable = true;
+                panelCanvasGroup.blocksRaycasts = true;
+            }
+        }
+
+        if (icon != null)
+        {
+            icon.enabled = true;
+            icon.sprite = data.icon;
+        }
+
+        if (skillName != null)
+            skillName.text = data.skillName;
+
+        if (description != null)
+            description.text = data.description;
+
+        if (animator != null)
+        {
+            animator.enabled = true;
+            animator.speed = 1f;
+
+            animator.ResetTrigger("Hide");
+            animator.ResetTrigger("Show");
+            animator.SetTrigger("Show");
+        }
 
         waitingForClose = true;
 
-        AudioManager.Instance.PlaySFX(AudioManager.Instance.skillUnlockSound);
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.skillUnlockSound
+            );
+        }
     }
 
-    IEnumerator ClosePanel()
+    private void HideSkill()
     {
-        yield return new WaitForSeconds(0.25f);
+        if (!waitingForClose)
+            return;
 
-        dimBackground.SetActive(false);
-        panel.SetActive(false);
+        waitingForClose = false;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.skillCloseSound
+            );
+        }
+
+        if (animator != null)
+        {
+            animator.ResetTrigger("Show");
+            animator.ResetTrigger("Hide");
+            animator.SetTrigger("Hide");
+        }
+
+        if (closeCoroutine != null)
+            StopCoroutine(closeCoroutine);
+
+        closeCoroutine = StartCoroutine(ClosePanel());
+    }
+
+    private IEnumerator ClosePanel()
+    {
+        yield return new WaitForSecondsRealtime(0.25f);
+
+        if (dimBackground != null)
+            dimBackground.SetActive(false);
+
+        if (panel != null)
+            panel.SetActive(false);
+
+        closeCoroutine = null;
 
         OnSkillPanelClosed?.Invoke();
     }
 
     public void ForceHide()
     {
+        if (closeCoroutine != null)
+        {
+            StopCoroutine(closeCoroutine);
+            closeCoroutine = null;
+        }
+
         waitingForClose = false;
-        gameObject.SetActive(false);
+
+        if (animator == null && panel != null)
+            animator = panel.GetComponent<Animator>();
+
+        if (animator != null)
+        {
+            animator.ResetTrigger("Show");
+            animator.ResetTrigger("Hide");
+        }
+
+        if (dimBackground != null)
+            dimBackground.SetActive(false);
+
+        if (panel != null)
+            panel.SetActive(false);
+
+        // Không được dùng gameObject.SetActive(false).
     }
 
-    
+    private void OnDestroy()
+    {
+        // Chỉ xóa Instance khi đúng object hiện tại bị Destroy.
+        if (Instance == this)
+            Instance = null;
+    }
 }
