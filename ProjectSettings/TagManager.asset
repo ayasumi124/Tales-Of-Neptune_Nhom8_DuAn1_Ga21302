@@ -72,7 +72,7 @@ TagManager:
   - name: Player
     uniqueID: 2025507539
     locked: 0
-  - name: Tree
+  - name: Tree1
     uniqueID: 799678501
     locked: 0
   - name: Tree2
@@ -92,6 +92,9 @@ TagManager:
     locked: 0
   - name: Enermy
     uniqueID: 3025102779
+    locked: 0
+  - name: New Layer 16
+    uniqueID: 1291748671
     locked: 0
   m_RenderingLayers:
   - Default
