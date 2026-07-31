@@ -295349,7 +295349,7 @@ PrefabInstance:
     - target: {fileID: 1532761682378635499, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: dashSound
       value: 
-      objectReference: {fileID: 8300000, guid: 722e995a40a3d714694a4fc302524f64, type: 3}
+      objectReference: {fileID: 8300000, guid: c48e9adfecd02c34f8797293977e7b00, type: 3}
     - target: {fileID: 1532761682378635499, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: errorSound
       value: 
@@ -295470,6 +295470,14 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7127851986103212690, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
+      propertyPath: BoundingShape2D
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231803347720515018, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -2413806693520163455, guid: c5c0795571e95d24c85dbf1bd59660a7, type: 3}
     - target: {fileID: 7347145476132200047, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -295556,7 +295564,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7816060795421002869, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_FillAmount
-      value: 0.68
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7816060795421002869, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_FillClockwise
@@ -295582,6 +295590,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9146921457717323397, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 6098003786803613586, guid: 144c3598af15823489411c52705b0100, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
