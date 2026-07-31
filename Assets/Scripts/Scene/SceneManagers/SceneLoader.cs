@@ -11,6 +11,7 @@ public class SceneLoader : MonoBehaviour
         private set;
     }
 
+
     [Header("Fade")]
     [SerializeField]
     private CanvasGroup fadeCanvasGroup;
@@ -38,7 +39,7 @@ public class SceneLoader : MonoBehaviour
 
     private bool portalFadeStarted;
     private bool isLoading;
-
+    public bool IsLoading => isLoading;
     private Coroutine portalFadeCoroutine;
     private Coroutine loadingCoroutine;
 

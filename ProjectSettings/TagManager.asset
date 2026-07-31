@@ -10,6 +10,7 @@ TagManager:
   - Ground
   - Coin
   - Wall
+  - CameraBounds
   layers:
   - Default
   - TransparentFX
