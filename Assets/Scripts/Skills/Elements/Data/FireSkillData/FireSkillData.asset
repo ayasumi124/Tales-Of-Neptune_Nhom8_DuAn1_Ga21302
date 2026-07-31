@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 971a0494660c6e6408e3dfe9481ee4fb, type: 3}
+  m_Name: FireSkillData
+  m_EditorClassIdentifier: Assembly-CSharp::ElementSkillData
+  skillName: FireBall
+  description: cast a fireball in front of player
+  icon: {fileID: 21300000, guid: 0776aaef201802c45be63f7e3f620772, type: 3}
+  elementType: 1
+  skillIndex: 1
+  requiredMastery: 0
+  manaCost: 20
+  cooldown: 5
+  unlocked: 0

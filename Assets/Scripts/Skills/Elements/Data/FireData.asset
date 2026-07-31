@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14cea1e7212702149979aa8bdb8857f0, type: 3}
+  m_Name: FireData
+  m_EditorClassIdentifier: Assembly-CSharp::ElementData
+  elementType: 1
+  elementName: Fire
+  description: 
+  elementIcon: {fileID: -6615130054868465961, guid: c858fd715f66e88409d5b1c7c6dbe2bc, type: 3}
+  maxMastery: 100
+  skills:
+  - {fileID: 11400000, guid: 0e184c89d679a6e4ab535e517acb757d, type: 2}
+  - {fileID: 11400000, guid: 1ebbccb4f67e16540ab3ea04d5855c26, type: 2}
+  - {fileID: 11400000, guid: 28fd7073bbd2c8947aff6c6b107fced6, type: 2}
+  - {fileID: 11400000, guid: 09fb8cf2c0cfcfe448ba8e951e1385e3, type: 2}
