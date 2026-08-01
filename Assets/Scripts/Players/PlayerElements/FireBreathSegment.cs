@@ -4,13 +4,23 @@ using UnityEngine;
 public class FireBreathSegment : MonoBehaviour
 {
     [Header("Lifetime")]
-    [SerializeField] private float lifeTime = 0.7f;
+    [SerializeField] private float lifeTime = 0.35f;
 
     [Header("Damage")]
     [SerializeField] private int damage = 10;
     [SerializeField] private int burnDamage = 10;
     [SerializeField] private float burnInterval = 1f;
     [SerializeField] private float burnDuration = 3f;
+
+    [Header("Damage Check")]
+    [Tooltip("Khoảng thời gian giữa mỗi lần kiểm tra Enemy.")]
+    [SerializeField] private float damageCheckInterval = 0.05f;
+
+    [Tooltip(
+        "Cùng một Enemy chỉ nhận damage Fire Breath " +
+        "sau mỗi khoảng thời gian này."
+    )]
+    [SerializeField] private float sameEnemyDamageInterval = 0.25f;
 
     [Header("Collision")]
     [SerializeField] private float damageRadius = 0.45f;
@@ -21,47 +31,171 @@ public class FireBreathSegment : MonoBehaviour
 
     [Header("Visual")]
     [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private Animator animator;
+
+    [Tooltip("Bật nếu sprite gốc hướng sang phải.")]
+    [SerializeField] private bool spriteFacesRight = true;
+
+    [Header("Scale")]
+    [SerializeField] private float baseScale = 0.3f;
+    [SerializeField] private float scalePerLayer = 0.15f;
+
+    private Transform ownerTransform;
+    private Transform followOrigin;
+    private Players ownerPlayer;
 
     private Vector2 direction;
-    private GameObject owner;
+    private float distanceFromOrigin;
+    private int segmentIndex;
 
-    private bool damageApplied;
+    private float damageCheckTimer;
+    private bool initialized;
 
-    private readonly HashSet<EnermyHealth>
-        damagedEnemies =
-            new HashSet<EnermyHealth>();
+    /*
+     * Dùng chung cho mọi segment.
+     * Tránh nhiều lớp lửa cùng gây damage
+     * lên một Enemy trong cùng một frame.
+     */
+    private static readonly Dictionary<EnermyHealth, float>
+        nextDamageTimes =
+            new Dictionary<EnermyHealth, float>();
 
     public void Initialize(
         Vector2 castDirection,
         GameObject skillOwner,
-        int segmentIndex)
+        Transform origin,
+        float segmentDistance,
+        int index)
     {
+        if (skillOwner == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        ownerTransform = skillOwner.transform;
+        ownerPlayer =
+            skillOwner.GetComponent<Players>();
+
+        followOrigin = origin;
+
         direction =
-            castDirection.sqrMagnitude > 0.001f
-                ? castDirection.normalized
-                : Vector2.down;
+            GetCardinalDirection(
+                castDirection.sqrMagnitude > 0.001f
+                    ? castDirection
+                    : Vector2.down
+            );
 
-        owner = skillOwner;
+        distanceFromOrigin =
+            Mathf.Max(0f, segmentDistance);
 
-        ConfigureRotation();
+        segmentIndex =
+            Mathf.Max(0, index);
+
+        initialized = true;
 
         float scaleMultiplier =
-            0.75f +
-            segmentIndex * 0.08f;
+            Mathf.Max(
+                0.01f,
+                baseScale +
+                segmentIndex * scalePerLayer
+            );
 
         transform.localScale =
             Vector3.one * scaleMultiplier;
 
-        ApplyDamage();
+        UpdateFollowPosition();
+        ConfigureVisualDirection();
+
+        // Kiểm tra damage ngay khi vừa sinh ra.
+        CheckDamage();
+
+        damageCheckTimer = 0f;
 
         Destroy(
             gameObject,
-            Mathf.Max(0.1f, lifeTime)
+            Mathf.Max(0.05f, lifeTime)
         );
     }
 
-    private void ConfigureRotation()
+    private void Update()
+    {
+        if (!initialized)
+            return;
+
+        damageCheckTimer -= Time.deltaTime;
+
+        if (damageCheckTimer <= 0f)
+        {
+            damageCheckTimer =
+                Mathf.Max(
+                    0.02f,
+                    damageCheckInterval
+                );
+
+            CheckDamage();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (!initialized ||
+            ownerTransform == null)
+        {
+            return;
+        }
+
+        /*
+         * Cập nhật hướng theo Player.
+         */
+        if (ownerPlayer != null &&
+            ownerPlayer.LastDirection.sqrMagnitude >
+            0.001f)
+        {
+            direction =
+                GetCardinalDirection(
+                    ownerPlayer.LastDirection
+                );
+        }
+
+        UpdateFollowPosition();
+        ConfigureVisualDirection();
+    }
+
+    private void UpdateFollowPosition()
+    {
+        if (ownerTransform == null)
+            return;
+
+        Vector3 originPosition =
+            followOrigin != null
+                ? followOrigin.position
+                : ownerTransform.position;
+
+        transform.position =
+            originPosition +
+            (Vector3)(
+                direction *
+                distanceFromOrigin
+            );
+    }
+
+    private Vector2 GetCardinalDirection(
+        Vector2 input)
+    {
+        if (Mathf.Abs(input.x) >
+            Mathf.Abs(input.y))
+        {
+            return input.x >= 0f
+                ? Vector2.right
+                : Vector2.left;
+        }
+
+        return input.y >= 0f
+            ? Vector2.up
+            : Vector2.down;
+    }
+
+    private void ConfigureVisualDirection()
     {
         if (spriteRenderer == null)
             return;
@@ -69,47 +203,53 @@ public class FireBreathSegment : MonoBehaviour
         spriteRenderer.flipX = false;
         spriteRenderer.flipY = false;
 
-        // Hướng phải
-        if (direction.x > 0.5f)
+        if (direction == Vector2.right)
         {
             transform.rotation =
-                Quaternion.Euler(0f, 0f, 0f);
+                Quaternion.identity;
 
-            spriteRenderer.flipX = false;
+            spriteRenderer.flipX =
+                !spriteFacesRight;
         }
-        // Hướng trái
-        else if (direction.x < -0.5f)
+        else if (direction == Vector2.left)
+        {
+            /*
+             * Chỉ Flip X để tránh bị lật luôn trục Y.
+             */
+            transform.rotation =
+                Quaternion.identity;
+
+            spriteRenderer.flipX =
+                spriteFacesRight;
+        }
+        else if (direction == Vector2.up)
         {
             transform.rotation =
-                Quaternion.Euler(0f, 0f, 0f);
+                Quaternion.Euler(
+                    0f,
+                    0f,
+                    90f
+                );
 
-            spriteRenderer.flipX = true;
+            spriteRenderer.flipX =
+                !spriteFacesRight;
         }
-        // Hướng lên
-        else if (direction.y > 0.5f)
-        {
-            transform.rotation =
-                Quaternion.Euler(0f, 0f, 90f);
-
-            spriteRenderer.flipX = false;
-        }
-        // Hướng xuống
         else
         {
             transform.rotation =
-                Quaternion.Euler(0f, 0f, -90f);
+                Quaternion.Euler(
+                    0f,
+                    0f,
+                    -90f
+                );
 
-            spriteRenderer.flipX = false;
+            spriteRenderer.flipX =
+                !spriteFacesRight;
         }
     }
 
-    private void ApplyDamage()
+    private void CheckDamage()
     {
-        if (damageApplied)
-            return;
-
-        damageApplied = true;
-
         Collider2D[] hits =
             Physics2D.OverlapCircleAll(
                 transform.position,
@@ -119,39 +259,66 @@ public class FireBreathSegment : MonoBehaviour
 
         foreach (Collider2D hit in hits)
         {
+            if (hit == null)
+                continue;
+
             EnermyHealth enemy =
                 hit.GetComponentInParent<EnermyHealth>();
 
             if (enemy == null)
                 continue;
 
-            if (damagedEnemies.Contains(enemy))
-                continue;
+            /*
+             * Enemy đang trong thời gian miễn damage
+             * của Fire Breath thì bỏ qua.
+             */
+            if (nextDamageTimes.TryGetValue(
+                    enemy,
+                    out float nextDamageTime))
+            {
+                if (Time.time < nextDamageTime)
+                    continue;
+            }
 
-            damagedEnemies.Add(enemy);
+            nextDamageTimes[enemy] =
+                Time.time +
+                Mathf.Max(
+                    0.05f,
+                    sameEnemyDamageInterval
+                );
 
             enemy.TakeDamage(
                 damage,
                 direction
             );
 
-            EnemyBurnEffect burn =
-                enemy.GetComponent<EnemyBurnEffect>();
-
-            if (burn == null)
-            {
-                burn =
-                    enemy.gameObject
-                        .AddComponent<EnemyBurnEffect>();
-            }
-
-            burn.ApplyBurn(
-                burnDamage,
-                burnInterval,
-                burnDuration,
-                burnEffectPrefab
-            );
+            ApplyBurn(enemy);
         }
+    }
+
+    private void ApplyBurn(
+        EnermyHealth enemy)
+    {
+        if (enemy == null)
+            return;
+
+        EnemyBurnEffect burn =
+            enemy.GetComponent<EnemyBurnEffect>();
+
+        if (burn == null)
+        {
+            burn =
+                enemy.gameObject.AddComponent<
+                    EnemyBurnEffect
+                >();
+        }
+
+        burn.ApplyBurn(
+            burnDamage,
+            burnInterval,
+            burnDuration,
+            burnEffectPrefab
+        );
     }
 
     private void OnDrawGizmosSelected()
@@ -160,5 +327,29 @@ public class FireBreathSegment : MonoBehaviour
             transform.position,
             damageRadius
         );
+    }
+
+    private void OnDestroy()
+    {
+        /*
+         * Xóa các Enemy đã bị Destroy khỏi Dictionary
+         * để tránh giữ reference rác lâu dài.
+         */
+        List<EnermyHealth> invalidEnemies =
+            new List<EnermyHealth>();
+
+        foreach (
+            KeyValuePair<EnermyHealth, float> pair
+            in nextDamageTimes)
+        {
+            if (pair.Key == null)
+                invalidEnemies.Add(pair.Key);
+        }
+
+        foreach (EnermyHealth enemy
+                 in invalidEnemies)
+        {
+            nextDamageTimes.Remove(enemy);
+        }
     }
 }

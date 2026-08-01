@@ -82,16 +82,29 @@ public class ElementSkillBarUI : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
             SelectSkill(0);
+        }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
             SelectSkill(1);
+        }
 
+        /*
+         * Skill 3 chỉ cần gọi một lần khi vừa nhấn.
+         * FireSkillController sẽ tự duy trì
+         * khi phím 3 vẫn đang được giữ.
+         */
         if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
             SelectSkill(2);
+        }
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
             SelectSkill(3);
+        }
     }
 
     public void ShowElement(
@@ -105,7 +118,9 @@ public class ElementSkillBarUI : MonoBehaviour
         PositionAboveTaskbar();
 
         if (skillBarPanel != null)
+        {
             skillBarPanel.SetActive(true);
+        }
 
         for (int i = 0;
              i < skillButtons.Length;
@@ -136,10 +151,14 @@ public class ElementSkillBarUI : MonoBehaviour
 
     public void Hide()
     {
+        StopActiveChannelSkill();
+
         currentElement = null;
 
         if (skillBarPanel != null)
+        {
             skillBarPanel.SetActive(false);
+        }
     }
 
     private void SelectSkill(int index)
@@ -158,7 +177,13 @@ public class ElementSkillBarUI : MonoBehaviour
             currentElement.skills[index];
 
         if (skill == null)
+        {
+            Debug.LogWarning(
+                $"Skill ở vị trí {index + 1} đang null."
+            );
+
             return;
+        }
 
         if (!skill.unlocked)
         {
@@ -184,26 +209,33 @@ public class ElementSkillBarUI : MonoBehaviour
             $"{skill.skillName}"
         );
 
-        // Giai đoạn sau sẽ gọi script thi triển skill ở đây.
-        FireSkillController fireController = null;
-
-        if (GameManager.Instance != null &&
-            GameManager.Instance.Player != null)
+        switch (currentElement.elementType)
         {
-            fireController =
-                GameManager.Instance.Player
-                    .GetComponent<FireSkillController>();
-        }
+            case ElementType.Fire:
+                CastFireSkill(skill);
+                break;
 
-        if (fireController == null)
-        {
-            fireController =
-                FindFirstObjectByType<
-                    FireSkillController
-                >();
-        }
+            case ElementType.Ice:
+                Debug.Log(
+                    "Ice Skill Controller chưa được tạo."
+                );
+                break;
 
-        if (fireController == null)
+            case ElementType.Thunder:
+                Debug.Log(
+                    "Thunder Skill Controller chưa được tạo."
+                );
+                break;
+        }
+    }
+
+    private void CastFireSkill(
+        ElementSkillData skill)
+    {
+        FireSkillController controller =
+            FindFireController();
+
+        if (controller == null)
         {
             Debug.LogError(
                 "Không tìm thấy FireSkillController trên Player."
@@ -212,10 +244,42 @@ public class ElementSkillBarUI : MonoBehaviour
             return;
         }
 
-        if (currentElement.elementType ==
-            ElementType.Fire)
+        /*
+         * Controller tự kiểm tra Skill Index:
+         *
+         * 1, 2, 4 → cast bình thường.
+         * 3       → bắt đầu Fire Breath.
+         */
+        controller.TryCast(skill);
+    }
+
+    private FireSkillController FindFireController()
+    {
+        if (GameManager.Instance != null &&
+            GameManager.Instance.Player != null)
         {
-            fireController.TryCast(skill);
+            FireSkillController controller =
+                GameManager.Instance.Player
+                    .GetComponent<FireSkillController>();
+
+            if (controller != null)
+                return controller;
+        }
+
+        return FindFirstObjectByType<
+            FireSkillController
+        >();
+    }
+
+    private void StopActiveChannelSkill()
+    {
+        FireSkillController controller =
+            FindFireController();
+
+        if (controller != null &&
+            controller.IsBreathing)
+        {
+            controller.StopFireBreath();
         }
     }
 
@@ -227,13 +291,25 @@ public class ElementSkillBarUI : MonoBehaviour
             return;
         }
 
-        Vector2 position =
-            taskbar.anchoredPosition;
+        /*
+         * Đồng bộ Anchor và Pivot để tránh
+         * thanh Element bị lệch so với Taskbar.
+         */
+        skillBarRect.anchorMin =
+            taskbar.anchorMin;
 
-        position.y += verticalOffset;
+        skillBarRect.anchorMax =
+            taskbar.anchorMax;
+
+        skillBarRect.pivot =
+            taskbar.pivot;
 
         skillBarRect.anchoredPosition =
-            position;
+            taskbar.anchoredPosition +
+            new Vector2(
+                0f,
+                verticalOffset
+            );
     }
 
     private void OnMasteryChanged(
@@ -270,13 +346,19 @@ public class ElementSkillBarUI : MonoBehaviour
             in skillButtons)
         {
             if (button != null)
+            {
                 button.Refresh();
+            }
         }
     }
 
     private void OnDestroy()
     {
+        StopActiveChannelSkill();
+
         if (Instance == this)
+        {
             Instance = null;
+        }
     }
 }

@@ -27,6 +27,9 @@ public class ElementSkillData : ScriptableObject
 
     [Header("Skill Settings")]
     public float manaCost;
+    [Tooltip("Thời gian hiệu ứng chính tồn tại.")]
+    public float duration;
+
     public float cooldown;
 
     [HideInInspector]

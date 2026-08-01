@@ -18,6 +18,7 @@ MonoBehaviour:
   elementType: 1
   skillIndex: 2
   requiredMastery: 25
-  manaCost: 40
-  cooldown: 20
-  unlocked: 0
+  manaCost: 60
+  duration: 7
+  cooldown: 45
+  unlocked: 1
