@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf501a2375cd26a4882f627d760d76b8, type: 3}
+  m_Name: HeartContainerData
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: heart_container
+  itemName: Heart Container
+  description: Permanently increases the player's maximum health.
+  icon: {fileID: 4217509214112299373, guid: ab2b355414a10e746a925bb3c916e815, type: 3}
+  itemType: 1
+  effectType: 3
+  stackable: 1
+  maxStack: 99
+  effectValue: 2
+  usable: 1
+  useDuration: 0.8
+  effectDelay: 0.4
+  useSound: {fileID: 8300000, guid: 18ecd6002c272964195f9e806d26614a, type: 3}

@@ -193,14 +193,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FireSparkProjectile
   speed: 8
-  lifeTime: 3
-  impactDamage: 200
+  lifeTime: 2
+  impactDamage: 150
   burnDamage: 30
   burnInterval: 1
   burnDuration: 10
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 17536
+    m_Bits: 1216
   hitEffectPrefab: {fileID: 5481003845478197903, guid: ebf592f0cbe3fac4a81c7124156c03cf, type: 3}
   burnEffectPrefab: {fileID: 153977106896969154, guid: 9e230a8eea3596946b3ad17576256c43, type: 3}
   spriteBaseAngle: 0

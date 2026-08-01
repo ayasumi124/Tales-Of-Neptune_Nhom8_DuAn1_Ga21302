@@ -1,67 +1,193 @@
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class HealthHeartBar : MonoBehaviour
 {
-    public GameObject heartPrefab;
-    public Health playerHealth;
-    List<HeartHeart> hearts = new List<HeartHeart>();
+    [Header("References")]
+    [SerializeField]
+    private GameObject heartPrefab;
 
-    void OnEnable()
+    [SerializeField]
+    private Health playerHealth;
+
+    private readonly List<HeartHeart> hearts =
+        new List<HeartHeart>();
+
+    private void Awake()
     {
-        Health.onPlayerDamaged += DrawHeart;
-        Health.onPlayerDeath += DrawHeart;
+        FindPlayerHealth();
     }
 
-    void OnDisable()
+    private void OnEnable()
     {
-        Health.onPlayerDamaged -= DrawHeart;
-        Health.onPlayerDeath -= DrawHeart;
-    }
-    public void DrawHeart()
-    {
-        ClearHearts();
-       float maxHeartRemainder = playerHealth.maxHealth % 2;
-        int heartToMake = (int) ((playerHealth.maxHealth / 2) + (maxHeartRemainder));
-        for (int i = 0; i < heartToMake; i++)
-        {
-            CreateEmptyHearts();
-        }
+        Health.onPlayerDamaged +=
+            DrawHeart;
 
-        for (int i = 0; i < hearts.Count; i++)
-        {
-            int heartStatusRemainder = (int)Mathf.Clamp(playerHealth.currentHealth - (i * 2), 0, 2);
-            hearts[i].SetHeartStatus((HeartStatus)heartStatusRemainder);
-        }
+        Health.onPlayerHealed +=
+            DrawHeart;
+
+        Health.onMaxHealthChanged +=
+            DrawHeart;
+
+        Health.onPlayerDeath +=
+            DrawHeart;
     }
 
-    public void CreateEmptyHearts()
+    private void Start()
     {
- GameObject newHeart = Instantiate(heartPrefab, transform);
-
-        HeartHeart heartComponent = newHeart.GetComponent<HeartHeart>();
-        heartComponent.SetHeartStatus(HeartStatus.Empty);
-        hearts.Add(heartComponent);
-    }
-    public void ClearHearts()
-    {
-        foreach (Transform t in transform)
-        {
-            Destroy(t.gameObject);
-        }
-        hearts = new List<HeartHeart>();
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+        FindPlayerHealth();
         DrawHeart();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDisable()
     {
+        Health.onPlayerDamaged -=
+            DrawHeart;
 
+        Health.onPlayerHealed -=
+            DrawHeart;
+
+        Health.onMaxHealthChanged -=
+            DrawHeart;
+
+        Health.onPlayerDeath -=
+            DrawHeart;
+    }
+
+    private void FindPlayerHealth()
+    {
+        if (playerHealth != null)
+            return;
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.Player != null)
+        {
+            playerHealth =
+                GameManager.Instance.Player
+                    .GetComponent<Health>();
+        }
+
+        if (playerHealth == null)
+        {
+            playerHealth =
+                FindFirstObjectByType<Health>();
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogError(
+                "HealthHeartBar không tìm thấy Health của Player."
+            );
+        }
+    }
+
+    public void DrawHeart()
+    {
+        if (playerHealth == null)
+            FindPlayerHealth();
+
+        if (playerHealth == null ||
+            heartPrefab == null)
+        {
+            return;
+        }
+
+        ClearHearts();
+
+        /*
+         * 2 HP = 1 trái tim.
+         * Ví dụ Max HP = 7 thì cần 4 tim.
+         */
+        int heartsToCreate =
+            Mathf.CeilToInt(
+                playerHealth.maxHealth / 2f
+            );
+
+        for (int i = 0;
+             i < heartsToCreate;
+             i++)
+        {
+            CreateEmptyHeart();
+        }
+
+        for (int i = 0;
+             i < hearts.Count;
+             i++)
+        {
+            float remainingHealth =
+                playerHealth.currentHealth -
+                i * 2f;
+
+            HeartStatus status;
+
+            if (remainingHealth >= 2f)
+            {
+                status =
+                    HeartStatus.Full;
+            }
+            else if (remainingHealth >= 1f)
+            {
+                status =
+                    HeartStatus.Half;
+            }
+            else
+            {
+                status =
+                    HeartStatus.Empty;
+            }
+
+            hearts[i].SetHeartStatus(
+                status
+            );
+        }
+    }
+
+    private void CreateEmptyHeart()
+    {
+        GameObject newHeart =
+            Instantiate(
+                heartPrefab,
+                transform
+            );
+
+        HeartHeart heartComponent =
+            newHeart.GetComponent<
+                HeartHeart
+            >();
+
+        if (heartComponent == null)
+        {
+            Debug.LogError(
+                "Heart Prefab thiếu HeartHeart."
+            );
+
+            Destroy(newHeart);
+            return;
+        }
+
+        heartComponent.SetHeartStatus(
+            HeartStatus.Empty
+        );
+
+        hearts.Add(
+            heartComponent
+        );
+    }
+
+    private void ClearHearts()
+    {
+        for (int i =
+                 transform.childCount - 1;
+             i >= 0;
+             i--)
+        {
+            Destroy(
+                transform
+                    .GetChild(i)
+                    .gameObject
+            );
+        }
+
+        hearts.Clear();
     }
 }
