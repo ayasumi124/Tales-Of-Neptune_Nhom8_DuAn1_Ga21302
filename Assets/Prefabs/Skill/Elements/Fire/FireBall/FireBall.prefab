@@ -194,10 +194,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FireProjectile
   speed: 10
   lifeTime: 2
-  impactDamage: 50
-  burnDamage: 15
+  impactDamage: 200
+  burnDamage: 25
   burnInterval: 1
-  burnDuration: 6
+  burnDuration: 10
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 128

@@ -295415,6 +295415,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -400
       objectReference: {fileID: 0}
+    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
+      propertyPath: fireBreathSound
+      value: 
+      objectReference: {fileID: 8300000, guid: fbd698b5caba505429380b9bc5d251c6, type: 3}
+    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
+      propertyPath: fireBreathPrefab
+      value: 
+      objectReference: {fileID: 2951837844343911776, guid: c49f69ad4e27e304b936b7710eb5ed96, type: 3}
     - target: {fileID: 813596454096422388, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0.5

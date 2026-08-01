@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class FireBreathArea : MonoBehaviour
 {
+    [Header("Position")]
+    [Tooltip("Khoảng cách hiệu ứng nằm trước mặt Player.")]
+    [SerializeField] private float forwardOffset = 1.1f;
+
+    [Tooltip("Chỉnh lệch riêng theo trục X/Y nếu sprite có pivot lệch.")]
+    [SerializeField] private Vector2 visualOffset = Vector2.zero;
+
     [Header("Settings")]
     [SerializeField] private float duration = 2f;
     [SerializeField] private float tickInterval = 0.4f;
@@ -14,13 +21,20 @@ public class FireBreathArea : MonoBehaviour
 
     [Header("Collision")]
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private float damageRadius = 0.8f;
 
     [Header("Effects")]
     [SerializeField] private GameObject burnEffectPrefab;
 
-    private Transform player;
-    private GameObject owner;
+    [Header("Visual")]
+    [SerializeField] private Transform visual;
+    [SerializeField]
+    private Vector2 visualLocalOffset =
+        new Vector2(-0.8f, 0f);
 
+    [SerializeField] private SpriteRenderer visualRenderer;
+
+    private Transform player;
     private Vector2 direction;
 
     public void Initialize(
@@ -29,7 +43,6 @@ public class FireBreathArea : MonoBehaviour
         GameObject skillOwner)
     {
         player = playerTransform;
-        owner = skillOwner;
 
         direction =
             castDirection.sqrMagnitude > 0.001f
@@ -37,8 +50,49 @@ public class FireBreathArea : MonoBehaviour
                 : Vector2.down;
 
         RotateEffect();
+        UpdatePosition();
 
         StartCoroutine(DamageRoutine());
+        UpdateVisualOffset();
+    }
+
+    private void LateUpdate()
+    {
+        UpdatePosition();
+    }
+
+    private void UpdatePosition()
+    {
+        if (player == null)
+            return;
+
+        transform.position =
+            player.position +
+            (Vector3)(direction * forwardOffset);
+    }
+
+    private Vector2 RotateOffsetForDirection(
+        Vector2 offset,
+        Vector2 castDirection)
+    {
+        float angle =
+            Mathf.Atan2(
+                castDirection.y,
+                castDirection.x
+            ) * Mathf.Rad2Deg;
+
+        return Quaternion.Euler(
+            0f,
+            0f,
+            angle
+        ) * offset;
+    }
+    private void UpdateVisualOffset()
+    {
+        if (visual == null)
+            return;
+
+        visual.localPosition = visualLocalOffset;
     }
 
     private IEnumerator DamageRoutine()
@@ -47,12 +101,10 @@ public class FireBreathArea : MonoBehaviour
 
         while (elapsed < duration)
         {
-            FollowPlayer();
-
             DamageEnemies();
 
             yield return new WaitForSeconds(
-                tickInterval
+                Mathf.Max(0.05f, tickInterval)
             );
 
             elapsed += tickInterval;
@@ -61,27 +113,12 @@ public class FireBreathArea : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void LateUpdate()
-    {
-        FollowPlayer();
-    }
-
-    private void FollowPlayer()
-    {
-        if (player == null)
-            return;
-
-        transform.position =
-            player.position +
-            (Vector3)(direction * 0.8f);
-    }
-
     private void DamageEnemies()
     {
         Collider2D[] hits =
             Physics2D.OverlapCircleAll(
                 transform.position,
-                0.8f,
+                damageRadius,
                 enemyLayer
             );
 
@@ -130,11 +167,26 @@ public class FireBreathArea : MonoBehaviour
                 direction.x
             ) * Mathf.Rad2Deg;
 
+        angle += 180f;
+
         transform.rotation =
             Quaternion.Euler(
                 0f,
                 0f,
                 angle
             );
+
+        if (visualRenderer != null)
+        {
+            visualRenderer.flipY =
+                direction.x < 0f;
+        }
+    }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireSphere(
+            transform.position,
+            damageRadius
+        );
     }
 }
