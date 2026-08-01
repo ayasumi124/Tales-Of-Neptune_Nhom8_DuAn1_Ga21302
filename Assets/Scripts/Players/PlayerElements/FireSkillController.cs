@@ -37,6 +37,18 @@ public class FireSkillController : MonoBehaviour
 
     public bool IsCasting => isCasting;
 
+    [Header("Fire Skill 2")]
+    [SerializeField] private GameObject fireSparkPrefab;
+
+    [Range(1, 15)]
+    [SerializeField] private int fireSparkCount = 7;
+
+    [Tooltip("Tổng góc tỏa của toàn bộ chùm FireSpark.")]
+    [SerializeField] private float fireSparkSpreadAngle = 36f;
+
+    [SerializeField] private float fireSparkSpawnOffset = 0.55f;
+
+    [SerializeField] private float fireSparkSpawnInterval = 0.025f;
     private void Awake()
     {
         mana = GetComponent<PlayerMana>();
@@ -245,109 +257,153 @@ public class FireSkillController : MonoBehaviour
     }
 
     private void CastFireSpear(
-        Vector2 direction)
+    Vector2 direction)
     {
-        if (fireSpearPrefab == null)
-            return;
-
-        float[] angles =
+        if (fireSparkPrefab == null)
         {
-            -18f,
-            -9f,
-            0f,
-            9f,
-            18f
-        };
-
-        foreach (float angle in angles)
-        {
-            Vector2 spearDirection =
-                RotateDirection(
-                    direction,
-                    angle
-                );
-
-            GameObject spear = Instantiate(
-                fireSpearPrefab,
-                GetSpawnPosition(direction),
-                Quaternion.identity
+            Debug.LogError(
+                "Fire Skill 2 chưa được gán FireSpark Prefab."
             );
 
-            FireProjectile projectile =
-                spear.GetComponent<FireProjectile>();
-
-            if (projectile != null)
-            {
-                projectile.Initialize(
-                    spearDirection,
-                    gameObject
-                );
-            }
+            return;
         }
+
+        SpawnFireSparkFan(direction);
 
         PlaySound(fireSpearSound);
     }
 
-    private void CastFireBreath(
+    private void SpawnFireSparkFan(
     Vector2 direction)
-{
-    if (fireBreathPrefab == null)
-        return;
-
-    StartCoroutine(
-        SpawnFireBreathSequence(direction)
-    );
-
-    PlaySound(fireBreathSound);
-}
-
-private IEnumerator SpawnFireBreathSequence(
-    Vector2 direction)
-{
-    direction =
-        direction.sqrMagnitude > 0.001f
-            ? direction.normalized
-            : Vector2.down;
-
-    int segmentCount = 5;
-    float segmentSpacing = 0.45f;
-    float spawnInterval = 0.07f;
-
-    for (int i = 0; i < segmentCount; i++)
     {
-        Vector3 spawnPosition =
-            transform.position +
-            (Vector3)(
-                direction *
-                (0.45f + i * segmentSpacing)
-            );
+        direction =
+            direction.sqrMagnitude > 0.001f
+                ? direction.normalized
+                : Vector2.down;
 
-        GameObject segment =
-            Instantiate(
-                fireBreathPrefab,
-                spawnPosition,
-                Quaternion.identity
-            );
+        int count =
+            Mathf.Max(1, fireSparkCount);
 
-        FireBreathSegment breathSegment =
-            segment.GetComponent<
-                FireBreathSegment
-            >();
+        float totalSpread =
+            Mathf.Max(0f, fireSparkSpreadAngle);
 
-        if (breathSegment != null)
+        float startAngle =
+            count > 1
+                ? -totalSpread * 0.5f
+                : 0f;
+
+        float angleStep =
+            count > 1
+                ? totalSpread / (count - 1)
+                : 0f;
+
+        for (int i = 0; i < count; i++)
         {
-            breathSegment.Initialize(
-                direction,
-                gameObject,
-                i
+            float currentAngle =
+                startAngle + angleStep * i;
+
+            Vector2 sparkDirection =
+                RotateDirection(
+                    direction,
+                    currentAngle
+                ).normalized;
+
+            Vector3 spawnPosition =
+                transform.position +
+                (Vector3)(
+                    sparkDirection *
+                    fireSparkSpawnOffset
+                );
+
+            GameObject spark =
+                Instantiate(
+                    fireSparkPrefab,
+                    spawnPosition,
+                    Quaternion.identity
+                );
+
+            FireSparkProjectile projectile =
+                spark.GetComponent<
+                    FireSparkProjectile
+                >();
+
+            if (projectile == null)
+            {
+                Debug.LogError(
+                    "FireSpark Prefab thiếu FireSparkProjectile."
+                );
+
+                Destroy(spark);
+                continue;
+            }
+
+            projectile.Initialize(
+                sparkDirection,
+                gameObject
             );
         }
-
-        yield return new WaitForSeconds(
-            spawnInterval
-        );
     }
-}
+
+    private void CastFireBreath(
+    Vector2 direction)
+    {
+        if (fireBreathPrefab == null)
+            return;
+
+        StartCoroutine(
+            SpawnFireBreathSequence(direction)
+        );
+
+        PlaySound(fireBreathSound);
+    }
+
+    private IEnumerator SpawnFireBreathSequence(
+        Vector2 direction)
+    {
+        direction =
+            direction.sqrMagnitude > 0.001f
+                ? direction.normalized
+                : Vector2.down;
+
+        int segmentCount = 5;
+        float segmentSpacing = 0.45f;
+        float spawnInterval = 0.07f;
+
+        for (int i = 0; i < segmentCount; i++)
+        {
+            Vector3 spawnPosition =
+                transform.position +
+                (Vector3)(
+                    direction *
+                    (0.45f + i * segmentSpacing)
+                );
+
+            GameObject segment =
+                Instantiate(
+                    fireBreathPrefab,
+                    spawnPosition,
+                    Quaternion.identity
+                );
+
+            FireBreathSegment breathSegment =
+                segment.GetComponent<
+                    FireBreathSegment
+                >();
+
+            if (breathSegment != null)
+            {
+                breathSegment.Initialize(
+                    direction,
+                    gameObject,
+                    i
+                );
+            }
+
+            yield return new WaitForSeconds(
+                spawnInterval
+            );
+        }
+    }
 
     private void CastFireTornado(
         Vector2 direction)
