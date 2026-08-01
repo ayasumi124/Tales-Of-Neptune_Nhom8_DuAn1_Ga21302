@@ -289,31 +289,65 @@ public class FireSkillController : MonoBehaviour
     }
 
     private void CastFireBreath(
-        Vector2 direction)
+    Vector2 direction)
+{
+    if (fireBreathPrefab == null)
+        return;
+
+    StartCoroutine(
+        SpawnFireBreathSequence(direction)
+    );
+
+    PlaySound(fireBreathSound);
+}
+
+private IEnumerator SpawnFireBreathSequence(
+    Vector2 direction)
+{
+    direction =
+        direction.sqrMagnitude > 0.001f
+            ? direction.normalized
+            : Vector2.down;
+
+    int segmentCount = 5;
+    float segmentSpacing = 0.45f;
+    float spawnInterval = 0.07f;
+
+    for (int i = 0; i < segmentCount; i++)
     {
-        if (fireBreathPrefab == null)
-            return;
+        Vector3 spawnPosition =
+            transform.position +
+            (Vector3)(
+                direction *
+                (0.45f + i * segmentSpacing)
+            );
 
-        GameObject breath = Instantiate(
-            fireBreathPrefab,
-            GetSpawnPosition(direction),
-            Quaternion.identity
-        );
+        GameObject segment =
+            Instantiate(
+                fireBreathPrefab,
+                spawnPosition,
+                Quaternion.identity
+            );
 
-        FireBreathArea breathArea =
-            breath.GetComponent<FireBreathArea>();
+        FireBreathSegment breathSegment =
+            segment.GetComponent<
+                FireBreathSegment
+            >();
 
-        if (breathArea != null)
+        if (breathSegment != null)
         {
-            breathArea.Initialize(
-                transform,
+            breathSegment.Initialize(
                 direction,
-                gameObject
+                gameObject,
+                i
             );
         }
 
-        PlaySound(fireBreathSound);
+        yield return new WaitForSeconds(
+            spawnInterval
+        );
     }
+}
 
     private void CastFireTornado(
         Vector2 direction)
