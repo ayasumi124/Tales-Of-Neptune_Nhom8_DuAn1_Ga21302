@@ -28,7 +28,7 @@ public class SkillInventoryUI : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.B))
         {
             if (panel != null)
                 panel.SetActive(!panel.activeSelf);
