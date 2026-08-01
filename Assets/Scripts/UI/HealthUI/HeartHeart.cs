@@ -1,49 +1,68 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
+
 public class HeartHeart : MonoBehaviour
 {
-    public Sprite fullHeart, halfHeart, emptyHeart;
+    [Header("Heart Sprites")]
+    [SerializeField]
+    private Sprite fullHeart;
 
-    public void SetHeartStatus(HeartStatus status)
+    [SerializeField]
+    private Sprite halfHeart;
+
+    [SerializeField]
+    private Sprite emptyHeart;
+
+    private Image heartImage;
+
+    private void Awake()
     {
+        heartImage =
+            GetComponent<Image>();
+
+        if (heartImage == null)
+        {
+            Debug.LogError(
+                $"{gameObject.name} thiếu component Image."
+            );
+        }
+    }
+
+    public void SetHeartStatus(
+        HeartStatus status)
+    {
+        if (heartImage == null)
+        {
+            heartImage =
+                GetComponent<Image>();
+        }
+
+        if (heartImage == null)
+            return;
+
         switch (status)
         {
             case HeartStatus.Full:
-                heartImage.sprite = fullHeart;
+                heartImage.sprite =
+                    fullHeart;
                 break;
+
             case HeartStatus.Half:
-                heartImage.sprite = halfHeart;
+                heartImage.sprite =
+                    halfHeart;
                 break;
+
             case HeartStatus.Empty:
-                heartImage.sprite = emptyHeart;
+                heartImage.sprite =
+                    emptyHeart;
                 break;
         }
-    }
-    Image heartImage;
-
-    void Awake()
-    {
-        heartImage = GetComponent<Image>();
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
 
 public enum HeartStatus
 {
-    Empty =0,
-
-    Half =1, 
-    Full =2,
+    Empty = 0,
+    Half = 1,
+    Full = 2
 }
