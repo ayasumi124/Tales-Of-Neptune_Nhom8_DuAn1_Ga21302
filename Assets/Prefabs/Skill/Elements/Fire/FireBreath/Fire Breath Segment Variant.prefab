@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7340059977750876248
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5560302080520578360, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_Name
+      value: Fire Breath Segment Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026800090626999660, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3954596370016160001, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5560302080520578360, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2607939995533196081}
+  m_SourcePrefab: {fileID: 100100000, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+--- !u!1 &2951837844343911776 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5560302080520578360, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+  m_PrefabInstance: {fileID: 7340059977750876248}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2607939995533196081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2951837844343911776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4f9a9b4317997d4b91d190e752e4d82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FireBreathSegment
+  lifeTime: 0.7
+  damage: 100
+  burnDamage: 25
+  burnInterval: 1
+  burnDuration: 10
+  damageRadius: 0.45
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  burnEffectPrefab: {fileID: 153977106896969154, guid: 9e230a8eea3596946b3ad17576256c43, type: 3}
+  spriteRenderer: {fileID: 5504348711252727491}
+  animator: {fileID: 5773484594567008019}
+--- !u!212 &5504348711252727491 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+  m_PrefabInstance: {fileID: 7340059977750876248}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &5773484594567008019 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3873843413291654987, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+  m_PrefabInstance: {fileID: 7340059977750876248}
+  m_PrefabAsset: {fileID: 0}
