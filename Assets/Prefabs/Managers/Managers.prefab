@@ -14002,6 +14002,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Players
       objectReference: {fileID: 0}
+    - target: {fileID: 7990163645947627234, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990163645947627234, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8161544903992188369, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
       propertyPath: slotUI
       value: 
@@ -14010,6 +14018,10 @@ PrefabInstance:
       propertyPath: slotUI
       value: 
       objectReference: {fileID: 3620891963784787458}
+    - target: {fileID: 8459480266853851217, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
+      propertyPath: lungeForce
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8460627641359223920, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
       propertyPath: deathSound
       value: 
