@@ -13,13 +13,9 @@ public class FireMeteor : MonoBehaviour
     [SerializeField] private float maximumLifeTime = 5f;
 
     [Header("Visual")]
-    [Tooltip("Kích thước cơ bản của meteor.")]
     [SerializeField] private float meteorScale = 1.8f;
 
-    [Tooltip(
-        "Góc gốc của sprite. Chỉnh nếu đầu meteor quay sai hướng."
-    )]
-    [SerializeField] private float spriteBaseAngle = 0f;
+    [SerializeField] private float spriteBaseAngle;
 
     [Header("Impact Damage")]
     [SerializeField] private int impactDamage = 25;
@@ -34,11 +30,7 @@ public class FireMeteor : MonoBehaviour
 
     [Header("Impact Effects")]
     [SerializeField] private GameObject impactEffectPrefab;
-
-    [Tooltip("Vùng lửa sinh ra sau khi meteor chạm đất.")]
     [SerializeField] private GameObject fireGroundPrefab;
-
-    [Tooltip("Thời gian tồn tại dự phòng của hiệu ứng nổ.")]
     [SerializeField] private float impactEffectLifeTime = 2f;
 
     [Header("Audio")]
@@ -51,17 +43,26 @@ public class FireMeteor : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float impactSoundVolume = 0.8f;
 
+    private static readonly HashSet<FireMeteor>
+        activeMeteors =
+            new HashSet<FireMeteor>();
+
     private GameObject owner;
 
-    private Vector3 startPosition;
     private Vector3 targetPosition;
 
     private bool initialized;
     private bool impacted;
+    private bool isBeingDestroyed;
 
     private float lifeTimer;
 
     private AudioSource fallingAudioSource;
+
+    private void OnEnable()
+    {
+        activeMeteors.Add(this);
+    }
 
     public void Initialize(
         Vector3 spawnPosition,
@@ -75,16 +76,19 @@ public class FireMeteor : MonoBehaviour
         initialized = true;
 
         owner = skillOwner;
-        startPosition = spawnPosition;
         targetPosition = impactPosition;
 
-        transform.position = startPosition;
+        transform.position =
+            spawnPosition;
 
         float finalScale =
             Mathf.Max(
                 0.1f,
                 meteorScale *
-                Mathf.Max(0.1f, scaleMultiplier)
+                Mathf.Max(
+                    0.1f,
+                    scaleMultiplier
+                )
             );
 
         transform.localScale =
@@ -106,10 +110,15 @@ public class FireMeteor : MonoBehaviour
 
     private void Update()
     {
-        if (!initialized || impacted)
+        if (!initialized ||
+            impacted ||
+            isBeingDestroyed)
+        {
             return;
+        }
 
-        lifeTimer -= Time.deltaTime;
+        lifeTimer -=
+            Time.deltaTime;
 
         if (lifeTimer <= 0f)
         {
@@ -152,8 +161,11 @@ public class FireMeteor : MonoBehaviour
             targetPosition -
             transform.position;
 
-        if (direction.sqrMagnitude <= 0.001f)
+        if (direction.sqrMagnitude <=
+            0.001f)
+        {
             return;
+        }
 
         float angle =
             Mathf.Atan2(
@@ -165,14 +177,18 @@ public class FireMeteor : MonoBehaviour
             Quaternion.Euler(
                 0f,
                 0f,
-                angle + spriteBaseAngle
+                angle +
+                spriteBaseAngle
             );
     }
 
     private void Impact()
     {
-        if (impacted)
+        if (impacted ||
+            isBeingDestroyed)
+        {
             return;
+        }
 
         impacted = true;
 
@@ -184,17 +200,18 @@ public class FireMeteor : MonoBehaviour
         if (AudioManager.Instance != null &&
             impactSound != null)
         {
-            AudioManager.Instance.PlaySFX(
-                impactSound,
-                impactSoundVolume
-            );
+            AudioManager.Instance
+                .PlayElementSkillSFX(
+                    impactSound,
+                    impactSoundVolume
+                );
         }
 
         DamageEnemies();
         SpawnImpactEffect();
         SpawnFireGround();
 
-        Destroy(gameObject);
+        DestroyMeteor();
     }
 
     private void DamageEnemies()
@@ -206,8 +223,9 @@ public class FireMeteor : MonoBehaviour
                 enemyLayer
             );
 
-        HashSet<EnermyHealth> damagedEnemies =
-            new HashSet<EnermyHealth>();
+        HashSet<EnermyHealth>
+            damagedEnemies =
+                new HashSet<EnermyHealth>();
 
         foreach (Collider2D hit in hits)
         {
@@ -277,8 +295,11 @@ public class FireMeteor : MonoBehaviour
 
     private void SpawnImpactEffect()
     {
-        if (impactEffectPrefab == null)
+        if (impactEffectPrefab == null ||
+            isBeingDestroyed)
+        {
             return;
+        }
 
         GameObject effect =
             Instantiate(
@@ -298,8 +319,11 @@ public class FireMeteor : MonoBehaviour
 
     private void SpawnFireGround()
     {
-        if (fireGroundPrefab == null)
+        if (fireGroundPrefab == null ||
+            isBeingDestroyed)
+        {
             return;
+        }
 
         GameObject fireGround =
             Instantiate(
@@ -331,10 +355,22 @@ public class FireMeteor : MonoBehaviour
         if (fallingSound == null)
             return;
 
+        /*
+         * Nếu prefab đã có AudioSource thì dùng lại,
+         * tránh AddComponent nhiều lần.
+         */
         fallingAudioSource =
-            gameObject.AddComponent<
-                AudioSource
-            >();
+            GetComponent<AudioSource>();
+
+        if (fallingAudioSource == null)
+        {
+            fallingAudioSource =
+                gameObject.AddComponent<
+                    AudioSource
+                >();
+        }
+
+        fallingAudioSource.Stop();
 
         fallingAudioSource.clip =
             fallingSound;
@@ -354,11 +390,70 @@ public class FireMeteor : MonoBehaviour
             return;
 
         fallingAudioSource.Stop();
+        fallingAudioSource.clip = null;
+        fallingAudioSource.loop = false;
+    }
+
+    private void DestroyMeteor()
+    {
+        if (isBeingDestroyed)
+            return;
+
+        isBeingDestroyed = true;
+
+        StopFallingSound();
+        activeMeteors.Remove(this);
+
+        Destroy(gameObject);
+    }
+
+    public static void StopAllMeteors()
+    {
+        if (activeMeteors.Count == 0)
+            return;
+
+        FireMeteor[] meteors =
+            new FireMeteor[
+                activeMeteors.Count
+            ];
+
+        activeMeteors.CopyTo(
+            meteors
+        );
+
+        /*
+         * Xóa list trước để OnDisable/OnDestroy
+         * không thay đổi collection đang duyệt.
+         */
+        activeMeteors.Clear();
+
+        foreach (FireMeteor meteor
+                 in meteors)
+        {
+            if (meteor == null)
+                continue;
+
+            meteor.isBeingDestroyed =
+                true;
+
+            meteor.StopFallingSound();
+
+            Destroy(
+                meteor.gameObject
+            );
+        }
     }
 
     private void OnDisable()
     {
         StopFallingSound();
+        activeMeteors.Remove(this);
+    }
+
+    private void OnDestroy()
+    {
+        StopFallingSound();
+        activeMeteors.Remove(this);
     }
 
     private void OnDrawGizmosSelected()

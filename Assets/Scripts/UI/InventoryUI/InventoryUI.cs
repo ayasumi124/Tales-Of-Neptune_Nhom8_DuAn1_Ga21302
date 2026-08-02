@@ -163,30 +163,31 @@ public class InventoryUI : MonoBehaviour
         previousTimeScale = Time.timeScale;
         Time.timeScale = 0f;
 
-        if (AudioManager.Instance != null &&
-            AudioManager.Instance.openInventorySound != null)
+        if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.openInventorySound
-            );
+            AudioManager.Instance.PlayInventoryOpen();
         }
-
         Refresh();
     }
 
-    public void CloseInventory()
+    public void CloseInventory(
+    bool playCloseSound = true)
     {
         if (!isOpen)
             return;
 
         isOpen = false;
 
+        if (playCloseSound &&
+            AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .PlayInventoryClose();
+        }
+
         if (inventoryPanel != null)
             inventoryPanel.SetActive(false);
 
-        /*
-         * Khôi phục tốc độ thời gian trước khi mở Inventory.
-         */
         Time.timeScale = previousTimeScale;
 
         if (player != null)
@@ -236,6 +237,12 @@ public class InventoryUI : MonoBehaviour
 
         if (!equipped)
             return;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .PlayInventoryShortcut();
+        }
 
         Debug.Log(
             $"Đã trang bị Shortcut: " +
@@ -334,9 +341,11 @@ public class InventoryUI : MonoBehaviour
     public void SelectSlot(
         int slotIndex)
     {
+        int previousSelected = selectedSlotIndex;
         if (InventoryManager.Instance == null)
             return;
-
+        if (selectedSlotIndex == slotIndex)
+            return;
         InventoryItem item =
             InventoryManager.Instance
                 .GetItemAt(slotIndex);
@@ -350,8 +359,13 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
-        selectedSlotIndex =
-            slotIndex;
+        selectedSlotIndex = slotIndex;
+
+        if (previousSelected != selectedSlotIndex &&
+            AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayInventorySelect();
+        }
 
         RefreshSlotSelection();
         RefreshSelectedItem();
@@ -492,10 +506,11 @@ public class InventoryUI : MonoBehaviour
         if (!used)
             return;
 
-        /*
-         * Đóng Inventory để thấy animation
-         * Player uống bình.
-         */
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayInventoryUse();
+        }
+
         CloseInventory();
 
         Refresh();

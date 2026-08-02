@@ -3029,6 +3029,7 @@ GameObject:
   - component: {fileID: 1532761682378635499}
   - component: {fileID: 7204271011993991898}
   - component: {fileID: 8738440082677175895}
+  - component: {fileID: 305470619675674171}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -3163,7 +3164,8 @@ MonoBehaviour:
   musicSource: {fileID: 247272261851596208}
   footstepSource: {fileID: 7204271011993991898}
   sfxSource: {fileID: 8738440082677175895}
-  dashVolume: 20
+  elementSkillSource: {fileID: 305470619675674171}
+  dashVolume: 1
   musicVolume: 1
   musicFadeDuration: 0.5
   footstepSound: {fileID: 8300000, guid: 7755074a914ca0940b629728e019a5f0, type: 3}
@@ -3174,12 +3176,18 @@ MonoBehaviour:
   coinPickupSound: {fileID: 8300000, guid: 999176df302871e4ea42c558665400c7, type: 3}
   coinDropSound: {fileID: 8300000, guid: 46decedfe3d1d7d478ed4ff07a74611e, type: 3}
   coinBounceSound: {fileID: 8300000, guid: 46decedfe3d1d7d478ed4ff07a74611e, type: 3}
-  buttonSound: {fileID: 0}
-  openInventorySound: {fileID: 0}
   skillUnlockSound: {fileID: 8300000, guid: 4d53a17e4d2e7b8448dd01fddc9750f1, type: 3}
   skillCloseSound: {fileID: 8300000, guid: 6b87f810304355d48bb291ba6881d4d6, type: 3}
   errorSound: {fileID: 8300000, guid: 67a004a41b2cd0347a83f9f9772345fb, type: 3}
   chestOpenSound: {fileID: 8300000, guid: ec20785bbf700cc4ab5d9a1095305654, type: 3}
+  inventoryOpenSound: {fileID: 8300000, guid: ddee08598b8d656469b09e22a57b2f4f, type: 3}
+  inventoryCloseSound: {fileID: 8300000, guid: 6b87f810304355d48bb291ba6881d4d6, type: 3}
+  inventoryMoveSound: {fileID: 0}
+  inventorySelectSound: {fileID: 8300000, guid: b8f992a7249869940beb407f38c1347d, type: 3}
+  inventoryUseSound: {fileID: 8300000, guid: 6b2a63bbb9513434a9fbbd604dd4f765, type: 3}
+  inventoryEquipSound: {fileID: 0}
+  inventoryShortcutSound: {fileID: 8300000, guid: 0846a7539cd3d7b4b9f76673461a1c11, type: 3}
+  inventoryDropSound: {fileID: 0}
 --- !u!82 &7204271011993991898
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3278,6 +3286,103 @@ AudioSource:
     m_PostInfinity: 2
     m_RotationOrder: 4
 --- !u!82 &8738440082677175895
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1619208822805610188}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!82 &305470619675674171
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8005,7 +8110,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -864, y: -444}
+  m_AnchoredPosition: {x: -880.8, y: -429.5}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3047600555398674730

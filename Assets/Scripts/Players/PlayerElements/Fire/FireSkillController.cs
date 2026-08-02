@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class FireSkillController : MonoBehaviour
 {
     [Header("Fire Element Data")]
@@ -19,6 +19,7 @@ public class FireSkillController : MonoBehaviour
     [SerializeField]
     private Vector2 breathCenterOffset =
         new Vector2(0f, 0.25f);
+    private bool sceneChanging;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject fireBallPrefab;
@@ -425,9 +426,10 @@ public class FireSkillController : MonoBehaviour
     }
 
     private IEnumerator CastRoutine(
-        ElementSkillData skillData)
+    ElementSkillData skillData)
     {
         isCasting = true;
+        sceneChanging = false;
 
         Vector2 direction =
             GetCastDirection();
@@ -444,6 +446,12 @@ public class FireSkillController : MonoBehaviour
                 castLockTime * 0.5f
             )
         );
+
+        if (sceneChanging)
+        {
+            normalCastCoroutine = null;
+            yield break;
+        }
 
         StartSkillDuration(skillData);
 
@@ -468,6 +476,12 @@ public class FireSkillController : MonoBehaviour
                 castLockTime * 0.5f
             )
         );
+
+        if (sceneChanging)
+        {
+            normalCastCoroutine = null;
+            yield break;
+        }
 
         EndNormalCast();
 
@@ -525,7 +539,7 @@ public class FireSkillController : MonoBehaviour
     // =====================================================
 
     private void CastFireMeteorRain(
-        Vector2 direction)
+    Vector2 direction)
     {
         if (fireMeteorPrefab == null)
         {
@@ -535,6 +549,9 @@ public class FireSkillController : MonoBehaviour
 
             return;
         }
+
+        if (sceneChanging)
+            return;
 
         if (meteorRainCoroutine != null)
         {
@@ -548,11 +565,13 @@ public class FireSkillController : MonoBehaviour
                 SpawnMeteorRain(direction)
             );
 
-        PlaySound(fireMeteorCastSound);
+        PlaySound(
+            fireMeteorCastSound
+        );
     }
 
     private IEnumerator SpawnMeteorRain(
-        Vector2 direction)
+    Vector2 direction)
     {
         direction =
             direction.sqrMagnitude > 0.001f
@@ -600,6 +619,16 @@ public class FireSkillController : MonoBehaviour
              i < count;
              i++)
         {
+            /*
+             * Nếu đang chuyển scene thì dừng coroutine,
+             * không tạo thêm meteor.
+             */
+            if (sceneChanging)
+            {
+                meteorRainCoroutine = null;
+                yield break;
+            }
+
             Vector2 impactOffset =
                 Random.insideUnitCircle *
                 Mathf.Max(
@@ -611,7 +640,6 @@ public class FireSkillController : MonoBehaviour
                 areaCenter +
                 (Vector3)impactOffset;
 
-            // Mỗi meteor rơi từ một phía khác nhau.
             float side =
                 Random.value < 0.5f
                     ? -1f
@@ -638,6 +666,15 @@ public class FireSkillController : MonoBehaviour
                     0f
                 );
 
+            /*
+             * Kiểm tra lại ngay trước khi Instantiate.
+             */
+            if (sceneChanging)
+            {
+                meteorRainCoroutine = null;
+                yield break;
+            }
+
             GameObject meteor =
                 Instantiate(
                     fireMeteorPrefab,
@@ -657,31 +694,32 @@ public class FireSkillController : MonoBehaviour
                 );
 
                 Destroy(meteor);
-                continue;
             }
-
-            float randomScale =
-                Random.Range(
-                    minimumScale,
-                    maximumScale
-                );
-
-            if (makeLastMeteorBigger &&
-                i == count - 1)
+            else
             {
-                randomScale *=
-                    Mathf.Max(
-                        1f,
-                        lastMeteorScaleMultiplier
+                float randomScale =
+                    Random.Range(
+                        minimumScale,
+                        maximumScale
                     );
-            }
 
-            meteorSkill.Initialize(
-                spawnPosition,
-                impactPosition,
-                gameObject,
-                randomScale
-            );
+                if (makeLastMeteorBigger &&
+                    i == count - 1)
+                {
+                    randomScale *=
+                        Mathf.Max(
+                            1f,
+                            lastMeteorScaleMultiplier
+                        );
+                }
+
+                meteorSkill.Initialize(
+                    spawnPosition,
+                    impactPosition,
+                    gameObject,
+                    randomScale
+                );
+            }
 
             if (meteorSpawnInterval > 0f &&
                 i < count - 1)
@@ -689,6 +727,15 @@ public class FireSkillController : MonoBehaviour
                 yield return new WaitForSeconds(
                     meteorSpawnInterval
                 );
+
+                /*
+                 * Scene có thể đổi trong lúc đang chờ delay.
+                 */
+                if (sceneChanging)
+                {
+                    meteorRainCoroutine = null;
+                    yield break;
+                }
             }
         }
 
@@ -1210,17 +1257,21 @@ public class FireSkillController : MonoBehaviour
     }
 
     private void PlaySound(
-        AudioClip clip)
+    AudioClip clip)
     {
+        if (sceneChanging)
+            return;
+
         if (clip == null ||
             AudioManager.Instance == null)
         {
             return;
         }
 
-        AudioManager.Instance.PlaySFX(
-            clip
-        );
+        AudioManager.Instance
+            .PlayElementSkillSFX(
+                clip
+            );
     }
 
     private void EndNormalCast()
@@ -1347,49 +1398,80 @@ public class FireSkillController : MonoBehaviour
     // =====================================================
     // CLEANUP
     // =====================================================
+    private void OnEnable()
+    {
+        sceneChanging = false;
 
-    private void OnDisable()
+        SceneManager.activeSceneChanged +=
+            OnActiveSceneChanged;
+    }
+    private void OnActiveSceneChanged(
+        Scene oldScene,
+        Scene newScene)
+    {
+        sceneChanging = true;
+
+        CancelAllFireSkills();
+    }
+    private void CancelAllFireSkills()
     {
         if (normalCastCoroutine != null)
         {
-            StopCoroutine(
-                normalCastCoroutine
-            );
-
+            StopCoroutine(normalCastCoroutine);
             normalCastCoroutine = null;
         }
 
         if (meteorRainCoroutine != null)
         {
-            StopCoroutine(
-                meteorRainCoroutine
-            );
-
+            StopCoroutine(meteorRainCoroutine);
             meteorRainCoroutine = null;
         }
 
         if (breathCoroutine != null)
         {
-            StopCoroutine(
-                breathCoroutine
-            );
-
+            StopCoroutine(breathCoroutine);
             breathCoroutine = null;
         }
 
-        bool wasNormalCasting =
-            isCasting && !isBreathing;
+        StopAllCoroutines();
 
-        isBreathing = false;
         isCasting = false;
+        isBreathing = false;
+
+        breathActuallyCast = false;
+        breathSoundPlayed = false;
+
         activeBreathSkill = null;
+
+        FireMeteor.StopAllMeteors();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .StopElementSkillSound();
+        }
 
         EnableCombatActions();
 
-        if (wasNormalCasting &&
-            player != null)
+        if (player != null &&
+            player.IsControlLocked)
         {
             player.UnlockControl();
         }
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.activeSceneChanged -=
+            OnActiveSceneChanged;
+
+        sceneChanging = true;
+
+        CancelAllFireSkills();
+    }
+    private void OnDestroy()
+    {
+        SceneManager.activeSceneChanged -=
+            OnActiveSceneChanged;
     }
 }
