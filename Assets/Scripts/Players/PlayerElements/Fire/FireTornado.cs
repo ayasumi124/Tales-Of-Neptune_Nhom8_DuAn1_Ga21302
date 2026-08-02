@@ -7,7 +7,12 @@ public class FireTornado : MonoBehaviour
     [Header("Lifetime")]
     [Tooltip("Thời gian tồn tại của lốc lửa.")]
     [SerializeField] private float duration = 5f;
+    [Header("Center Fire Ground")]
+    [Tooltip("Tạo một Fire Ground ở giữa ngay khi Tornado xuất hiện.")]
+    [SerializeField] private bool spawnCenterGroundOnStart = true;
 
+    [Tooltip("Prefab mặt lửa nằm giữa Tornado.")]
+    [SerializeField] private GameObject centerFireGroundPrefab;
     [Header("Visual Layers")]
     [Tooltip("Prefab vòng lửa có SpriteRenderer và Animator.")]
     [SerializeField] private GameObject ringVisualPrefab;
@@ -114,7 +119,12 @@ public class FireTornado : MonoBehaviour
                 : Vector2.down;
 
         CreateVisualLayers();
+
         StartLoopSound();
+        if (spawnCenterGroundOnStart)
+        {
+            SpawnCenterFireGround();
+        }
 
         damageCoroutine =
             StartCoroutine(
@@ -225,6 +235,49 @@ public class FireTornado : MonoBehaviour
                 );
             }
         }
+    }
+
+    private void SpawnCenterFireGround()
+    {
+        GameObject prefab =
+            centerFireGroundPrefab != null
+                ? centerFireGroundPrefab
+                : fireGroundPrefab;
+
+        if (prefab == null)
+        {
+            Debug.LogError(
+                "FireTornado chưa được gán Fire Ground Prefab."
+            );
+
+            return;
+        }
+
+        GameObject centerGround =
+            Instantiate(
+                prefab,
+                transform.position,
+                Quaternion.identity
+            );
+
+        FireGroundArea groundArea =
+            centerGround.GetComponent<
+                FireGroundArea
+            >();
+
+        if (groundArea == null)
+        {
+            Debug.LogError(
+                "Center Fire Ground Prefab thiếu FireGroundArea."
+            );
+
+            Destroy(centerGround);
+            return;
+        }
+
+        groundArea.Initialize(
+            owner
+        );
     }
 
     // =====================================================
@@ -431,204 +484,192 @@ public class FireTornado : MonoBehaviour
     }
 
     private void EndTornado()
-{
-    if (ending)
-        return;
-
-    ending = true;
-
-    if (damageCoroutine != null)
     {
-        StopCoroutine(
-            damageCoroutine
-        );
+        if (ending)
+            return;
 
-        damageCoroutine = null;
-    }
+        ending = true;
 
-    StopLoopSound();
-
-    if (AudioManager.Instance != null &&
-        tornadoEndSound != null)
-    {
-        AudioManager.Instance.PlaySFX(
-            tornadoEndSound
-        );
-    }
-
-    StartCoroutine(
-        SpawnFireGroundRoutine()
-    );
-}
-
-    private IEnumerator SpawnFireGroundRoutine()
-{
-    if (fireGroundPrefab == null)
-    {
-        Destroy(gameObject);
-        yield break;
-    }
-
-    usedFireGroundPositions.Clear();
-
-    Vector3 center =
-        transform.position;
-
-    int count =
-        Mathf.Max(
-            1,
-            fireGroundCount
-        );
-
-    /*
-     * Tạo một vùng lửa ở chính giữa trước.
-     */
-    if (spawnCenterFireGround)
-    {
-        SpawnSingleFireGround(
-            center
-        );
-
-        usedFireGroundPositions.Add(
-            center
-        );
-
-        count--;
-    }
-
-    for (int i = 0;
-         i < count;
-         i++)
-    {
-        Vector3 spawnPosition =
-            FindRandomFireGroundPosition(
-                center
+        if (damageCoroutine != null)
+        {
+            StopCoroutine(
+                damageCoroutine
             );
 
-        SpawnSingleFireGround(
-            spawnPosition
-        );
+            damageCoroutine = null;
+        }
 
-        usedFireGroundPositions.Add(
-            spawnPosition
-        );
+        StopLoopSound();
 
-        if (fireGroundSpawnDelay > 0f &&
-            i < count - 1)
+        if (AudioManager.Instance != null &&
+            tornadoEndSound != null)
         {
-            yield return new WaitForSeconds(
-                fireGroundSpawnDelay
+            AudioManager.Instance.PlaySFX(
+                tornadoEndSound
             );
         }
+
+        StartCoroutine(
+            SpawnFireGroundRoutine()
+        );
     }
 
-    Destroy(gameObject);
-}
-private Vector3 FindRandomFireGroundPosition(
-    Vector3 center)
-{
-    int attempts =
-        Mathf.Max(
-            1,
-            fireGroundPositionAttempts
-        );
-
-    float radius =
-        Mathf.Max(
-            0f,
-            fireGroundSpawnRadius
-        );
-
-    float minimumSpacing =
-        Mathf.Max(
-            0f,
-            fireGroundMinSpacing
-        );
-
-    Vector3 fallbackPosition =
-        center;
-
-    for (int attempt = 0;
-         attempt < attempts;
-         attempt++)
+    private IEnumerator SpawnFireGroundRoutine()
     {
-        Vector2 randomOffset =
-            Random.insideUnitCircle *
-            radius;
+        if (fireGroundPrefab == null)
+        {
+            Destroy(gameObject);
+            yield break;
+        }
 
-        Vector3 candidate =
-            center +
-            new Vector3(
-                randomOffset.x,
-                randomOffset.y,
-                0f
+        usedFireGroundPositions.Clear();
+
+        Vector3 center =
+            transform.position;
+
+        int count =
+            Mathf.Max(
+                1,
+                fireGroundCount
             );
 
-        fallbackPosition =
-            candidate;
-
-        bool positionValid = true;
-
-        foreach (Vector3 usedPosition
-                 in usedFireGroundPositions)
+        /*
+         * Không tạo thêm Fire Ground ở tâm,
+         * vì tâm đã được tạo khi Tornado xuất hiện.
+         */
+        for (int i = 0;
+             i < count;
+             i++)
         {
-            float distance =
-                Vector2.Distance(
-                    candidate,
-                    usedPosition
+            Vector3 spawnPosition =
+                FindRandomFireGroundPosition(
+                    center
                 );
 
-            if (distance <
-                minimumSpacing)
+            SpawnSingleFireGround(
+                spawnPosition
+            );
+
+            usedFireGroundPositions.Add(
+                spawnPosition
+            );
+
+            if (fireGroundSpawnDelay > 0f &&
+                i < count - 1)
             {
-                positionValid = false;
-                break;
+                yield return new WaitForSeconds(
+                    fireGroundSpawnDelay
+                );
             }
         }
 
-        if (positionValid)
-            return candidate;
+        Destroy(gameObject);
     }
-
-    /*
-     * Nếu thử nhiều lần vẫn không tìm được
-     * vị trí đủ xa, sử dụng vị trí cuối cùng.
-     */
-    return fallbackPosition;
-}
-private void SpawnSingleFireGround(
-    Vector3 spawnPosition)
-{
-    if (fireGroundPrefab == null)
-        return;
-
-    GameObject fireGround =
-        Instantiate(
-            fireGroundPrefab,
-            spawnPosition,
-            Quaternion.identity
-        );
-
-    FireGroundArea groundArea =
-        fireGround.GetComponent<
-            FireGroundArea
-        >();
-
-    if (groundArea != null)
+    private Vector3 FindRandomFireGroundPosition(
+        Vector3 center)
     {
-        groundArea.Initialize(
-            owner
-        );
-    }
-    else
-    {
-        Debug.LogError(
-            "Fire Ground Prefab thiếu FireGroundArea."
-        );
+        int attempts =
+            Mathf.Max(
+                1,
+                fireGroundPositionAttempts
+            );
 
-        Destroy(fireGround);
+        float radius =
+            Mathf.Max(
+                0f,
+                fireGroundSpawnRadius
+            );
+
+        float minimumSpacing =
+            Mathf.Max(
+                0f,
+                fireGroundMinSpacing
+            );
+
+        Vector3 fallbackPosition =
+            center;
+
+        for (int attempt = 0;
+             attempt < attempts;
+             attempt++)
+        {
+            Vector2 randomOffset =
+                Random.insideUnitCircle *
+                radius;
+
+            Vector3 candidate =
+                center +
+                new Vector3(
+                    randomOffset.x,
+                    randomOffset.y,
+                    0f
+                );
+
+            fallbackPosition =
+                candidate;
+
+            bool positionValid = true;
+
+            foreach (Vector3 usedPosition
+                     in usedFireGroundPositions)
+            {
+                float distance =
+                    Vector2.Distance(
+                        candidate,
+                        usedPosition
+                    );
+
+                if (distance <
+                    minimumSpacing)
+                {
+                    positionValid = false;
+                    break;
+                }
+            }
+
+            if (positionValid)
+                return candidate;
+        }
+
+        /*
+         * Nếu thử nhiều lần vẫn không tìm được
+         * vị trí đủ xa, sử dụng vị trí cuối cùng.
+         */
+        return fallbackPosition;
     }
-}
+    private void SpawnSingleFireGround(
+        Vector3 spawnPosition)
+    {
+        if (fireGroundPrefab == null)
+            return;
+
+        GameObject fireGround =
+            Instantiate(
+                fireGroundPrefab,
+                spawnPosition,
+                Quaternion.identity
+            );
+
+        FireGroundArea groundArea =
+            fireGround.GetComponent<
+                FireGroundArea
+            >();
+
+        if (groundArea != null)
+        {
+            groundArea.Initialize(
+                owner
+            );
+        }
+        else
+        {
+            Debug.LogError(
+                "Fire Ground Prefab thiếu FireGroundArea."
+            );
+
+            Destroy(fireGround);
+        }
+    }
 
     // =====================================================
     // AUDIO
