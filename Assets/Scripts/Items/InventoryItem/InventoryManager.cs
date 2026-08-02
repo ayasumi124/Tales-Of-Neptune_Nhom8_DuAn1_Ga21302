@@ -88,23 +88,6 @@ public class InventoryManager : MonoBehaviour
         AddItem(testManaPotion, 10);
         AddItem(testHeartContainer, 10);
     }
-    // Dùng item ở ô đầu tiên.
-    if (Input.GetKeyDown(KeyCode.Z))
-    {
-        UseItemAt(0);
-    }
-
-    // Dùng item ở ô thứ hai.
-    if (Input.GetKeyDown(KeyCode.X))
-    {
-        UseItemAt(1);
-    }
-
-    // Dùng Heart ở ô thứ ba.
-    if (Input.GetKeyDown(KeyCode.C))
-    {
-        UseItemAt(2);
-    }
 }
     private void InitializeInventory()
     {
@@ -157,6 +140,42 @@ public class InventoryManager : MonoBehaviour
             }
         }
     }
+
+    public bool CanAddItem(
+    ItemData itemData,
+    int amount = 1)
+{
+    if (itemData == null ||
+        amount <= 0)
+    {
+        return false;
+    }
+
+    int availableSpace = 0;
+
+    foreach (InventoryItem slot in items)
+    {
+        if (slot == null ||
+            slot.IsEmpty())
+        {
+            availableSpace +=
+                itemData.Stackable
+                    ? itemData.MaxStack
+                    : 1;
+        }
+        else if (slot.CanStackWith(
+                     itemData))
+        {
+            availableSpace +=
+                slot.RemainingSpace();
+        }
+
+        if (availableSpace >= amount)
+            return true;
+    }
+
+    return false;
+}
 
     public bool AddItem(
         ItemData itemData,
