@@ -13950,6 +13950,10 @@ PrefabInstance:
       propertyPath: slotUI
       value: 
       objectReference: {fileID: 1198610068164027515}
+    - target: {fileID: 2574351753208449971, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
+      propertyPath: obstacleLayer.m_Bits
+      value: 9216
+      objectReference: {fileID: 0}
     - target: {fileID: 3574906316501632060, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
