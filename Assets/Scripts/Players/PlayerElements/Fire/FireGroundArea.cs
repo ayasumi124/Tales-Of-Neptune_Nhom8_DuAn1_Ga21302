@@ -33,7 +33,8 @@ public class FireGroundArea : MonoBehaviour
         "Tên trigger mở đầu của Fire Ground. " +
         "Để trống nếu animation tự chạy."
     )]
-    [SerializeField] private string appearTrigger =
+    [SerializeField]
+    private string appearTrigger =
         "Appear";
 
     [Header("Audio")]
@@ -65,11 +66,12 @@ public class FireGroundArea : MonoBehaviour
         }
 
         if (AudioManager.Instance != null &&
-            appearSound != null)
+    appearSound != null)
         {
-            AudioManager.Instance.PlaySFX(
-                appearSound
-            );
+            AudioManager.Instance
+                .PlayElementSkillSFX(
+                    appearSound
+                );
         }
 
         DamageEnemies(
@@ -185,5 +187,9 @@ public class FireGroundArea : MonoBehaviour
             transform.position,
             damageRadius
         );
+    }
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 }
