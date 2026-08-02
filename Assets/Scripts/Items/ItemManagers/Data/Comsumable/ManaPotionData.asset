@@ -25,3 +25,5 @@ MonoBehaviour:
   useDuration: 0.8
   effectDelay: 0.4
   useSound: {fileID: 8300000, guid: c09e4156084ab2447b7b603a3762074d, type: 3}
+  pickupSound: {fileID: 8300000, guid: 499fe040cf13ad24c9fd46fe4ecd374c, type: 3}
+  pickupVolume: 1

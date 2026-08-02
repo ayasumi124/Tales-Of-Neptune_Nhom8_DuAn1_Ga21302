@@ -122,11 +122,12 @@ public class WorldItemPickup : MonoBehaviour
         if (keyIcon != null)
             keyIcon.SetActive(false);
 
-        if (pickupSound != null &&
-            AudioManager.Instance != null)
+        if (AudioManager.Instance != null &&
+     itemData.pickupSound != null)
         {
             AudioManager.Instance.PlaySFX(
-                pickupSound
+                itemData.pickupSound,
+                itemData.pickupVolume
             );
         }
 
