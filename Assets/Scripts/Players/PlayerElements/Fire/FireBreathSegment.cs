@@ -38,6 +38,13 @@ public class FireBreathSegment : MonoBehaviour
     [Header("Scale")]
     [SerializeField] private float baseScale = 0.3f;
     [SerializeField] private float scalePerLayer = 0.15f;
+    [Header("Directional Visual Offset")]
+    [SerializeField] private Vector2 rightOffset = Vector2.zero;
+    [SerializeField] private Vector2 leftOffset = Vector2.zero;
+    [SerializeField] private Vector2 upOffset = new Vector2(-0.2f, 0f);
+    [SerializeField] private Vector2 downOffset = new Vector2(0.2f, 0f);
+
+    private Vector3 basePosition;
 
     private Transform ownerTransform;
     private Transform followOrigin;
@@ -104,6 +111,8 @@ public class FireBreathSegment : MonoBehaviour
             Vector3.one * scaleMultiplier;
 
         UpdateFollowPosition();
+        basePosition = transform.position;
+        ApplyDirectionalOffset();
         ConfigureVisualDirection();
 
         // Kiểm tra damage ngay khi vừa sinh ra.
@@ -159,8 +168,24 @@ public class FireBreathSegment : MonoBehaviour
 
         UpdateFollowPosition();
         ConfigureVisualDirection();
+        ApplyDirectionalOffset();
     }
 
+    private void ApplyDirectionalOffset()
+{
+    Vector2 offset = Vector2.zero;
+
+    if (direction == Vector2.right)
+        offset = rightOffset;
+    else if (direction == Vector2.left)
+        offset = leftOffset;
+    else if (direction == Vector2.up)
+        offset = upOffset;
+    else if (direction == Vector2.down)
+        offset = downOffset;
+
+    transform.position += (Vector3)offset;
+}
     private void UpdateFollowPosition()
     {
         if (ownerTransform == null)
@@ -206,24 +231,32 @@ public class FireBreathSegment : MonoBehaviour
         if (direction == Vector2.right)
         {
             transform.rotation =
-                Quaternion.identity;
+                Quaternion.Euler(
+                    0f,
+                    0f,
+                    0f
+                );
 
             spriteRenderer.flipX =
                 !spriteFacesRight;
         }
         else if (direction == Vector2.left)
         {
-            /*
-             * Chỉ Flip X để tránh bị lật luôn trục Y.
-             */
             transform.rotation =
-                Quaternion.identity;
+                Quaternion.Euler(
+                    0f,
+                    0f,
+                    0f
+                );
 
             spriteRenderer.flipX =
                 spriteFacesRight;
         }
         else if (direction == Vector2.up)
         {
+            /*
+             * Sprite ngang quay lên.
+             */
             transform.rotation =
                 Quaternion.Euler(
                     0f,
@@ -234,17 +267,19 @@ public class FireBreathSegment : MonoBehaviour
             spriteRenderer.flipX =
                 !spriteFacesRight;
         }
-        else
+        else if (direction == Vector2.down)
         {
             transform.rotation =
                 Quaternion.Euler(
                     0f,
                     0f,
-                    -90f
+                    90f
                 );
 
             spriteRenderer.flipX =
-                !spriteFacesRight;
+                spriteFacesRight;
+
+            spriteRenderer.flipY = true;
         }
     }
 

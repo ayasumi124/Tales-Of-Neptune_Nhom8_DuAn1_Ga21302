@@ -16,6 +16,18 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 2025507539
+      objectReference: {fileID: 0}
     - target: {fileID: 5560302080520578360, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
       propertyPath: m_Name
       value: Fire Breath Segment Variant
@@ -102,6 +114,10 @@ MonoBehaviour:
   spriteFacesRight: 1
   baseScale: 0.3
   scalePerLayer: 0.04
+  rightOffset: {x: 0, y: 0}
+  leftOffset: {x: 0, y: 0}
+  upOffset: {x: -0.15, y: 0}
+  downOffset: {x: 0.15, y: 0}
 --- !u!212 &5504348711252727491 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}

@@ -98,6 +98,11 @@ public class FireSkillController : MonoBehaviour
     private KeyCode fireBreathKey =
         KeyCode.Alpha3;
 
+    [SerializeField]
+    private float breathHorizontalDistance = 0.55f;
+
+    [SerializeField]
+    private float breathVerticalDistance = 0.75f;
     // =====================================================
     // FIRE SKILL 4 - TORNADO
     // =====================================================
@@ -188,21 +193,21 @@ public class FireSkillController : MonoBehaviour
                 GetCastDirection()
             );
 
+        float distance =
+            Mathf.Abs(direction.x) > 0f
+                ? breathHorizontalDistance
+                : breathVerticalDistance;
+
         breathPoint.position =
             transform.position +
             (Vector3)breathCenterOffset +
             (Vector3)(
-                direction *
-                Mathf.Max(
-                    0f,
-                    breathPointDistance
-                )
+                direction * distance
             );
 
         breathPoint.rotation =
             Quaternion.identity;
     }
-
     // =====================================================
     // TIMER SYSTEM
     // =====================================================
