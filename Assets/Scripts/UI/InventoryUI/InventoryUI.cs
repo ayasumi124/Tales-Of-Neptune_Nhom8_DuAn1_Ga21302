@@ -29,13 +29,14 @@ public class InventoryUI : MonoBehaviour
 
     [Header("Buttons")]
     [SerializeField] private Button useButton;
+    [SerializeField]
+    private Button equipShortcutButton;
 
     [Header("Player")]
     [SerializeField] private Players player;
 
     private readonly List<InventorySlotUI>
         slotUIs = new List<InventorySlotUI>();
-
     private float previousTimeScale = 1f;
 
     private int selectedSlotIndex = -1;
@@ -65,6 +66,19 @@ public class InventoryUI : MonoBehaviour
             );
         }
 
+        if (equipShortcutButton != null)
+        {
+            equipShortcutButton.onClick
+                .RemoveListener(
+                    EquipSelectedItemToShortcut
+                );
+
+            equipShortcutButton.onClick
+                .AddListener(
+                    EquipSelectedItemToShortcut
+                );
+        }
+
         HideImmediate();
     }
 
@@ -75,24 +89,24 @@ public class InventoryUI : MonoBehaviour
     }
 
     private void OnDisable()
-{
-    InventoryManager.OnInventoryChanged -=
-        Refresh;
-
-    /*
-     * Tránh game bị kẹt Time.timeScale = 0
-     * nếu InventoryUI bị disable khi đang mở.
-     */
-    if (isOpen)
     {
-        isOpen = false;
+        InventoryManager.OnInventoryChanged -=
+            Refresh;
 
-        Time.timeScale = previousTimeScale;
+        /*
+         * Tránh game bị kẹt Time.timeScale = 0
+         * nếu InventoryUI bị disable khi đang mở.
+         */
+        if (isOpen)
+        {
+            isOpen = false;
 
-        if (player != null)
-            player.UnlockControl();
+            Time.timeScale = previousTimeScale;
+
+            if (player != null)
+                player.UnlockControl();
+        }
     }
-}
 
     private void Start()
     {
@@ -119,66 +133,117 @@ public class InventoryUI : MonoBehaviour
     }
 
     public void OpenInventory()
-{
-    if (isOpen)
-        return;
-
-    if (InventoryManager.Instance == null)
     {
-        Debug.LogError(
-            "Không tìm thấy InventoryManager."
-        );
+        if (isOpen)
+            return;
 
-        return;
+        if (InventoryManager.Instance == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy InventoryManager."
+            );
+
+            return;
+        }
+
+        isOpen = true;
+
+        if (inventoryPanel != null)
+            inventoryPanel.SetActive(true);
+
+        FindPlayer();
+
+        if (player != null)
+            player.LockControl();
+
+        /*
+         * Lưu Time Scale trước đó để không phá
+         * trạng thái pause của hệ thống khác.
+         */
+        previousTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+
+        if (AudioManager.Instance != null &&
+            AudioManager.Instance.openInventorySound != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.openInventorySound
+            );
+        }
+
+        Refresh();
     }
-
-    isOpen = true;
-
-    if (inventoryPanel != null)
-        inventoryPanel.SetActive(true);
-
-    FindPlayer();
-
-    if (player != null)
-        player.LockControl();
-
-    /*
-     * Lưu Time Scale trước đó để không phá
-     * trạng thái pause của hệ thống khác.
-     */
-    previousTimeScale = Time.timeScale;
-    Time.timeScale = 0f;
-
-    if (AudioManager.Instance != null &&
-        AudioManager.Instance.openInventorySound != null)
-    {
-        AudioManager.Instance.PlaySFX(
-            AudioManager.Instance.openInventorySound
-        );
-    }
-
-    Refresh();
-}
 
     public void CloseInventory()
-{
-    if (!isOpen)
-        return;
+    {
+        if (!isOpen)
+            return;
 
-    isOpen = false;
+        isOpen = false;
 
-    if (inventoryPanel != null)
-        inventoryPanel.SetActive(false);
+        if (inventoryPanel != null)
+            inventoryPanel.SetActive(false);
 
-    /*
-     * Khôi phục tốc độ thời gian trước khi mở Inventory.
-     */
-    Time.timeScale = previousTimeScale;
+        /*
+         * Khôi phục tốc độ thời gian trước khi mở Inventory.
+         */
+        Time.timeScale = previousTimeScale;
 
-    if (player != null)
-        player.UnlockControl();
-}
+        if (player != null)
+            player.UnlockControl();
+    }
 
+    public void EquipSelectedItemToShortcut()
+    {
+        if (InventoryManager.Instance == null ||
+            selectedSlotIndex < 0)
+        {
+            return;
+        }
+
+        InventoryItem selectedItem =
+            InventoryManager.Instance
+                .GetItemAt(
+                    selectedSlotIndex
+                );
+
+        if (selectedItem == null ||
+            selectedItem.IsEmpty())
+        {
+            return;
+        }
+
+        ItemData itemData =
+            selectedItem.itemData;
+
+        if (itemData == null)
+            return;
+
+        if (ItemShortcutManager.Instance == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy ItemShortcutManager."
+            );
+
+            return;
+        }
+
+        bool equipped =
+            ItemShortcutManager.Instance
+                .EquipShortcut(
+                    itemData
+                );
+
+        if (!equipped)
+            return;
+
+        Debug.Log(
+            $"Đã trang bị Shortcut: " +
+            $"{itemData.ItemName}"
+        );
+
+        RefreshSelectedItem();
+    }
     private void CreateSlots()
     {
         if (InventoryManager.Instance == null ||
@@ -304,12 +369,12 @@ public class InventoryUI : MonoBehaviour
         }
     }
     private void HideImmediate()
-{
-    isOpen = false;
+    {
+        isOpen = false;
 
-    if (inventoryPanel != null)
-        inventoryPanel.SetActive(false);
-}
+        if (inventoryPanel != null)
+            inventoryPanel.SetActive(false);
+    }
     private void RefreshSelectedItem()
     {
         if (InventoryManager.Instance == null ||
@@ -329,13 +394,21 @@ public class InventoryUI : MonoBehaviour
             selectedItem.IsEmpty())
         {
             selectedSlotIndex = -1;
+
             ClearItemInfo();
             RefreshSlotSelection();
+
             return;
         }
 
         ItemData data =
             selectedItem.itemData;
+
+        if (data == null)
+        {
+            ClearItemInfo();
+            return;
+        }
 
         if (selectedItemIcon != null)
         {
@@ -373,8 +446,23 @@ public class InventoryUI : MonoBehaviour
             useButton.interactable =
                 data.Usable;
         }
-    }
 
+        if (equipShortcutButton != null)
+        {
+            bool canEquipShortcut =
+                data.Usable &&
+                data.ItemType ==
+                ItemType.Consumable;
+
+            equipShortcutButton.gameObject
+                .SetActive(
+                    canEquipShortcut
+                );
+
+            equipShortcutButton.interactable =
+                canEquipShortcut;
+        }
+    }
     public void UseSelectedItem()
     {
         if (InventoryManager.Instance == null ||
@@ -431,7 +519,19 @@ public class InventoryUI : MonoBehaviour
             selectedItemQuantity.text = "";
 
         if (useButton != null)
-            useButton.gameObject.SetActive(false);
+        {
+            useButton.gameObject.SetActive(
+                false
+            );
+        }
+
+        if (equipShortcutButton != null)
+        {
+            equipShortcutButton.gameObject
+                .SetActive(
+                    false
+                );
+        }
     }
 
     private void FindPlayer()
@@ -455,24 +555,33 @@ public class InventoryUI : MonoBehaviour
     }
 
     private void OnDestroy()
-{
-    InventoryManager.OnInventoryChanged -=
-        Refresh;
-
-    if (useButton != null)
     {
-        useButton.onClick.RemoveListener(
-            UseSelectedItem
-        );
+        InventoryManager.OnInventoryChanged -=
+            Refresh;
+
+        if (useButton != null)
+        {
+            useButton.onClick.RemoveListener(
+                UseSelectedItem
+            );
+        }
+
+        if (equipShortcutButton != null)
+        {
+            equipShortcutButton.onClick
+                .RemoveListener(
+                    EquipSelectedItemToShortcut
+                );
+        }
+
+        if (isOpen)
+        {
+            Time.timeScale =
+                previousTimeScale;
+        }
+
+        if (Instance == this)
+            Instance = null;
     }
 
-    if (isOpen)
-    {
-        Time.timeScale = previousTimeScale;
-    }
-
-    if (Instance == this)
-        Instance = null;
-}
-    
 }
