@@ -75,6 +75,7 @@ public class ShortcutItemUI : MonoBehaviour
          */
         if (quantity <= 0)
         {
+            ItemShortcutManager.Instance.ClearShortcut();
             HidePanel();
             return;
         }

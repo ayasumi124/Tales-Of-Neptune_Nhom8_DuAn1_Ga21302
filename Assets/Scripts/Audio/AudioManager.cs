@@ -52,6 +52,7 @@ public class AudioManager : MonoBehaviour
     private Coroutine musicCoroutine;
     [Header("Inventory")]
     public AudioClip inventoryOpenSound;
+
     public AudioClip inventoryCloseSound;
     public AudioClip inventoryMoveSound;      // di chuyển giữa các ô
     public AudioClip inventorySelectSound;    // click chọn item

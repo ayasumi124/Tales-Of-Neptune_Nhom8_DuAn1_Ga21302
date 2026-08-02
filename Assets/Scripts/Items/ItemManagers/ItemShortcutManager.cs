@@ -88,7 +88,12 @@ public class ItemShortcutManager : MonoBehaviour
 
         return true;
     }
+    public void ClearShortcut()
+    {
+        equippedItem = null;
 
+        OnShortcutChanged?.Invoke();
+    }
     public void RemoveShortcut()
     {
         equippedItem = null;

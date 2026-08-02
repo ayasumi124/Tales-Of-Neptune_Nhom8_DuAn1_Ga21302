@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 public class FireSkillController : MonoBehaviour
 {
     [Header("Fire Element Data")]
@@ -15,11 +16,13 @@ public class FireSkillController : MonoBehaviour
     [Tooltip("Khoảng cách BreathPoint so với tâm Player.")]
     [SerializeField] private float breathPointDistance = 0.5f;
 
-    [Tooltip("Bù vị trí theo world space để BreathPoint nằm ở phần thân trên.")]
+    [Tooltip(
+        "Bù vị trí theo world space để " +
+        "BreathPoint nằm ở phần thân trên."
+    )]
     [SerializeField]
     private Vector2 breathCenterOffset =
         new Vector2(0f, 0.25f);
-    private bool sceneChanging;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject fireBallPrefab;
@@ -70,14 +73,14 @@ public class FireSkillController : MonoBehaviour
     [Tooltip("Hệ số kích thước lớn nhất.")]
     [SerializeField] private float meteorScaleMax = 1.6f;
 
-    [Tooltip("Viên cuối cùng lớn hơn để tạo cảm giác kết thúc.")]
+    [Tooltip("Viên cuối cùng lớn hơn.")]
     [SerializeField] private bool makeLastMeteorBigger = true;
 
-    [Tooltip("Hệ số phóng to viên thiên thạch cuối.")]
+    [Tooltip("Hệ số phóng to viên cuối.")]
     [SerializeField] private float lastMeteorScaleMultiplier = 1.35f;
 
     // =====================================================
-    // FIRE SKILL 3 - CONTINUOUS BREATH
+    // FIRE SKILL 3 - FIRE BREATH
     // =====================================================
 
     [Header("Fire Skill 3 - Continuous Breath")]
@@ -104,6 +107,7 @@ public class FireSkillController : MonoBehaviour
 
     [SerializeField]
     private float breathVerticalDistance = 0.75f;
+
     // =====================================================
     // FIRE SKILL 4 - TORNADO
     // =====================================================
@@ -112,7 +116,7 @@ public class FireSkillController : MonoBehaviour
     [SerializeField] private float tornadoSpawnDistance = 2f;
 
     // =====================================================
-    // REFERENCES AND STATE
+    // REFERENCES
     // =====================================================
 
     private PlayerMana mana;
@@ -120,10 +124,22 @@ public class FireSkillController : MonoBehaviour
     private Attack attack;
     private PlayerDash dash;
 
+    // =====================================================
+    // STATE
+    // =====================================================
+
     private bool isCasting;
     private bool isBreathing;
+
     private bool breathActuallyCast;
     private bool breathSoundPlayed;
+
+    /*
+     * Chỉ dùng để ghi nhận scene vừa thay đổi.
+     * Khi SceneLoader kết thúc loading,
+     * Update sẽ tự đặt lại false.
+     */
+    private bool sceneChanging;
 
     private Coroutine normalCastCoroutine;
     private Coroutine meteorRainCoroutine;
@@ -158,6 +174,21 @@ public class FireSkillController : MonoBehaviour
             animator = GetComponent<Animator>();
     }
 
+    private void OnEnable()
+    {
+        SceneManager.activeSceneChanged -=
+            OnActiveSceneChanged;
+
+        SceneManager.activeSceneChanged +=
+            OnActiveSceneChanged;
+
+        /*
+         * Khi mới bật object trong scene đầu tiên,
+         * skill được phép hoạt động bình thường.
+         */
+        sceneChanging = false;
+    }
+
     private void Start()
     {
         UpdateBreathPoint();
@@ -165,6 +196,20 @@ public class FireSkillController : MonoBehaviour
 
     private void Update()
     {
+        /*
+         * Chỉ reset sceneChanging sau khi
+         * SceneLoader đã hoàn tất:
+         * - loading,
+         * - fade-in,
+         * - đặt SpawnPoint,
+         * - Unlock Player.
+         */
+        if (sceneChanging &&
+            !IsSceneLoading())
+        {
+            sceneChanging = false;
+        }
+
         UpdateCooldowns();
         UpdateDurations();
 
@@ -178,6 +223,78 @@ public class FireSkillController : MonoBehaviour
     private void LateUpdate()
     {
         UpdateBreathPoint();
+    }
+
+    // =====================================================
+    // SCENE STATE
+    // =====================================================
+
+    private bool IsSceneLoading()
+    {
+        return SceneLoader.Instance != null &&
+               SceneLoader.Instance.IsLoading;
+    }
+
+    private void OnActiveSceneChanged(
+        Scene oldScene,
+        Scene newScene)
+    {
+        sceneChanging = true;
+
+        /*
+         * Chỉ hủy skill.
+         * Không được Unlock Player ở đây.
+         */
+        CancelAllFireSkills();
+    }
+
+    private void CancelAllFireSkills()
+    {
+        if (normalCastCoroutine != null)
+        {
+            StopCoroutine(normalCastCoroutine);
+            normalCastCoroutine = null;
+        }
+
+        if (meteorRainCoroutine != null)
+        {
+            StopCoroutine(meteorRainCoroutine);
+            meteorRainCoroutine = null;
+        }
+
+        if (breathCoroutine != null)
+        {
+            StopCoroutine(breathCoroutine);
+            breathCoroutine = null;
+        }
+
+        isCasting = false;
+        isBreathing = false;
+
+        breathActuallyCast = false;
+        breathSoundPlayed = false;
+
+        activeBreathSkill = null;
+
+        FireMeteor.StopAllMeteors();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .StopElementSkillSound();
+        }
+
+        /*
+         * Trong lúc load scene:
+         * không bật lại Attack/Dash.
+         *
+         * SceneLoader.UnlockPlayer() sẽ tự bật lại
+         * đúng lúc sau khi fade hoàn tất.
+         */
+        if (!IsSceneLoading())
+        {
+            EnableCombatActions();
+        }
     }
 
     // =====================================================
@@ -209,6 +326,7 @@ public class FireSkillController : MonoBehaviour
         breathPoint.rotation =
             Quaternion.identity;
     }
+
     // =====================================================
     // TIMER SYSTEM
     // =====================================================
@@ -239,8 +357,8 @@ public class FireSkillController : MonoBehaviour
             if (durationTimers[i] <= 0f)
                 continue;
 
-            // Skill 3 giữ duration đầy khi đang channel.
-            if (i == 2 && isBreathing)
+            if (i == 2 &&
+                isBreathing)
             {
                 durationTimers[i] =
                     Mathf.Max(
@@ -294,6 +412,12 @@ public class FireSkillController : MonoBehaviour
     public void TryCast(
         ElementSkillData skillData)
     {
+        if (IsSceneLoading() ||
+            sceneChanging)
+        {
+            return;
+        }
+
         if (skillData == null)
             return;
 
@@ -343,6 +467,12 @@ public class FireSkillController : MonoBehaviour
     private bool CanUseNormalSkill(
         ElementSkillData skillData)
     {
+        if (IsSceneLoading() ||
+            sceneChanging)
+        {
+            return false;
+        }
+
         if (!skillData.unlocked)
         {
             Debug.Log(
@@ -352,8 +482,11 @@ public class FireSkillController : MonoBehaviour
             return false;
         }
 
-        if (isCasting || isBreathing)
+        if (isCasting ||
+            isBreathing)
+        {
             return false;
+        }
 
         if (player != null &&
             player.IsControlLocked)
@@ -426,10 +559,9 @@ public class FireSkillController : MonoBehaviour
     }
 
     private IEnumerator CastRoutine(
-    ElementSkillData skillData)
+        ElementSkillData skillData)
     {
         isCasting = true;
-        sceneChanging = false;
 
         Vector2 direction =
             GetCastDirection();
@@ -447,7 +579,8 @@ public class FireSkillController : MonoBehaviour
             )
         );
 
-        if (sceneChanging)
+        if (IsSceneLoading() ||
+            sceneChanging)
         {
             normalCastCoroutine = null;
             yield break;
@@ -477,7 +610,8 @@ public class FireSkillController : MonoBehaviour
             )
         );
 
-        if (sceneChanging)
+        if (IsSceneLoading() ||
+            sceneChanging)
         {
             normalCastCoroutine = null;
             yield break;
@@ -489,7 +623,7 @@ public class FireSkillController : MonoBehaviour
     }
 
     // =====================================================
-    // FIRE SKILL 1 - FIREBALL
+    // FIRE SKILL 1
     // =====================================================
 
     private void CastFireBall(
@@ -535,12 +669,18 @@ public class FireSkillController : MonoBehaviour
     }
 
     // =====================================================
-    // FIRE SKILL 2 - METEOR RAIN
+    // FIRE SKILL 2
     // =====================================================
 
     private void CastFireMeteorRain(
-    Vector2 direction)
+        Vector2 direction)
     {
+        if (IsSceneLoading() ||
+            sceneChanging)
+        {
+            return;
+        }
+
         if (fireMeteorPrefab == null)
         {
             Debug.LogError(
@@ -549,9 +689,6 @@ public class FireSkillController : MonoBehaviour
 
             return;
         }
-
-        if (sceneChanging)
-            return;
 
         if (meteorRainCoroutine != null)
         {
@@ -571,7 +708,7 @@ public class FireSkillController : MonoBehaviour
     }
 
     private IEnumerator SpawnMeteorRain(
-    Vector2 direction)
+        Vector2 direction)
     {
         direction =
             direction.sqrMagnitude > 0.001f
@@ -619,11 +756,8 @@ public class FireSkillController : MonoBehaviour
              i < count;
              i++)
         {
-            /*
-             * Nếu đang chuyển scene thì dừng coroutine,
-             * không tạo thêm meteor.
-             */
-            if (sceneChanging)
+            if (IsSceneLoading() ||
+                sceneChanging)
             {
                 meteorRainCoroutine = null;
                 yield break;
@@ -666,10 +800,8 @@ public class FireSkillController : MonoBehaviour
                     0f
                 );
 
-            /*
-             * Kiểm tra lại ngay trước khi Instantiate.
-             */
-            if (sceneChanging)
+            if (IsSceneLoading() ||
+                sceneChanging)
             {
                 meteorRainCoroutine = null;
                 yield break;
@@ -728,10 +860,8 @@ public class FireSkillController : MonoBehaviour
                     meteorSpawnInterval
                 );
 
-                /*
-                 * Scene có thể đổi trong lúc đang chờ delay.
-                 */
-                if (sceneChanging)
+                if (IsSceneLoading() ||
+                    sceneChanging)
                 {
                     meteorRainCoroutine = null;
                     yield break;
@@ -743,14 +873,21 @@ public class FireSkillController : MonoBehaviour
     }
 
     // =====================================================
-    // FIRE SKILL 3 - FIRE BREATH
+    // FIRE SKILL 3
     // =====================================================
 
     public void StartFireBreath(
-    ElementSkillData skillData)
+        ElementSkillData skillData)
     {
+        if (IsSceneLoading() ||
+            sceneChanging)
+        {
+            return;
+        }
+
         if (skillData == null ||
-            skillData.elementType != ElementType.Fire ||
+            skillData.elementType !=
+                ElementType.Fire ||
             skillData.skillIndex != 3)
         {
             return;
@@ -765,8 +902,11 @@ public class FireSkillController : MonoBehaviour
             return;
         }
 
-        if (isBreathing || isCasting)
+        if (isBreathing ||
+            isCasting)
+        {
             return;
+        }
 
         if (player != null &&
             player.IsControlLocked)
@@ -790,12 +930,14 @@ public class FireSkillController : MonoBehaviour
             skillData.skillIndex - 1;
 
         if (cooldownIndex < 0 ||
-            cooldownIndex >= cooldownTimers.Length)
+            cooldownIndex >=
+            cooldownTimers.Length)
         {
             return;
         }
 
-        if (cooldownTimers[cooldownIndex] > 0f)
+        if (cooldownTimers[
+                cooldownIndex] > 0f)
         {
             Debug.Log(
                 $"{skillData.skillName} còn hồi " +
@@ -835,16 +977,13 @@ public class FireSkillController : MonoBehaviour
             return;
         }
 
-        /*
-         * Tính lượng mana tối thiểu cần cho
-         * đợt phun đầu tiên.
-         */
         float firstCycleCost =
             CalculateBreathCycleManaCost(
                 skillData
             );
 
-        if (mana.currentMana < firstCycleCost)
+        if (mana.currentMana <
+            firstCycleCost)
         {
             if (ManaUI.Instance != null)
                 ManaUI.Instance.ShowNoMana();
@@ -864,7 +1003,8 @@ public class FireSkillController : MonoBehaviour
         breathActuallyCast = false;
         breathSoundPlayed = false;
 
-        activeBreathSkill = skillData;
+        activeBreathSkill =
+            skillData;
 
         DisableCombatActions();
 
@@ -909,6 +1049,12 @@ public class FireSkillController : MonoBehaviour
         while (isBreathing &&
                activeBreathSkill != null)
         {
+            if (IsSceneLoading() ||
+                sceneChanging)
+            {
+                break;
+            }
+
             float manaCostThisCycle =
                 CalculateBreathCycleManaCost(
                     activeBreathSkill
@@ -921,10 +1067,6 @@ public class FireSkillController : MonoBehaviour
                 break;
             }
 
-            /*
-             * Từ đây skill mới được tính là
-             * đã cast thật.
-             */
             if (!breathActuallyCast)
             {
                 breathActuallyCast = true;
@@ -947,8 +1089,12 @@ public class FireSkillController : MonoBehaviour
                 SpawnContinuousBreath()
             );
 
-            if (!isBreathing)
+            if (!isBreathing ||
+                IsSceneLoading() ||
+                sceneChanging)
+            {
                 break;
+            }
 
             yield return new WaitForSeconds(
                 Mathf.Max(
@@ -958,7 +1104,17 @@ public class FireSkillController : MonoBehaviour
             );
         }
 
-        FinishFireBreath();
+        if (!IsSceneLoading() &&
+            !sceneChanging)
+        {
+            FinishFireBreath();
+        }
+        else
+        {
+            isBreathing = false;
+            isCasting = false;
+            activeBreathSkill = null;
+        }
 
         breathCoroutine = null;
     }
@@ -981,8 +1137,12 @@ public class FireSkillController : MonoBehaviour
              i < count;
              i++)
         {
-            if (!isBreathing)
+            if (!isBreathing ||
+                IsSceneLoading() ||
+                sceneChanging)
+            {
                 yield break;
+            }
 
             Vector2 direction =
                 GetCardinalDirection(
@@ -992,7 +1152,8 @@ public class FireSkillController : MonoBehaviour
             UpdateBreathPoint();
 
             float distanceFromPoint =
-                i * breathSegmentSpacing;
+                i *
+                breathSegmentSpacing;
 
             Vector3 spawnPosition =
                 breathPoint.position +
@@ -1075,18 +1236,16 @@ public class FireSkillController : MonoBehaviour
                 finishedSkill.skillIndex - 1;
 
             if (index >= 0 &&
-                index < durationTimers.Length)
+                index <
+                durationTimers.Length)
             {
                 durationTimers[index] = 0f;
             }
 
-            /*
-             * Chỉ hồi chiêu nếu đã tạo được
-             * ít nhất một đợt Fire Breath.
-             */
             if (didCast &&
                 index >= 0 &&
-                index < cooldownTimers.Length)
+                index <
+                cooldownTimers.Length)
             {
                 cooldownTimers[index] =
                     Mathf.Max(
@@ -1100,12 +1259,18 @@ public class FireSkillController : MonoBehaviour
     }
 
     // =====================================================
-    // FIRE SKILL 4 - TORNADO
+    // FIRE SKILL 4
     // =====================================================
 
     private void CastFireTornado(
         Vector2 direction)
     {
+        if (IsSceneLoading() ||
+            sceneChanging)
+        {
+            return;
+        }
+
         if (fireTornadoPrefab == null)
         {
             Debug.LogError(
@@ -1154,7 +1319,9 @@ public class FireSkillController : MonoBehaviour
             gameObject
         );
 
-        PlaySound(fireTornadoSound);
+        PlaySound(
+            fireTornadoSound
+        );
     }
 
     // =====================================================
@@ -1167,7 +1334,9 @@ public class FireSkillController : MonoBehaviour
             player.LastDirection.sqrMagnitude >
             0.001f)
         {
-            return player.LastDirection.normalized;
+            return player
+                .LastDirection
+                .normalized;
         }
 
         return Vector2.down;
@@ -1235,11 +1404,26 @@ public class FireSkillController : MonoBehaviour
         }
 
         if (dash != null)
+        {
+            if (dash.IsDashing)
+                dash.CancelDash();
+
             dash.enabled = false;
+        }
     }
 
     private void EnableCombatActions()
     {
+        /*
+         * Không bật combat trong lúc SceneLoader
+         * vẫn đang khóa Player.
+         */
+        if (IsSceneLoading() ||
+            sceneChanging)
+        {
+            return;
+        }
+
         Health health =
             GetComponent<Health>();
 
@@ -1257,13 +1441,21 @@ public class FireSkillController : MonoBehaviour
     }
 
     private void PlaySound(
-    AudioClip clip)
+        AudioClip clip)
     {
-        if (sceneChanging)
-            return;
-
         if (clip == null ||
             AudioManager.Instance == null)
+        {
+            return;
+        }
+
+        /*
+         * Không phát âm thanh cũ khi load scene.
+         * Sau khi SceneLoader hoàn tất,
+         * lần dùng Fire Breath đầu tiên sẽ phát bình thường.
+         */
+        if (IsSceneLoading() ||
+            sceneChanging)
         {
             return;
         }
@@ -1280,8 +1472,17 @@ public class FireSkillController : MonoBehaviour
 
         EnableCombatActions();
 
-        if (player != null)
+        /*
+         * Đây là kết thúc cast bình thường,
+         * không phải chuyển scene,
+         * nên mới được mở khóa điều khiển.
+         */
+        if (player != null &&
+            !IsSceneLoading() &&
+            !sceneChanging)
+        {
             player.UnlockControl();
+        }
     }
 
     // =====================================================
@@ -1398,77 +1599,21 @@ public class FireSkillController : MonoBehaviour
     // =====================================================
     // CLEANUP
     // =====================================================
-    private void OnEnable()
-    {
-        sceneChanging = false;
-
-        SceneManager.activeSceneChanged +=
-            OnActiveSceneChanged;
-    }
-    private void OnActiveSceneChanged(
-        Scene oldScene,
-        Scene newScene)
-    {
-        sceneChanging = true;
-
-        CancelAllFireSkills();
-    }
-    private void CancelAllFireSkills()
-    {
-        if (normalCastCoroutine != null)
-        {
-            StopCoroutine(normalCastCoroutine);
-            normalCastCoroutine = null;
-        }
-
-        if (meteorRainCoroutine != null)
-        {
-            StopCoroutine(meteorRainCoroutine);
-            meteorRainCoroutine = null;
-        }
-
-        if (breathCoroutine != null)
-        {
-            StopCoroutine(breathCoroutine);
-            breathCoroutine = null;
-        }
-
-        StopAllCoroutines();
-
-        isCasting = false;
-        isBreathing = false;
-
-        breathActuallyCast = false;
-        breathSoundPlayed = false;
-
-        activeBreathSkill = null;
-
-        FireMeteor.StopAllMeteors();
-
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance
-                .StopElementSkillSound();
-        }
-
-        EnableCombatActions();
-
-        if (player != null &&
-            player.IsControlLocked)
-        {
-            player.UnlockControl();
-        }
-    }
 
     private void OnDisable()
     {
         SceneManager.activeSceneChanged -=
             OnActiveSceneChanged;
 
+        /*
+         * Nếu object bị disable trong quá trình load,
+         * không được Unlock Player hoặc bật lại combat.
+         */
         sceneChanging = true;
 
         CancelAllFireSkills();
     }
+
     private void OnDestroy()
     {
         SceneManager.activeSceneChanged -=
