@@ -296127,38 +296127,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: meteorCount
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: meteorSpawnHeight
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: meteorImpactSpread
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: meteorSpawnInterval
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: meteorTargetDistance
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: breathVerticalDistance
-      value: 0.55
-      objectReference: {fileID: 0}
-    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: meteorHorizontalOffsetMax
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 804299714303310558, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: meteorHorizontalOffsetMin
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3152961894926593638, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -296206,31 +296174,11 @@ PrefabInstance:
     - target: {fileID: 3476960432240670734, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3825396057429524551, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.032
       objectReference: {fileID: 0}
     - target: {fileID: 4980342896392501824, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_Name
       value: Managers
       objectReference: {fileID: 0}
-    - target: {fileID: 6117446412505999439, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117446412505999439, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117446412505999439, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117446412505999439, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6148802167453540259, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -296254,10 +296202,6 @@ PrefabInstance:
     - target: {fileID: 6148802167453540259, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6313509507794677169, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.038
       objectReference: {fileID: 0}
     - target: {fileID: 6847287477314407810, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_SizeDelta.x

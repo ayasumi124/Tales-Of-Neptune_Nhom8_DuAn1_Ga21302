@@ -10,7 +10,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 397330039608258386, guid: c04f1c38f63a0954599a12b8b8ba2c7d, type: 3}
       propertyPath: m_Name
-      value: FireGround_Meteor
+      value: FireGround_Meteor Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1827824633055943447, guid: c04f1c38f63a0954599a12b8b8ba2c7d, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1827824633055943447, guid: c04f1c38f63a0954599a12b8b8ba2c7d, type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1827824633055943447, guid: c04f1c38f63a0954599a12b8b8ba2c7d, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 179487883
       objectReference: {fileID: 0}
     - target: {fileID: 5275699965013818808, guid: c04f1c38f63a0954599a12b8b8ba2c7d, type: 3}
       propertyPath: burnDamage

@@ -2693,7 +2693,7 @@ Transform:
   m_GameObject: {fileID: 1691165667053968148}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.038, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12290,6 +12290,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7347145476132200047}
     m_Modifications:
+    - target: {fileID: 301186943132381571, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.032
+      objectReference: {fileID: 0}
     - target: {fileID: 2574351753208449971, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
       propertyPath: slotUI
       value: 
@@ -12417,13 +12421,13 @@ MonoBehaviour:
   fireMeteorCastSound: {fileID: 8300000, guid: c74f67e1969591b45abb558b9021ad30, type: 3}
   fireBreathSound: {fileID: 8300000, guid: 7b14dae718c40174f95d2eae33602023, type: 3}
   fireTornadoSound: {fileID: 8300000, guid: 27fdb760c69c65243a9914752349eaa0, type: 3}
-  meteorCount: 7
-  meteorSpawnInterval: 0.1
-  meteorTargetDistance: 3
-  meteorImpactSpread: 2
-  meteorSpawnHeight: 6
-  meteorHorizontalOffsetMin: 2.5
-  meteorHorizontalOffsetMax: 4.5
+  meteorCount: 10
+  meteorSpawnInterval: 0.75
+  meteorTargetDistance: 1.5
+  meteorImpactSpread: 5
+  meteorSpawnHeight: 7
+  meteorHorizontalOffsetMin: 3.5
+  meteorHorizontalOffsetMax: 5.5
   meteorScaleMin: 1.1
   meteorScaleMax: 1.6
   makeLastMeteorBigger: 1
@@ -12433,6 +12437,8 @@ MonoBehaviour:
   breathSegmentSpacing: 0.32
   breathLayerDelay: 0.035
   fireBreathKey: 51
+  breathHorizontalDistance: 0.55
+  breathVerticalDistance: 0.55
   tornadoSpawnDistance: 2
 --- !u!114 &8955593085745508771
 MonoBehaviour:
