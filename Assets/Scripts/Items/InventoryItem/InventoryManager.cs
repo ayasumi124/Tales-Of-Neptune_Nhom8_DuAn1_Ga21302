@@ -82,7 +82,7 @@ public class InventoryManager : MonoBehaviour
 
     private void Update()
 {
-    if (Input.GetKeyDown(KeyCode.T))
+    if (Input.GetKeyDown(KeyCode.R))
     {
         AddItem(testHealthPotion, 10);
         AddItem(testManaPotion, 10);
