@@ -70,7 +70,7 @@ public class InventoryManager : MonoBehaviour
 
             AddItem(
                 testManaPotion,
-                3
+                5
             );
 
             AddItem(
