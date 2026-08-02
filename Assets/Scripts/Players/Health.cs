@@ -249,37 +249,77 @@ public class Health : MonoBehaviour
         Rigidbody2D rb =
             GetComponent<Rigidbody2D>();
 
-        if (rb != null)
-        {
-            rb.linearVelocity =
-                Vector2.zero;
-
-            rb.angularVelocity = 0f;
-        }
-
         Players players =
             GetComponent<Players>();
-
-        if (players != null)
-            players.enabled = false;
 
         Attack attack =
             GetComponent<Attack>();
 
+        PlayerDash dash =
+            GetComponent<PlayerDash>();
+
+        /*
+         * Dừng Dash trước để coroutine Dash
+         * không tiếp tục gán velocity.
+         */
+        if (dash != null)
+        {
+            dash.CancelDash();
+            dash.enabled = false;
+        }
+
+        /*
+         * Dừng Attack và coroutine Lunge.
+         */
         if (attack != null)
         {
             attack.CancelAttack();
             attack.enabled = false;
         }
 
+        /*
+         * Tắt script di chuyển sau khi
+         * các trạng thái combat đã được hủy.
+         */
+        if (players != null)
+        {
+            players.StopAutoWalk();
+            players.enabled = false;
+        }
+
+        /*
+         * Xóa toàn bộ vận tốc cuối cùng.
+         */
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+
+            /*
+             * Freeze Position để đảm bảo Player
+             * không bị lực hoặc va chạm đẩy trượt.
+             */
+            rb.constraints =
+                RigidbodyConstraints2D.FreezeAll;
+        }
+
         if (animator != null)
         {
             animator.speed = 1f;
 
+            animator.SetBool("IsMoving", false);
+            animator.SetBool("IsRunning", false);
+
             animator.ResetTrigger("Attack");
+            animator.ResetTrigger("Dash");
             animator.ResetTrigger("Hurt");
+            animator.ResetTrigger("Death");
+
             animator.SetTrigger("Death");
         }
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.StopFootstep();
 
         if (audioPlayer != null)
             audioPlayer.PlayDeath();
@@ -338,9 +378,10 @@ public class Health : MonoBehaviour
 
         if (rb != null)
         {
-            rb.linearVelocity =
-                Vector2.zero;
+            rb.constraints =
+                RigidbodyConstraints2D.FreezeRotation;
 
+            rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
         }
 
@@ -357,6 +398,14 @@ public class Health : MonoBehaviour
         {
             attack.enabled = true;
             attack.CancelAttack();
+        }
+        PlayerDash dash =
+    GetComponent<PlayerDash>();
+
+        if (dash != null)
+        {
+            dash.enabled = true;
+            dash.CancelDash();
         }
 
         if (animator != null)

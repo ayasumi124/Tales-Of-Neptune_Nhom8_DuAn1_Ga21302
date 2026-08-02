@@ -65,5 +65,11 @@ MonoBehaviour:
   burnDuration: 10
   burnEffectPrefab: {fileID: 153977106896969154, guid: 9e230a8eea3596946b3ad17576256c43, type: 3}
   fireGroundPrefab: {fileID: 397330039608258386, guid: c04f1c38f63a0954599a12b8b8ba2c7d, type: 3}
+  fireGroundCount: 5
+  fireGroundSpawnRadius: 2.5
+  fireGroundMinSpacing: 2
+  fireGroundPositionAttempts: 15
+  spawnCenterFireGround: 1
+  fireGroundSpawnDelay: 0.08
   tornadoLoopSound: {fileID: 8300000, guid: bb6cff40ceddecf40a0a8f2d3ba27353, type: 3}
   tornadoEndSound: {fileID: 8300000, guid: 5edcb73603342f648ad1799abe2556bf, type: 3}
