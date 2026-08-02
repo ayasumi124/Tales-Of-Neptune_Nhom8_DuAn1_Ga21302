@@ -36,6 +36,8 @@ public class InventoryUI : MonoBehaviour
     private readonly List<InventorySlotUI>
         slotUIs = new List<InventorySlotUI>();
 
+    private float previousTimeScale = 1f;
+
     private int selectedSlotIndex = -1;
     private bool isOpen;
 
@@ -73,10 +75,24 @@ public class InventoryUI : MonoBehaviour
     }
 
     private void OnDisable()
+{
+    InventoryManager.OnInventoryChanged -=
+        Refresh;
+
+    /*
+     * Tránh game bị kẹt Time.timeScale = 0
+     * nếu InventoryUI bị disable khi đang mở.
+     */
+    if (isOpen)
     {
-        InventoryManager.OnInventoryChanged -=
-            Refresh;
+        isOpen = false;
+
+        Time.timeScale = previousTimeScale;
+
+        if (player != null)
+            player.UnlockControl();
     }
+}
 
     private void Start()
     {
@@ -103,55 +119,65 @@ public class InventoryUI : MonoBehaviour
     }
 
     public void OpenInventory()
+{
+    if (isOpen)
+        return;
+
+    if (InventoryManager.Instance == null)
     {
-        if (InventoryManager.Instance == null)
-        {
-            Debug.LogError(
-                "Không tìm thấy InventoryManager."
-            );
+        Debug.LogError(
+            "Không tìm thấy InventoryManager."
+        );
 
-            return;
-        }
-
-        isOpen = true;
-
-        if (inventoryPanel != null)
-            inventoryPanel.SetActive(true);
-
-        FindPlayer();
-
-        if (player != null)
-            player.LockControl();
-
-        if (AudioManager.Instance != null &&
-            AudioManager.Instance.openInventorySound != null)
-        {
-            AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.openInventorySound
-            );
-        }
-
-        Refresh();
+        return;
     }
+
+    isOpen = true;
+
+    if (inventoryPanel != null)
+        inventoryPanel.SetActive(true);
+
+    FindPlayer();
+
+    if (player != null)
+        player.LockControl();
+
+    /*
+     * Lưu Time Scale trước đó để không phá
+     * trạng thái pause của hệ thống khác.
+     */
+    previousTimeScale = Time.timeScale;
+    Time.timeScale = 0f;
+
+    if (AudioManager.Instance != null &&
+        AudioManager.Instance.openInventorySound != null)
+    {
+        AudioManager.Instance.PlaySFX(
+            AudioManager.Instance.openInventorySound
+        );
+    }
+
+    Refresh();
+}
 
     public void CloseInventory()
-    {
-        isOpen = false;
+{
+    if (!isOpen)
+        return;
 
-        if (inventoryPanel != null)
-            inventoryPanel.SetActive(false);
+    isOpen = false;
 
-        if (player != null)
-            player.UnlockControl();
-    }
+    if (inventoryPanel != null)
+        inventoryPanel.SetActive(false);
 
-    private void HideImmediate()
-    {
-        isOpen = false;
+    /*
+     * Khôi phục tốc độ thời gian trước khi mở Inventory.
+     */
+    Time.timeScale = previousTimeScale;
 
-        if (inventoryPanel != null)
-            inventoryPanel.SetActive(false);
-    }
+    if (player != null)
+        player.UnlockControl();
+}
 
     private void CreateSlots()
     {
@@ -277,7 +303,13 @@ public class InventoryUI : MonoBehaviour
             );
         }
     }
+    private void HideImmediate()
+{
+    isOpen = false;
 
+    if (inventoryPanel != null)
+        inventoryPanel.SetActive(false);
+}
     private void RefreshSelectedItem()
     {
         if (InventoryManager.Instance == null ||
@@ -423,18 +455,24 @@ public class InventoryUI : MonoBehaviour
     }
 
     private void OnDestroy()
+{
+    InventoryManager.OnInventoryChanged -=
+        Refresh;
+
+    if (useButton != null)
     {
-        InventoryManager.OnInventoryChanged -=
-            Refresh;
-
-        if (useButton != null)
-        {
-            useButton.onClick.RemoveListener(
-                UseSelectedItem
-            );
-        }
-
-        if (Instance == this)
-            Instance = null;
+        useButton.onClick.RemoveListener(
+            UseSelectedItem
+        );
     }
+
+    if (isOpen)
+    {
+        Time.timeScale = previousTimeScale;
+    }
+
+    if (Instance == this)
+        Instance = null;
+}
+    
 }

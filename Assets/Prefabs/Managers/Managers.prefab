@@ -14076,8 +14076,8 @@ MonoBehaviour:
   meteorCount: 12
   meteorSpawnInterval: 0.75
   meteorTargetDistance: 0
-  meteorImpactSpread: 5
-  meteorSpawnHeight: 9
+  meteorImpactSpread: 5.5
+  meteorSpawnHeight: 8.5
   meteorHorizontalOffsetMin: 4
   meteorHorizontalOffsetMax: 6
   meteorScaleMin: 1.1
