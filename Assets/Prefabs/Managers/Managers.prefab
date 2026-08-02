@@ -14022,6 +14022,10 @@ PrefabInstance:
       propertyPath: lungeForce
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 8459480266853851217, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
+      propertyPath: 'comboLunge.Array.data[2]'
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 8460627641359223920, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
       propertyPath: deathSound
       value: 
