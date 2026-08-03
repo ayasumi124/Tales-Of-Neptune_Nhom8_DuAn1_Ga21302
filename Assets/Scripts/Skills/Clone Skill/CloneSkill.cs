@@ -1,64 +1,159 @@
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
+
 public class CloneSkill : MonoBehaviour
 {
+    [Header("Clone")]
+    [SerializeField] private GameObject clonePrefab;
+    [SerializeField] private AbilityData skillData;
 
+    [Header("Equipped Slot Keys")]
+    [SerializeField] private KeyCode slot3Key = KeyCode.K;
+    [SerializeField] private KeyCode slot4Key = KeyCode.F;
 
-    public GameObject clonePrefab;
-    public AbilityData skillData;
+    private PlayerMana mana;
 
-    public SkillSlotUI slotUI;
-    PlayerMana mana;
-
-    void Start()
+    private void Awake()
     {
         mana = GetComponent<PlayerMana>();
-
-        slotUI.Setup(skillData);
-
-        //slotUI.abilityType = skillData.type;
     }
 
-    void Update()
+    private void Update()
     {
-        Debug.Log("Unlocked: " + AbilityManager.Instance.HasAbility(AbilityType.Clone));
-        if (!AbilityManager.Instance.HasAbility(AbilityType.Clone))
+        if (Time.timeScale <= 0f)
             return;
-        Debug.Log(AbilityManager.Instance.clone.unlocked);
 
+        if (AbilityManager.Instance == null)
+            return;
 
+        if (EquipmentManager.Instance == null)
+            return;
 
-        // Dùng skill
-        if (Input.GetKeyDown(KeyCode.K) &&
-    AbilityManager.Instance.clone.cooldown <= 0)
+        if (skillData == null ||
+            clonePrefab == null)
         {
-            if (!mana.UseMana(skillData.manaCost))
+            return;
+        }
+
+        // Chưa mở khóa Clone thì không cho dùng.
+        if (!AbilityManager.Instance.HasAbility(
+                AbilityType.Clone))
+        {
+            return;
+        }
+
+        // Kiểm tra Clone đang được trang bị ở slot nào.
+        int equippedSlot =
+            EquipmentManager.Instance
+                .GetEquippedSlot(skillData);
+
+        KeyCode useKey;
+
+        switch (equippedSlot)
+        {
+            case 3:
+                useKey = slot3Key;
+                break;
+
+            case 4:
+                useKey = slot4Key;
+                break;
+
+            default:
+                // Clone chưa được trang bị.
+                return;
+        }
+
+        if (!Input.GetKeyDown(useKey))
+            return;
+
+        TryUseClone();
+    }
+
+    private void TryUseClone()
+    {
+        AbilityManager.AbilityState state =
+            AbilityManager.Instance.GetState(
+                AbilityType.Clone
+            );
+
+        if (state == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy AbilityState của Clone."
+            );
+
+            return;
+        }
+
+        if (state.cooldown > 0f)
+            return;
+
+        if (mana == null)
+        {
+            Debug.LogError(
+                "Player thiếu PlayerMana."
+            );
+
+            return;
+        }
+
+        if (!mana.UseMana(skillData.manaCost))
+        {
+            if (ManaUI.Instance != null)
             {
                 ManaUI.Instance.ShowNoMana();
-                return;
             }
 
-            SpawnClone();
-
-            AbilityManager.Instance.clone.cooldown = skillData.cooldown;
-            AbilityManager.Instance.clone.duration = skillData.duration;
-            AbilityManager.Instance.clone.maxCooldown = skillData.cooldown;
-
+            return;
         }
+
+        SpawnClone();
+
+        state.cooldown =
+            skillData.cooldown;
+
+        state.maxCooldown =
+            skillData.cooldown;
+
+        state.duration =
+            skillData.duration;
+
+        state.maxDuration =
+            skillData.duration;
     }
 
-    void SpawnClone()
+    private void SpawnClone()
     {
-        Debug.Log("Spawn Clone");
+        GameObject clone =
+            Instantiate(
+                clonePrefab,
+                transform.position,
+                Quaternion.identity
+            );
 
-        GameObject clone = Instantiate(
-            clonePrefab,
-            transform.position,
-            Quaternion.identity);
+        CloneFollow cloneFollow =
+            clone.GetComponent<CloneFollow>();
 
-        clone.GetComponent<CloneFollow>().player = transform;
+        if (cloneFollow != null)
+        {
+            cloneFollow.player =
+                transform;
+        }
+        else
+        {
+            Debug.LogError(
+                "Clone Prefab thiếu CloneFollow."
+            );
+        }
 
-        Destroy(clone, skillData.duration);
+        Destroy(
+            clone,
+            Mathf.Max(
+                0.1f,
+                skillData.duration
+            )
+        );
+
+        Debug.Log("Đã triệu hồi Clone.");
     }
 }

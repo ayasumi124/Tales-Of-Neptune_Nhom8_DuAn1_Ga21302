@@ -13,6 +13,7 @@ public class ElementData : ScriptableObject
 
     [TextArea]
     public string description;
+    
 
     public Sprite elementIcon;
 
@@ -34,4 +35,5 @@ public class ElementData : ScriptableObject
             );
         }
     }
+    
 }

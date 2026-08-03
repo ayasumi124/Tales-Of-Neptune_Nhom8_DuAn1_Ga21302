@@ -31,6 +31,14 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private Button useButton;
     [SerializeField]
     private Button equipShortcutButton;
+    [SerializeField]
+    private Button sortButton;
+
+    [SerializeField]
+    private Button dropOneButton;
+
+    [SerializeField]
+    private Button dropStackButton;
 
     [Header("Player")]
     [SerializeField] private Players player;
@@ -46,6 +54,7 @@ public class InventoryUI : MonoBehaviour
 
     private void Awake()
     {
+
         if (Instance != null &&
             Instance != this)
         {
@@ -54,6 +63,7 @@ public class InventoryUI : MonoBehaviour
         }
 
         Instance = this;
+
 
         if (useButton != null)
         {
@@ -77,6 +87,38 @@ public class InventoryUI : MonoBehaviour
                 .AddListener(
                     EquipSelectedItemToShortcut
                 );
+        }
+        if (sortButton != null)
+        {
+            sortButton.onClick.RemoveListener(
+                SortInventory
+            );
+
+            sortButton.onClick.AddListener(
+                SortInventory
+            );
+        }
+
+        if (dropOneButton != null)
+        {
+            dropOneButton.onClick.RemoveListener(
+                DropOneSelectedItem
+            );
+
+            dropOneButton.onClick.AddListener(
+                DropOneSelectedItem
+            );
+        }
+
+        if (dropStackButton != null)
+        {
+            dropStackButton.onClick.RemoveListener(
+                DropSelectedStack
+            );
+
+            dropStackButton.onClick.AddListener(
+                DropSelectedStack
+            );
         }
 
         HideImmediate();
@@ -192,6 +234,72 @@ public class InventoryUI : MonoBehaviour
 
         if (player != null)
             player.UnlockControl();
+    }
+
+    public void SortInventory()
+    {
+        if (InventoryManager.Instance == null)
+            return;
+
+        selectedSlotIndex = -1;
+
+        InventoryManager.Instance
+            .SortInventory();
+
+        ClearItemInfo();
+        Refresh();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .PlayInventoryMove();
+        }
+    }
+
+    public void DropOneSelectedItem()
+    {
+        DropSelectedItem(false);
+    }
+
+    public void DropSelectedStack()
+    {
+        DropSelectedItem(true);
+    }
+
+    private void DropSelectedItem(
+        bool entireStack)
+    {
+        if (InventoryManager.Instance == null ||
+            selectedSlotIndex < 0)
+        {
+            return;
+        }
+
+        bool dropped =
+            entireStack
+                ? InventoryManager.Instance
+                    .DropEntireStack(
+                        selectedSlotIndex
+                    )
+                : InventoryManager.Instance
+                    .DropItemAt(
+                        selectedSlotIndex,
+                        1
+                    );
+
+        if (!dropped)
+            return;
+
+        selectedSlotIndex = -1;
+
+        ClearItemInfo();
+        Refresh();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .PlayInventoryDrop();
+        }
     }
 
     public void EquipSelectedItemToShortcut()
@@ -398,6 +506,8 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
+
+
         InventoryItem selectedItem =
             InventoryManager.Instance
                 .GetItemAt(
@@ -414,7 +524,21 @@ public class InventoryUI : MonoBehaviour
 
             return;
         }
+        if (dropOneButton != null)
+        {
+            dropOneButton.gameObject.SetActive(true);
+            dropOneButton.interactable = true;
+        }
 
+        if (dropStackButton != null)
+        {
+            dropStackButton.gameObject.SetActive(
+                selectedItem.quantity > 1
+            );
+
+            dropStackButton.interactable =
+                selectedItem.quantity > 1;
+        }
         ItemData data =
             selectedItem.itemData;
 
@@ -518,6 +642,15 @@ public class InventoryUI : MonoBehaviour
 
     private void ClearItemInfo()
     {
+        if (dropOneButton != null)
+        {
+            dropOneButton.gameObject.SetActive(false);
+        }
+
+        if (dropStackButton != null)
+        {
+            dropStackButton.gameObject.SetActive(false);
+        }
         if (selectedItemIcon != null)
         {
             selectedItemIcon.sprite = null;
@@ -578,6 +711,27 @@ public class InventoryUI : MonoBehaviour
         {
             useButton.onClick.RemoveListener(
                 UseSelectedItem
+            );
+        }
+
+        if (sortButton != null)
+        {
+            sortButton.onClick.RemoveListener(
+                SortInventory
+            );
+        }
+
+        if (dropOneButton != null)
+        {
+            dropOneButton.onClick.RemoveListener(
+                DropOneSelectedItem
+            );
+        }
+
+        if (dropStackButton != null)
+        {
+            dropStackButton.onClick.RemoveListener(
+                DropSelectedStack
             );
         }
 

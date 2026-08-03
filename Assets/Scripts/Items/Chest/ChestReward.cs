@@ -9,24 +9,44 @@ public class ChestReward : MonoBehaviour
     }
 
     [Header("Reward Type")]
-    [SerializeField] private RewardType rewardType;
+    [SerializeField]
+    private RewardType rewardType;
 
     [Header("Coin Reward")]
-    [SerializeField] private int coinAmount = 100;
-    [SerializeField] private Sprite coinIcon;
+    [Min(1)]
+    [SerializeField]
+    private int coinAmount = 100;
+
+    [SerializeField]
+    private Sprite coinIcon;
 
     [Header("Item Reward")]
-    [SerializeField] private ItemData itemData;
+    [SerializeField]
+    private ItemData itemData;
 
     [Min(1)]
-    [SerializeField] private int itemQuantity = 1;
+    [SerializeField]
+    private int itemQuantity = 1;
 
     private bool rewardClaimed;
 
-    public bool GiveReward()
+    public bool RewardClaimed =>
+        rewardClaimed;
+
+    /*
+     * Không đặt tên GiveReward,
+     * tránh trùng với Animation Event của Chest.
+     */
+    public bool ClaimReward()
     {
         if (rewardClaimed)
+        {
+            Debug.LogWarning(
+                $"{name}: phần thưởng đã được nhận."
+            );
+
             return false;
+        }
 
         bool success = false;
 
@@ -34,57 +54,64 @@ public class ChestReward : MonoBehaviour
         {
             case RewardType.Coin:
                 success =
-                    GiveCoinReward();
+                    ClaimCoinReward();
                 break;
 
             case RewardType.Item:
                 success =
-                    GiveItemReward();
+                    ClaimItemReward();
                 break;
         }
 
         if (success)
-        {
             rewardClaimed = true;
-        }
 
         return success;
     }
 
-    private bool GiveCoinReward()
+    private bool ClaimCoinReward()
     {
-        if (coinAmount <= 0)
-            return false;
+        int amount =
+            Mathf.Max(
+                1,
+                coinAmount
+            );
 
         if (CoinUI.Instance == null)
         {
             Debug.LogError(
-                "Không tìm thấy CoinUI."
+                $"{name}: không tìm thấy CoinUI."
             );
 
             return false;
         }
 
         CoinUI.Instance.AddCoin(
-            coinAmount
+            amount
         );
 
         if (RewardPopupUI.Instance != null)
         {
             RewardPopupUI.Instance.ShowCoin(
                 coinIcon,
-                coinAmount
+                amount
+            );
+        }
+        else
+        {
+            Debug.LogWarning(
+                "Không tìm thấy RewardPopupUI."
             );
         }
 
         Debug.Log(
-            $"Nhận {coinAmount} Coin."
+            $"Nhận Coin x{amount}."
         );
 
         return true;
     }
 
-    private bool GiveItemReward()
+    private bool ClaimItemReward()
     {
         if (itemData == null)
         {
@@ -104,7 +131,7 @@ public class ChestReward : MonoBehaviour
         if (InventoryManager.Instance == null)
         {
             Debug.LogError(
-                "Không tìm thấy InventoryManager."
+                $"{name}: không tìm thấy InventoryManager."
             );
 
             return false;
@@ -114,8 +141,9 @@ public class ChestReward : MonoBehaviour
                 itemData,
                 quantity))
         {
-            Debug.Log(
-                "Inventory không đủ chỗ."
+            Debug.LogWarning(
+                $"Inventory không đủ chỗ cho " +
+                $"{itemData.ItemName} x{quantity}."
             );
 
             return false;
@@ -137,12 +165,42 @@ public class ChestReward : MonoBehaviour
                 quantity
             );
         }
+        else
+        {
+            Debug.LogWarning(
+                "Không tìm thấy RewardPopupUI."
+            );
+        }
 
         Debug.Log(
-            $"Nhận {itemData.ItemName} " +
-            $"x{quantity}."
+            $"Nhận {itemData.ItemName} x{quantity}."
         );
 
         return true;
+    }
+
+    public void RestoreClaimedState()
+    {
+        rewardClaimed = true;
+    }
+
+    public void ResetReward()
+    {
+        rewardClaimed = false;
+    }
+
+    private void OnValidate()
+    {
+        coinAmount =
+            Mathf.Max(
+                1,
+                coinAmount
+            );
+
+        itemQuantity =
+            Mathf.Max(
+                1,
+                itemQuantity
+            );
     }
 }

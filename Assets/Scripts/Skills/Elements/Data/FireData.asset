@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ElementData
   elementType: 1
   elementName: Fire
-  description: 
+  description: Enabling the user to control the power of the flame
   elementIcon: {fileID: -6615130054868465961, guid: c858fd715f66e88409d5b1c7c6dbe2bc, type: 3}
   maxMastery: 100
   skills:
