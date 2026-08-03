@@ -19,5 +19,6 @@ MonoBehaviour:
   skillIndex: 1
   requiredMastery: 0
   manaCost: 10
-  cooldown: 5
+  duration: 3
+  cooldown: 1
   unlocked: 1

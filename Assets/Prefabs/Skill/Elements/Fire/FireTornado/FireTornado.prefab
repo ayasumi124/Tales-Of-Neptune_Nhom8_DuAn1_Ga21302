@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6390731736345113369
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4652037837608260430}
+  - component: {fileID: 6034664806320569470}
+  m_Layer: 0
+  m_Name: FireTornado
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4652037837608260430
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6390731736345113369}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6034664806320569470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6390731736345113369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d359928dd9d0b134cb51c855c5eb64a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FireTornado
+  duration: 12
+  spawnCenterGroundOnStart: 1
+  centerFireGroundPrefab: {fileID: 8980986671677515990, guid: 821d13cfb159c8e49849f5300f1ef05a, type: 3}
+  ringVisualPrefab: {fileID: 2392003662405541017, guid: 8eb3af7f1bd90874b89d09d571438ece, type: 3}
+  layerCount: 7
+  layerHeight: 0.18
+  bottomScale: 0.45
+  scalePerLayer: 0.16
+  animationDelayPerLayer: 0.05
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  effectRadius: 3.5
+  pullForce: 12
+  maxPullSpeed: 4
+  pullStopDistance: 0.25
+  damagePerTick: 40
+  damageInterval: 0.5
+  burnDamage: 20
+  burnInterval: 1
+  burnDuration: 10
+  burnEffectPrefab: {fileID: 153977106896969154, guid: 9e230a8eea3596946b3ad17576256c43, type: 3}
+  fireGroundPrefab: {fileID: 397330039608258386, guid: c04f1c38f63a0954599a12b8b8ba2c7d, type: 3}
+  fireGroundCount: 5
+  fireGroundSpawnRadius: 2.5
+  fireGroundMinSpacing: 2
+  fireGroundPositionAttempts: 15
+  spawnCenterFireGround: 1
+  fireGroundSpawnDelay: 0.08
+  tornadoLoopSound: {fileID: 8300000, guid: bb6cff40ceddecf40a0a8f2d3ba27353, type: 3}
+  tornadoEndSound: {fileID: 8300000, guid: 5edcb73603342f648ad1799abe2556bf, type: 3}

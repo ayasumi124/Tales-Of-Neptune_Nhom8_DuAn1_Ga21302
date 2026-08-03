@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
@@ -13,12 +14,17 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource footstepSource;
     [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource elementSkillSource;
 
     public AudioSource SFXSource => sfxSource;
-    [Range(0f, 20f)]
-    public float dashVolume = 20f;
-    [Header("Music Settings")]
+
+    [Header("Volume")]
+    [Range(0f, 1f)]
+    public float dashVolume = 1f;
+
+    [Range(0f, 1f)]
     [SerializeField] private float musicVolume = 1f;
+
     [SerializeField] private float musicFadeDuration = 0.5f;
 
     [Header("Player")]
@@ -36,8 +42,6 @@ public class AudioManager : MonoBehaviour
     public AudioClip coinBounceSound;
 
     [Header("UI")]
-    public AudioClip buttonSound;
-    public AudioClip openInventorySound;
     public AudioClip skillUnlockSound;
     public AudioClip skillCloseSound;
     public AudioClip errorSound;
@@ -46,6 +50,16 @@ public class AudioManager : MonoBehaviour
     public AudioClip chestOpenSound;
 
     private Coroutine musicCoroutine;
+    [Header("Inventory")]
+    public AudioClip inventoryOpenSound;
+
+    public AudioClip inventoryCloseSound;
+    public AudioClip inventoryMoveSound;      // di chuyển giữa các ô
+    public AudioClip inventorySelectSound;    // click chọn item
+    public AudioClip inventoryUseSound;       // Use
+    public AudioClip inventoryEquipSound;     // Equip Sword/Armor
+    public AudioClip inventoryShortcutSound;  // Equip Shortcut
+    public AudioClip inventoryDropSound;      // Drop item (sau này)
 
     private void Awake()
     {
@@ -63,6 +77,24 @@ public class AudioManager : MonoBehaviour
         SetupAudioSources();
     }
 
+    private void OnEnable()
+    {
+        SceneManager.sceneUnloaded +=
+            OnSceneUnloaded;
+
+        SceneManager.sceneLoaded +=
+            OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneUnloaded -=
+            OnSceneUnloaded;
+
+        SceneManager.sceneLoaded -=
+            OnSceneLoaded;
+    }
+
     private void Start()
     {
         if (backgroundMusic != null &&
@@ -75,27 +107,230 @@ public class AudioManager : MonoBehaviour
 
     private void SetupAudioSources()
     {
+        SetupSource(
+            musicSource,
+            true
+        );
+
+        SetupSource(
+            footstepSource,
+            true
+        );
+
+        SetupSource(
+            sfxSource,
+            false
+        );
+
+        SetupSource(
+            elementSkillSource,
+            false
+        );
+
         if (musicSource != null)
-        {
-            musicSource.loop = true;
-            musicSource.playOnAwake = false;
             musicSource.volume = musicVolume;
-        }
-
-        if (footstepSource != null)
-        {
-            footstepSource.loop = true;
-            footstepSource.playOnAwake = false;
-        }
-
-        if (sfxSource != null)
-        {
-            sfxSource.loop = false;
-            sfxSource.playOnAwake = false;
-        }
     }
 
-    public void PlayMusic(AudioClip clip)
+    private void SetupSource(
+        AudioSource source,
+        bool loop)
+    {
+        if (source == null)
+            return;
+
+        source.playOnAwake = false;
+        source.loop = loop;
+        source.spatialBlend = 0f;
+    }
+
+    private void OnSceneUnloaded(
+        Scene scene)
+    {
+        /*
+         * Hủy meteor trước để AudioSource riêng
+         * trên từng meteor được dừng ngay.
+         */
+        FireMeteor.StopAllMeteors();
+
+        StopGameplaySounds();
+    }
+
+    private void OnSceneLoaded(
+        Scene scene,
+        LoadSceneMode mode)
+    {
+        /*
+         * Dừng lại lần nữa để bảo đảm không còn
+         * âm thanh từ scene cũ lọt sang scene mới.
+         */
+        StopGameplaySounds();
+    }
+
+    // =====================================================
+    // GAMEPLAY SOUND CLEANUP
+    // =====================================================
+
+    public void StopGameplaySounds()
+    {
+        StopSFX();
+        StopElementSkillSound();
+        StopFootstep();
+    }
+
+    public void StopAllSFX()
+    {
+        StopGameplaySounds();
+    }
+
+    private void StopSFX()
+    {
+        if (sfxSource == null)
+            return;
+
+        sfxSource.Stop();
+        sfxSource.clip = null;
+        sfxSource.loop = false;
+    }
+
+    public void StopElementSkillSound()
+    {
+        if (elementSkillSource == null)
+            return;
+
+        elementSkillSource.Stop();
+        elementSkillSource.clip = null;
+        elementSkillSource.loop = false;
+    }
+
+    public void StopFootstep()
+    {
+        if (footstepSource == null)
+            return;
+
+        footstepSource.Stop();
+        footstepSource.clip = null;
+    }
+
+    // =====================================================
+    // ELEMENT SKILL AUDIO
+    // =====================================================
+
+    public void PlayElementSkillSFX(
+        AudioClip clip,
+        float volume = 1f)
+    {
+        if (clip == null)
+            return;
+
+        if (elementSkillSource == null)
+        {
+            Debug.LogError(
+                "AudioManager chưa được gán Element Skill Source."
+            );
+
+            return;
+        }
+
+        /*
+         * PlayOneShot cho phép nhiều meteor impact
+         * phát gần nhau trên cùng một source.
+         * Stop() sẽ dừng toàn bộ các OneShot này.
+         */
+        elementSkillSource.PlayOneShot(
+            clip,
+            Mathf.Clamp01(volume)
+        );
+    }
+
+    public void PlayElementSkillLoop(
+        AudioClip clip,
+        float volume = 1f)
+    {
+        if (clip == null ||
+            elementSkillSource == null)
+        {
+            return;
+        }
+
+        elementSkillSource.Stop();
+
+        elementSkillSource.clip = clip;
+        elementSkillSource.volume =
+            Mathf.Clamp01(volume);
+
+        elementSkillSource.loop = true;
+        elementSkillSource.Play();
+    }
+
+    // =====================================================
+    // NORMAL SFX
+    // =====================================================
+
+    public void PlaySFX(
+        AudioClip clip)
+    {
+        PlaySFX(
+            clip,
+            1f
+        );
+    }
+
+    public void PlaySFX(
+        AudioClip clip,
+        float volume)
+    {
+        if (clip == null ||
+            sfxSource == null)
+        {
+            return;
+        }
+
+        sfxSource.PlayOneShot(
+            clip,
+            Mathf.Clamp01(volume)
+        );
+    }
+
+    // =====================================================
+    // FOOTSTEP
+    // =====================================================
+
+    public void PlayFootstep(
+        bool isMoving)
+    {
+        if (footstepSource == null)
+            return;
+
+        if (!isMoving)
+        {
+            if (footstepSource.isPlaying)
+                footstepSource.Stop();
+
+            return;
+        }
+
+        if (footstepSound == null)
+            return;
+
+        if (footstepSource.clip !=
+            footstepSound)
+        {
+            footstepSource.clip =
+                footstepSound;
+        }
+
+        footstepSource.loop = true;
+
+        if (!footstepSource.isPlaying)
+            footstepSource.Play();
+    }
+
+    // =====================================================
+    // MUSIC
+    // =====================================================
+
+    public void PlayMusic(
+        AudioClip clip)
     {
         if (clip == null ||
             musicSource == null)
@@ -105,7 +340,10 @@ public class AudioManager : MonoBehaviour
 
         if (musicCoroutine != null)
         {
-            StopCoroutine(musicCoroutine);
+            StopCoroutine(
+                musicCoroutine
+            );
+
             musicCoroutine = null;
         }
 
@@ -115,7 +353,8 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
-    public void ChangeMusic(AudioClip clip)
+    public void ChangeMusic(
+        AudioClip clip)
     {
         if (clip == null ||
             musicSource == null)
@@ -123,10 +362,6 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        /*
-         * Nếu đang phát đúng bài này thì
-         * không restart lại từ đầu.
-         */
         if (musicSource.clip == clip &&
             musicSource.isPlaying)
         {
@@ -135,7 +370,9 @@ public class AudioManager : MonoBehaviour
 
         if (musicCoroutine != null)
         {
-            StopCoroutine(musicCoroutine);
+            StopCoroutine(
+                musicCoroutine
+            );
         }
 
         musicCoroutine =
@@ -144,11 +381,54 @@ public class AudioManager : MonoBehaviour
             );
     }
 
+    public void PlayInventoryOpen()
+    {
+        PlaySFX(inventoryOpenSound);
+    }
+
+    public void PlayInventoryClose()
+    {
+        PlaySFX(inventoryCloseSound);
+    }
+
+    public void PlayInventoryMove()
+    {
+        PlaySFX(inventoryMoveSound);
+    }
+
+    public void PlayInventorySelect()
+    {
+        PlaySFX(inventorySelectSound);
+    }
+
+    public void PlayInventoryUse()
+    {
+        PlaySFX(inventoryUseSound);
+    }
+
+    public void PlayInventoryEquip()
+    {
+        PlaySFX(inventoryEquipSound);
+    }
+
+    public void PlayInventoryShortcut()
+    {
+        PlaySFX(inventoryShortcutSound);
+    }
+
+    public void PlayInventoryDrop()
+    {
+        PlaySFX(inventoryDropSound);
+    }
+
     private IEnumerator ChangeMusicRoutine(
         AudioClip newClip)
     {
         float duration =
-            Mathf.Max(0f, musicFadeDuration);
+            Mathf.Max(
+                0f,
+                musicFadeDuration
+            );
 
         if (musicSource.isPlaying &&
             musicSource.clip != null &&
@@ -218,18 +498,25 @@ public class AudioManager : MonoBehaviour
             yield return null;
         }
 
-        musicSource.volume = musicVolume;
+        musicSource.volume =
+            musicVolume;
+
         musicCoroutine = null;
     }
 
-    public void StopMusic(bool fadeOut = true)
+    public void StopMusic(
+        bool fadeOut = true)
     {
         if (musicSource == null)
             return;
 
         if (musicCoroutine != null)
         {
-            StopCoroutine(musicCoroutine);
+            StopCoroutine(
+                musicCoroutine
+            );
+
+            musicCoroutine = null;
         }
 
         if (fadeOut)
@@ -243,14 +530,18 @@ public class AudioManager : MonoBehaviour
         {
             musicSource.Stop();
             musicSource.clip = null;
-            musicSource.volume = musicVolume;
+            musicSource.volume =
+                musicVolume;
         }
     }
 
     private IEnumerator StopMusicRoutine()
     {
         float duration =
-            Mathf.Max(0f, musicFadeDuration);
+            Mathf.Max(
+                0f,
+                musicFadeDuration
+            );
 
         float startVolume =
             musicSource.volume;
@@ -279,12 +570,14 @@ public class AudioManager : MonoBehaviour
 
         musicSource.Stop();
         musicSource.clip = null;
-        musicSource.volume = musicVolume;
+        musicSource.volume =
+            musicVolume;
 
         musicCoroutine = null;
     }
 
-    public void SetMusicVolume(float volume)
+    public void SetMusicVolume(
+        float volume)
     {
         musicVolume =
             Mathf.Clamp01(volume);
@@ -296,70 +589,14 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySFX(AudioClip clip)
-    {
-        if (clip == null ||
-            sfxSource == null)
-        {
-            return;
-        }
-
-        sfxSource.PlayOneShot(clip);
-    }
-
-    public void PlaySFX(
-        AudioClip clip,
-        float volume)
-    {
-        if (clip == null ||
-            sfxSource == null)
-        {
-            return;
-        }
-
-        sfxSource.PlayOneShot(
-            clip,
-            Mathf.Clamp01(volume)
-        );
-    }
-
-    public void PlayFootstep(bool isMoving)
-    {
-        if (footstepSource == null)
-            return;
-
-        if (!isMoving)
-        {
-            if (footstepSource.isPlaying)
-                footstepSource.Stop();
-
-            return;
-        }
-
-        if (footstepSound == null)
-            return;
-
-        if (footstepSource.clip !=
-            footstepSound)
-        {
-            footstepSource.clip =
-                footstepSound;
-        }
-
-        footstepSource.loop = true;
-
-        if (!footstepSource.isPlaying)
-            footstepSource.Play();
-    }
-
-    public void StopFootstep()
-    {
-        if (footstepSource != null)
-            footstepSource.Stop();
-    }
-
     private void OnDestroy()
     {
+        SceneManager.sceneUnloaded -=
+            OnSceneUnloaded;
+
+        SceneManager.sceneLoaded -=
+            OnSceneLoaded;
+
         if (Instance == this)
             Instance = null;
     }

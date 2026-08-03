@@ -6,19 +6,24 @@ public class ElementSkillButtonUI : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] private Image skillIcon;
-    [SerializeField] private GameObject lockOverlay;
-    [SerializeField] private TextMeshProUGUI keyText;
+    [SerializeField] private Image lockOverlay;
+
+    [SerializeField] private Image cooldownMask;
+    [SerializeField] private Image durationMask;
+
+    [SerializeField] private TextMeshProUGUI cooldownText;
     [SerializeField] private TextMeshProUGUI masteryText;
+    [SerializeField] private TextMeshProUGUI keyText;
 
     private ElementSkillData skillData;
     private int skillIndex;
 
-    public ElementSkillData SkillData =>
-        skillData;
+    private FireSkillController fireController;
 
-    public bool IsUnlocked =>
-        skillData != null &&
-        skillData.unlocked;
+    private void Update()
+    {
+        UpdateMasks();
+    }
 
     public void Setup(
         ElementSkillData data,
@@ -27,83 +32,178 @@ public class ElementSkillButtonUI : MonoBehaviour
         skillData = data;
         skillIndex = index;
 
-        gameObject.SetActive(true);
-
-        if (keyText != null)
+        if (skillData == null)
         {
-            keyText.text =
-                (skillIndex + 1).ToString();
+            Clear();
+            return;
         }
 
         if (skillIcon != null)
         {
-            skillIcon.sprite =
-                data != null
-                    ? data.icon
-                    : null;
-
-            skillIcon.enabled =
-                data != null;
+            skillIcon.enabled = true;
+            skillIcon.sprite = skillData.icon;
         }
 
+        if (keyText != null)
+        {
+            keyText.text =
+                (index + 1).ToString();
+        }
+
+        FindController();
         Refresh();
+    }
+
+    private void FindController()
+    {
+        if (fireController != null)
+            return;
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.Player != null)
+        {
+            fireController =
+                GameManager.Instance.Player
+                    .GetComponent<
+                        FireSkillController
+                    >();
+        }
+
+        if (fireController == null)
+        {
+            fireController =
+                FindFirstObjectByType<
+                    FireSkillController
+                >();
+        }
+    }
+
+    private void UpdateMasks()
+    {
+        if (skillData == null)
+        {
+            HideMasks();
+            return;
+        }
+
+        if (skillData.elementType !=
+            ElementType.Fire)
+        {
+            HideMasks();
+            return;
+        }
+
+        if (fireController == null)
+            FindController();
+
+        if (fireController == null)
+        {
+            HideMasks();
+            return;
+        }
+
+        float duration =
+            fireController.GetDurationNormalized(
+                skillData
+            );
+
+        float cooldown =
+            fireController.GetCooldownNormalized(
+                skillData
+            );
+
+        // DurationMask hoạt động độc lập.
+        if (durationMask != null)
+        {
+            bool showDuration =
+                duration > 0f;
+
+            durationMask.gameObject.SetActive(
+                showDuration
+            );
+
+            durationMask.fillAmount =
+                showDuration
+                    ? duration
+                    : 0f;
+        }
+
+        // CooldownMask cũng hoạt động độc lập.
+        if (cooldownMask != null)
+        {
+            bool showCooldown =
+                cooldown > 0f;
+
+            cooldownMask.gameObject.SetActive(
+                showCooldown
+            );
+
+            cooldownMask.fillAmount =
+                showCooldown
+                    ? cooldown
+                    : 0f;
+        }
+
+        if (cooldownText != null)
+        {
+            if (cooldown > 0f)
+            {
+                float remaining =
+                    fireController
+                        .GetRemainingCooldown(
+                            skillData
+                        );
+
+                cooldownText.text =
+                    Mathf.CeilToInt(
+                        remaining
+                    ).ToString();
+            }
+            else
+            {
+                cooldownText.text = "";
+            }
+        }
+    }
+    private void HideMasks()
+    {
+        if (durationMask != null)
+        {
+            durationMask.fillAmount = 0f;
+            durationMask.gameObject
+                .SetActive(false);
+        }
+
+        if (cooldownMask != null)
+        {
+            cooldownMask.fillAmount = 0f;
+            cooldownMask.gameObject
+                .SetActive(false);
+        }
+
+        if (cooldownText != null)
+            cooldownText.text = "";
     }
 
     public void Refresh()
     {
         if (skillData == null)
-        {
-            SetLocked(true);
-
-            if (masteryText != null)
-                masteryText.text = "";
-
             return;
-        }
 
-        bool unlocked =
-            skillData.unlocked;
-
-        if (!unlocked &&
-            ElementMasteryManager.Instance != null &&
-            ElementMasteryManager.Instance
-                .CanUnlock(skillData))
+        if (lockOverlay != null)
         {
-            ElementMasteryManager.Instance
-                .UnlockSkill(skillData);
-
-            unlocked =
-                skillData.unlocked;
+            lockOverlay.gameObject.SetActive(
+                !skillData.unlocked
+            );
         }
-
-        SetLocked(!unlocked);
 
         if (masteryText != null)
         {
             masteryText.text =
-                unlocked
+                skillData.unlocked
                     ? ""
                     : skillData.requiredMastery
                         .ToString();
-        }
-    }
-
-    private void SetLocked(bool locked)
-    {
-        if (lockOverlay != null)
-        {
-            lockOverlay.SetActive(locked);
-        }
-
-        if (skillIcon != null)
-        {
-            Color color =
-                skillIcon.color;
-
-            color.a =
-                locked ? 0.4f : 1f;
-
-            skillIcon.color = color;
         }
     }
 
@@ -117,13 +217,15 @@ public class ElementSkillButtonUI : MonoBehaviour
             skillIcon.enabled = false;
         }
 
-        if (keyText != null)
-            keyText.text = "";
+        HideMasks();
+
+        if (lockOverlay != null)
+            lockOverlay.gameObject.SetActive(false);
 
         if (masteryText != null)
             masteryText.text = "";
 
-        if (lockOverlay != null)
-            lockOverlay.SetActive(false);
+        if (keyText != null)
+            keyText.text = "";
     }
 }

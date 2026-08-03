@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class PlayerDash : MonoBehaviour
 {
@@ -11,88 +11,269 @@ public class PlayerDash : MonoBehaviour
     [Header("Stamina")]
     public float dashStaminaCost = 50f;
 
-    private PlayerStamina stamina;
+    [Header("Ability")]
+    public AbilityData skillData;
+    public SkillSlotUI slotUI;
 
     public bool IsDashing { get; private set; }
 
-    Rigidbody2D rb;
-    Players player;
-    Animator animator;
-    public AbilityData skillData;
+    private PlayerStamina stamina;
+    private Rigidbody2D rb;
+    private Players player;
+    private Animator animator;
+    private Attack attack;
+    private Health health;
 
-    public SkillSlotUI slotUI;
+    private Coroutine dashCoroutine;
+[Header("Dash Collision")]
+[SerializeField] private LayerMask obstacleLayer;
+[SerializeField] private float skinWidth = 0.03f;
 
-    void Start()
+private Collider2D playerCollider;
+
+private readonly RaycastHit2D[] dashHits =
+    new RaycastHit2D[8];
+    private void Awake()
     {
-        slotUI.Setup(skillData);
         rb = GetComponent<Rigidbody2D>();
         player = GetComponent<Players>();
         animator = GetComponent<Animator>();
         stamina = GetComponent<PlayerStamina>();
+        attack = GetComponent<Attack>();
+        health = GetComponent<Health>();
+        playerCollider = GetComponent<Collider2D>();
     }
 
-    void Update()
+    private void Start()
+    {
+        if (slotUI != null &&
+            skillData != null)
+        {
+            slotUI.Setup(skillData);
+        }
+    }
+
+    private void Update()
     {
         if (IsDashing)
             return;
+
+        if (Time.timeScale <= 0f)
+            return;
+
+        if (health != null &&
+            (health.IsDead ||
+             health.IsHurting))
+        {
+            return;
+        }
 
         bool pressDash =
             Input.GetKeyDown(KeyCode.L) ||
             Input.GetKeyDown(KeyCode.Mouse1);
 
-        if (pressDash &&
-            AbilityManager.Instance != null &&
-            AbilityManager.Instance.HasAbility(AbilityType.Dash) &&
-            AbilityManager.Instance.dash.cooldown <= 0f &&
-            !stamina.IsExhausted)
+        if (!pressDash)
+            return;
+
+        if (AbilityManager.Instance == null)
+            return;
+
+        if (!AbilityManager.Instance
+                .HasAbility(AbilityType.Dash))
         {
-            if (stamina.UseStamina(dashStaminaCost))
-            {
-                StartCoroutine(Dash());
-            }
+            return;
         }
+
+        if (AbilityManager.Instance
+                .dash.cooldown > 0f)
+        {
+            return;
+        }
+
+        if (stamina == null ||
+            stamina.IsExhausted)
+        {
+            return;
+        }
+
+        if (!stamina.UseStamina(
+                dashStaminaCost))
+        {
+            return;
+        }
+
+        dashCoroutine =
+            StartCoroutine(
+                DashRoutine()
+            );
     }
 
-    IEnumerator Dash()
+    private IEnumerator DashRoutine()
+{
+    IsDashing = true;
+
+    AbilityManager.Instance.dash.maxCooldown =
+        dashCooldown;
+
+    AbilityManager.Instance.dash.cooldown =
+        dashCooldown;
+
+    AbilityManager.Instance.dash.maxDuration =
+        dashDuration;
+
+    AbilityManager.Instance.dash.duration =
+        dashDuration;
+
+    Vector2 direction =
+        GetDashDirection();
+
+    if (animator != null &&
+        (attack == null ||
+         !attack.IsAttacking))
     {
-        IsDashing = true;
-
-        AbilityManager.Instance.dash.maxCooldown =
-            dashCooldown;
-
-        AbilityManager.Instance.dash.cooldown =
-            dashCooldown;
-
-        AbilityManager.Instance.dash.maxDuration =
-            dashDuration;
-
-        AbilityManager.Instance.dash.duration =
-            dashDuration;
-
-        Vector2 dir = player.LastDirection;
-
-        rb.linearVelocity = dir * dashSpeed;
+        animator.ResetTrigger("Dash");
         animator.SetTrigger("Dash");
+    }
 
-        float timer = dashDuration;
+    ContactFilter2D filter =
+        new ContactFilter2D();
 
-        while (timer > 0f)
+    filter.SetLayerMask(
+        obstacleLayer
+    );
+
+    filter.useTriggers = false;
+
+    float timer =
+        Mathf.Max(
+            0.01f,
+            dashDuration
+        );
+
+    while (timer > 0f)
+    {
+        float moveDistance =
+            dashSpeed *
+            Time.fixedDeltaTime;
+
+        if (playerCollider != null)
         {
-            rb.linearVelocity = dir * dashSpeed;
+            int hitCount =
+                playerCollider.Cast(
+                    direction,
+                    filter,
+                    dashHits,
+                    moveDistance + skinWidth
+                );
 
-            timer -= Time.deltaTime;
-            yield return null;
+            if (hitCount > 0)
+            {
+                float closestDistance =
+                    moveDistance;
+
+                for (int i = 0;
+                     i < hitCount;
+                     i++)
+                {
+                    if (dashHits[i].collider == null)
+                        continue;
+
+                    closestDistance =
+                        Mathf.Min(
+                            closestDistance,
+                            dashHits[i].distance
+                        );
+                }
+
+                float safeDistance =
+                    Mathf.Max(
+                        0f,
+                        closestDistance -
+                        skinWidth
+                    );
+
+                rb.MovePosition(
+                    rb.position +
+                    direction *
+                    safeDistance
+                );
+
+                break;
+            }
         }
 
-        rb.linearVelocity = Vector2.zero;
-        IsDashing = false;
+        rb.MovePosition(
+            rb.position +
+            direction *
+            moveDistance
+        );
+
+        timer -=
+            Time.fixedDeltaTime;
+
+        yield return new WaitForFixedUpdate();
+    }
+
+    FinishDash();
+}
+
+    private Vector2 GetDashDirection()
+    {
+        if (player != null &&
+            player.LastDirection.sqrMagnitude >
+            0.001f)
+        {
+            return player.LastDirection.normalized;
+        }
+
+        return Vector2.down;
+    }
+
+    private void FinishDash()
+{
+    if (rb != null)
+    {
+        rb.linearVelocity =
+            Vector2.zero;
+
+        rb.angularVelocity = 0f;
+    }
+
+    IsDashing = false;
+    dashCoroutine = null;
+}
+
+    public void CancelDash()
+    {
+        if (dashCoroutine != null)
+        {
+            StopCoroutine(
+                dashCoroutine
+            );
+
+            dashCoroutine = null;
+        }
+
+        FinishDash();
+
+        if (animator != null)
+            animator.ResetTrigger("Dash");
     }
 
     public void PlayDashSound()
     {
+        if (AudioManager.Instance == null)
+            return;
+
         AudioManager.Instance.PlaySFX(
-    AudioManager.Instance.dashSound,
-    AudioManager.Instance.dashVolume
-);
+            AudioManager.Instance.dashSound,
+            AudioManager.Instance.dashVolume
+        );
+    }
+
+    private void OnDisable()
+    {
+        if (IsDashing)
+            CancelDash();
     }
 }

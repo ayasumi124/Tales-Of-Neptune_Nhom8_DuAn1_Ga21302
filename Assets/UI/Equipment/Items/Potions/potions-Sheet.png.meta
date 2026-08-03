@@ -148,12 +148,12 @@ TextureImporter:
       name: potions-Sheet_0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 192
-        width: 14
-        height: 53
+        x: 26
+        y: 193
+        width: 12
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -170,12 +170,12 @@ TextureImporter:
       name: potions-Sheet_1
       rect:
         serializedVersion: 2
-        x: 63
-        y: 127
-        width: 66
-        height: 66
+        x: 86
+        y: 193
+        width: 20
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -192,12 +192,12 @@ TextureImporter:
       name: potions-Sheet_2
       rect:
         serializedVersion: 2
-        x: 85
-        y: 192
-        width: 22
-        height: 53
+        x: 145
+        y: 193
+        width: 30
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -214,12 +214,12 @@ TextureImporter:
       name: potions-Sheet_3
       rect:
         serializedVersion: 2
-        x: 144
-        y: 192
-        width: 32
-        height: 53
+        x: 207
+        y: 193
+        width: 34
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -236,12 +236,12 @@ TextureImporter:
       name: potions-Sheet_4
       rect:
         serializedVersion: 2
-        x: 206
-        y: 192
+        x: 14
+        y: 129
         width: 36
-        height: 53
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -258,12 +258,12 @@ TextureImporter:
       name: potions-Sheet_5
       rect:
         serializedVersion: 2
-        x: 13
+        x: 64
         y: 128
-        width: 38
-        height: 53
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -280,12 +280,12 @@ TextureImporter:
       name: potions-Sheet_6
       rect:
         serializedVersion: 2
-        x: 153
-        y: 128
-        width: 14
-        height: 53
+        x: 154
+        y: 129
+        width: 12
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -302,12 +302,12 @@ TextureImporter:
       name: potions-Sheet_7
       rect:
         serializedVersion: 2
-        x: 213
-        y: 128
-        width: 22
-        height: 53
+        x: 214
+        y: 129
+        width: 20
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -324,12 +324,12 @@ TextureImporter:
       name: potions-Sheet_8
       rect:
         serializedVersion: 2
-        x: 16
-        y: 64
-        width: 32
-        height: 53
+        x: 17
+        y: 65
+        width: 30
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -346,12 +346,12 @@ TextureImporter:
       name: potions-Sheet_9
       rect:
         serializedVersion: 2
-        x: 78
-        y: 64
-        width: 36
-        height: 53
+        x: 79
+        y: 65
+        width: 34
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -368,12 +368,12 @@ TextureImporter:
       name: potions-Sheet_10
       rect:
         serializedVersion: 2
-        x: 141
-        y: 64
-        width: 38
-        height: 53
+        x: 142
+        y: 65
+        width: 36
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -390,12 +390,12 @@ TextureImporter:
       name: potions-Sheet_11
       rect:
         serializedVersion: 2
-        x: 217
-        y: 64
-        width: 14
-        height: 53
+        x: 218
+        y: 65
+        width: 12
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -412,12 +412,12 @@ TextureImporter:
       name: potions-Sheet_12
       rect:
         serializedVersion: 2
-        x: 21
-        y: 0
-        width: 22
-        height: 53
+        x: 22
+        y: 1
+        width: 20
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -434,12 +434,12 @@ TextureImporter:
       name: potions-Sheet_13
       rect:
         serializedVersion: 2
-        x: 80
-        y: 0
-        width: 32
-        height: 53
+        x: 81
+        y: 1
+        width: 30
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -456,12 +456,12 @@ TextureImporter:
       name: potions-Sheet_14
       rect:
         serializedVersion: 2
-        x: 142
-        y: 0
-        width: 36
-        height: 53
+        x: 143
+        y: 1
+        width: 34
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -478,12 +478,12 @@ TextureImporter:
       name: potions-Sheet_15
       rect:
         serializedVersion: 2
-        x: 205
-        y: 0
-        width: 38
-        height: 53
+        x: 206
+        y: 1
+        width: 36
+        height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -500,7 +500,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: d6873659f03f6df499427cecf04689dc
     internalID: 0
     vertices: []
     indices: 
@@ -508,7 +508,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       potions-Sheet_0: -6059108330734355681
       potions-Sheet_1: -3018243283945118751

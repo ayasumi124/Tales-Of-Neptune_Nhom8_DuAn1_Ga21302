@@ -67,27 +67,40 @@ public class Players : MonoBehaviour
             return;
         }
 
-        Health health = GetComponent<Health>();
+        Health health =
+            GetComponent<Health>();
 
-        if (health != null && health.IsDead)
+        if (health != null &&
+            health.IsDead)
         {
-            rb.linearVelocity = Vector2.zero;
+            rb.linearVelocity =
+                Vector2.zero;
+
             return;
         }
 
-        if (attack != null &&
-            attack.IsAttacking)
-        {
-            rb.linearVelocity *= 0.9f;
-            return;
-        }
-
+        /*
+         * Dash tự điều khiển velocity.
+         */
         if (dash != null &&
             dash.IsDashing)
         {
             return;
         }
 
+        /*
+         * Attack tự điều khiển Lunge.
+         */
+        if (attack != null &&
+            attack.IsAttacking)
+        {
+            return;
+        }
+
+        /*
+         * Di chuyển bình thường.
+         * Đoạn này của bạn đã bị thiếu.
+         */
         rb.linearVelocity =
             new Vector2(
                 moveX * tocDo,
@@ -131,14 +144,21 @@ public class Players : MonoBehaviour
             return;
         }
 
-        if (attack != null && attack.IsAttacking)
-            return;
-
-        if (dash != null && dash.IsDashing)
+        /*
+ * Khi Dash hoặc Attack, script tương ứng
+ * đang điều khiển vận tốc và animation.
+ *
+ * Tuyệt đối không đặt velocity về 0 ở đây.
+ */
+        if (dash != null &&
+            dash.IsDashing)
         {
-            if (rb != null)
-                rb.linearVelocity = Vector2.zero;
+            return;
+        }
 
+        if (attack != null &&
+            attack.IsAttacking)
+        {
             return;
         }
 

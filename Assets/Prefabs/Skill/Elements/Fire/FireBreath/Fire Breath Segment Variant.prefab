@@ -8,6 +8,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 278768261391937154, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 278768261391937154, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 2025507539
+      objectReference: {fileID: 0}
     - target: {fileID: 5560302080520578360, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
       propertyPath: m_Name
       value: Fire Breath Segment Variant
@@ -83,20 +103,23 @@ MonoBehaviour:
   burnDamage: 25
   burnInterval: 1
   burnDuration: 10
-  damageRadius: 0.45
+  damageCheckInterval: 0.05
+  sameEnemyDamageInterval: 0.25
+  damageRadius: 0.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
   burnEffectPrefab: {fileID: 153977106896969154, guid: 9e230a8eea3596946b3ad17576256c43, type: 3}
   spriteRenderer: {fileID: 5504348711252727491}
-  animator: {fileID: 5773484594567008019}
+  spriteFacesRight: 1
+  baseScale: 0.3
+  scalePerLayer: 0.04
+  rightOffset: {x: 0, y: 0}
+  leftOffset: {x: 0, y: 0}
+  upOffset: {x: -0.15, y: 0}
+  downOffset: {x: 0.15, y: 0}
 --- !u!212 &5504348711252727491 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 3007980501546698395, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
-  m_PrefabInstance: {fileID: 7340059977750876248}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &5773484594567008019 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 3873843413291654987, guid: a0122b0883cfcea4e83db12707e8f77f, type: 3}
   m_PrefabInstance: {fileID: 7340059977750876248}
   m_PrefabAsset: {fileID: 0}
