@@ -4857,6 +4857,9 @@ MonoBehaviour:
   testHealthPotion: {fileID: 11400000, guid: 1ddd3a8e1f27cef4699170b0f2c3109b, type: 2}
   testManaPotion: {fileID: 11400000, guid: 8e3ccfafc3850184c9dff00c793c6b62, type: 2}
   testHeartContainer: {fileID: 11400000, guid: 84bc2f9b944bb3e48b21f6a7bc887483, type: 2}
+  enableTestInput: 1
+  addTestItemKey: 114
+  testAddAmount: 10
 --- !u!1 &2839307349472220769
 GameObject:
   m_ObjectHideFlags: 0

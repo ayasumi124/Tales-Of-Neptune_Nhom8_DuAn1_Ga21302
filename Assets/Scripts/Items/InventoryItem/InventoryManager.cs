@@ -55,6 +55,14 @@ public class InventoryManager : MonoBehaviour
 
     [SerializeField]
     private ItemData testHeartContainer;
+    [Header("Test Input")]
+    [SerializeField] private bool enableTestInput = true;
+
+    [SerializeField]
+    private KeyCode addTestItemKey =
+        KeyCode.R;
+
+    [SerializeField] private int testAddAmount = 10;
 
     public static event Action OnInventoryChanged;
 
@@ -95,6 +103,53 @@ public class InventoryManager : MonoBehaviour
             AddItem(testHeartContainer, 1);
         }
     }
+    private void Update()
+{
+    if (!enableTestInput)
+        return;
+
+    if (!Input.GetKeyDown(addTestItemKey))
+        return;
+
+    AddTestItems();
+}
+
+private void AddTestItems()
+{
+    int amount =
+        Mathf.Max(
+            1,
+            testAddAmount
+        );
+
+    if (testHealthPotion != null)
+    {
+        AddItem(
+            testHealthPotion,
+            amount
+        );
+    }
+
+    if (testManaPotion != null)
+    {
+        AddItem(
+            testManaPotion,
+            amount
+        );
+    }
+
+    if (testHeartContainer != null)
+    {
+        AddItem(
+            testHeartContainer,
+            amount
+        );
+    }
+
+    Debug.Log(
+        $"Đã thêm item test x{amount}."
+    );
+}
 
     private void InitializeInventory()
     {
