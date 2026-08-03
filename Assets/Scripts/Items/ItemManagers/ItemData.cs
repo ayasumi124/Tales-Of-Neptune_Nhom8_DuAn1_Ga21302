@@ -54,8 +54,8 @@ public class ItemData : ScriptableObject
     [Header("Audio")]
     public AudioClip pickupSound;
 
-    [Range(0f, 1f)]
-    public float pickupVolume = 1f;
+    [Range(0f, 20f)]
+    public float pickupVolume = 3f;
 
     public string ItemID => itemID;
     public string ItemName => itemName;
