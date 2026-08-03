@@ -297,6 +297,21 @@ public class Chest : MonoBehaviour
 
             ResumeGame();
         }
+        ChestReward chestReward =
+    GetComponent<ChestReward>();
+
+        if (chestReward != null)
+        {
+            bool success =
+                chestReward.GiveReward();
+
+            if (!success)
+            {
+                Debug.Log(
+                    "Không thể nhận phần thưởng."
+                );
+            }
+        }
     }
 
     private void OnValidate()

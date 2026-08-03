@@ -137,10 +137,10 @@ public class WorldItemPickup : MonoBehaviour
         if (AudioManager.Instance != null &&
      itemData.pickupSound != null)
         {
-            AudioManager.Instance.PlaySFX(
-                itemData.pickupSound,
-                itemData.pickupVolume
-            );
+            AudioManager.Instance.PlayItemSFX(
+    itemData.pickupSound,
+    itemData.pickupVolume
+);
         }
 
         Debug.Log(
