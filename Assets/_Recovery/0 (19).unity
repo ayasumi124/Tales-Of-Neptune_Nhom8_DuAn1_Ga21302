@@ -302238,10 +302238,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6626843244026516959, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: addTestItemsOnStart
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6847287477314407810, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
@@ -302249,10 +302245,6 @@ PrefabInstance:
     - target: {fileID: 6847287477314407810, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7127851986103212690, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
-      propertyPath: BoundingShape2D
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7347145476132200047, guid: 3944d739d2da46e45bb1f98ec1903215, type: 3}
       propertyPath: m_LocalPosition.x
