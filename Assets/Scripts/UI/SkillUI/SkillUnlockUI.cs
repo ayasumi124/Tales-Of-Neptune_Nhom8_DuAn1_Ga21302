@@ -6,17 +6,27 @@ using UnityEngine.UI;
 
 public class SkillUnlockUI : MonoBehaviour
 {
-    public static SkillUnlockUI Instance { get; private set; }
+    public static SkillUnlockUI Instance
+    {
+        get;
+        private set;
+    }
 
     public static Action OnSkillPanelClosed;
+    [Header("Animation States")]
+    [SerializeField] private string showStateName = "panelskillUI_show";
+    [SerializeField] private string hideStateName = "panelskillUI_hide";
 
     [Header("UI")]
-    public GameObject dimBackground;
-    public GameObject panel;
+    [SerializeField] private GameObject dimBackground;
+    [SerializeField] private GameObject panel;
 
-    public Image icon;
-    public TextMeshProUGUI skillName;
-    public TextMeshProUGUI description;
+    [SerializeField] private Image icon;
+    [SerializeField] private TextMeshProUGUI skillName;
+    [SerializeField] private TextMeshProUGUI description;
+
+    [Header("Animation")]
+    [SerializeField] private float closeDelay = 0.25f;
 
     private Animator animator;
     private CanvasGroup panelCanvasGroup;
@@ -26,12 +36,13 @@ public class SkillUnlockUI : MonoBehaviour
 
     private void Awake()
     {
-        // Không để UI mới từ scene khác ghi đè UI persistent cũ.
-        if (Instance != null && Instance != this)
+        if (Instance != null &&
+            Instance != this)
         {
             Debug.LogWarning(
-                "Phát hiện SkillUnlockUI trùng. Đã xóa bản mới: "
-                + gameObject.scene.name
+                "Phát hiện SkillUnlockUI trùng. " +
+                "Đã xóa bản mới: " +
+                gameObject.scene.name
             );
 
             Destroy(gameObject);
@@ -40,11 +51,7 @@ public class SkillUnlockUI : MonoBehaviour
 
         Instance = this;
 
-        if (panel != null)
-        {
-            animator = panel.GetComponent<Animator>();
-            panelCanvasGroup = panel.GetComponent<CanvasGroup>();
-        }
+        CacheComponents();
     }
 
     private void Start()
@@ -64,18 +71,83 @@ public class SkillUnlockUI : MonoBehaviour
         }
     }
 
-    public void ShowSkill(AbilityData data)
+    private void CacheComponents()
+    {
+        if (panel == null)
+            return;
+
+        if (animator == null)
+        {
+            animator =
+                panel.GetComponent<Animator>();
+        }
+
+        if (panelCanvasGroup == null)
+        {
+            panelCanvasGroup =
+                panel.GetComponent<CanvasGroup>();
+        }
+    }
+
+    public void ShowSkill(
+        AbilityData data)
+    {
+        ShowAbility(data);
+    }
+
+    public void ShowAbility(
+        AbilityData data)
     {
         if (data == null)
         {
-            Debug.LogError("AbilityData truyền vào ShowSkill đang null.");
+            Debug.LogError(
+                "AbilityData truyền vào ShowAbility đang null."
+            );
+
             return;
         }
+        LogPanelInfo("ABILITY");
 
-        Debug.Log(
-            "ShowSkill chạy trên object: " + gameObject.name +
-            " | Scene: " + gameObject.scene.name
+        ShowPanel(
+            data.icon,
+            data.skillName,
+            data.description
         );
+    }
+
+    public void ShowElement(
+        ElementData data)
+    {
+        if (data == null)
+        {
+            Debug.LogError(
+                "ElementData truyền vào ShowElement đang null."
+            );
+
+            return;
+        }
+        LogPanelInfo("ELEMENT");
+
+        ShowPanel(
+            data.elementIcon,
+            data.elementName,
+            data.description
+        );
+    }
+
+    private void ShowPanel(
+        Sprite rewardIcon,
+        string rewardName,
+        string rewardDescription)
+    {
+        if (panel == null)
+        {
+            Debug.LogError(
+                "SkillUnlockUI chưa được gán Panel."
+            );
+
+            return;
+        }
 
         if (closeCoroutine != null)
         {
@@ -85,68 +157,134 @@ public class SkillUnlockUI : MonoBehaviour
 
         waitingForClose = false;
 
-        // GameObject chứa script phải luôn hoạt động.
         if (!gameObject.activeSelf)
+        {
             gameObject.SetActive(true);
+        }
 
         if (dimBackground != null)
-            dimBackground.SetActive(true);
-
-        if (panel != null)
-            panel.SetActive(true);
-
-        // Lấy lại component sau khi scene/load thay đổi.
-        if (panel != null)
         {
-            if (animator == null)
-                animator = panel.GetComponent<Animator>();
+            dimBackground.SetActive(true);
+        }
 
-            if (panelCanvasGroup == null)
-                panelCanvasGroup = panel.GetComponent<CanvasGroup>();
+        panel.SetActive(true);
 
-            // Ép Panel trở về trạng thái nhìn thấy.
-            panel.transform.localScale = Vector3.one;
+        CacheComponents();
 
-            if (panelCanvasGroup != null)
-            {
-                panelCanvasGroup.alpha = 1f;
-                panelCanvasGroup.interactable = true;
-                panelCanvasGroup.blocksRaycasts = true;
-            }
+        panel.transform.localScale =
+            Vector3.one;
+
+        if (panelCanvasGroup != null)
+        {
+            panelCanvasGroup.alpha = 1f;
+            panelCanvasGroup.interactable = true;
+            panelCanvasGroup.blocksRaycasts = true;
         }
 
         if (icon != null)
         {
-            icon.enabled = true;
-            icon.sprite = data.icon;
+            icon.sprite =
+                rewardIcon;
+
+            icon.enabled =
+                rewardIcon != null;
+
+            icon.preserveAspect =
+                true;
+
+            Color iconColor =
+                icon.color;
+
+            iconColor.a = 1f;
+            icon.color = iconColor;
         }
 
         if (skillName != null)
-            skillName.text = data.skillName;
+        {
+            skillName.text =
+                string.IsNullOrWhiteSpace(
+                    rewardName)
+                    ? "Unknown Skill"
+                    : rewardName;
+        }
 
         if (description != null)
-            description.text = data.description;
+        {
+            description.text =
+                rewardDescription ?? "";
+        }
 
         if (animator != null)
         {
+            /*
+             * Tắt Animator trước để nó không giữ lại
+             * scale 0.15 từ animation Hide.
+             */
+            animator.enabled = false;
+
+            panel.transform.localScale = Vector3.one;
+            panel.transform.localRotation = Quaternion.identity;
+
             animator.enabled = true;
             animator.speed = 1f;
 
             animator.ResetTrigger("Hide");
             animator.ResetTrigger("Show");
-            animator.SetTrigger("Show");
+
+            /*
+             * Ép animation Show chạy lại từ frame đầu,
+             * không phụ thuộc state trước đó.
+             */
+            animator.Play(
+                showStateName,
+                0,
+                0f
+            );
+
+            animator.Update(0f);
+        }
+        else
+        {
+            panel.transform.localScale = Vector3.one;
         }
 
         waitingForClose = true;
 
-        if (AudioManager.Instance != null)
+        if (AudioManager.Instance != null &&
+            AudioManager.Instance.skillUnlockSound != null)
         {
             AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.skillUnlockSound
+                AudioManager.Instance
+                    .skillUnlockSound
             );
         }
+
+        Debug.Log(
+            $"Hiện SkillUnlockUI: {rewardName}"
+        );
     }
 
+    private void LogPanelInfo(string rewardType)
+    {
+        RectTransform panelRect =
+            panel != null
+                ? panel.GetComponent<RectTransform>()
+                : null;
+
+        Debug.Log(
+            $"===== {rewardType} =====\n" +
+            $"SkillUnlockUI object: {gameObject.name}\n" +
+            $"Scene: {gameObject.scene.name}\n" +
+            $"Panel: {(panel != null ? panel.name : "NULL")}\n" +
+            $"Panel parent: " +
+            $"{(panel != null && panel.transform.parent != null ? panel.transform.parent.name : "NULL")}\n" +
+            $"Local scale: " +
+            $"{(panelRect != null ? panelRect.localScale.ToString() : "NULL")}\n" +
+            $"Lossy scale: " +
+            $"{(panelRect != null ? panelRect.lossyScale.ToString() : "NULL")}",
+            this
+        );
+    }
     private void HideSkill()
     {
         if (!waitingForClose)
@@ -154,10 +292,12 @@ public class SkillUnlockUI : MonoBehaviour
 
         waitingForClose = false;
 
-        if (AudioManager.Instance != null)
+        if (AudioManager.Instance != null &&
+            AudioManager.Instance.skillCloseSound != null)
         {
             AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.skillCloseSound
+                AudioManager.Instance
+                    .skillCloseSound
             );
         }
 
@@ -169,20 +309,42 @@ public class SkillUnlockUI : MonoBehaviour
         }
 
         if (closeCoroutine != null)
+        {
             StopCoroutine(closeCoroutine);
+        }
 
-        closeCoroutine = StartCoroutine(ClosePanel());
+        closeCoroutine =
+            StartCoroutine(
+                ClosePanelRoutine()
+            );
     }
 
-    private IEnumerator ClosePanel()
+    private IEnumerator ClosePanelRoutine()
     {
-        yield return new WaitForSecondsRealtime(0.25f);
+        yield return new WaitForSecondsRealtime(
+            Mathf.Max(0f, closeDelay)
+        );
+
+        if (animator != null)
+        {
+            animator.enabled = false;
+        }
+
+        if (panel != null)
+        {
+            panel.transform.localScale =
+                Vector3.one;
+
+            panel.SetActive(false);
+        }
+
+        if (animator != null)
+        {
+            animator.enabled = true;
+        }
 
         if (dimBackground != null)
             dimBackground.SetActive(false);
-
-        if (panel != null)
-            panel.SetActive(false);
 
         closeCoroutine = null;
 
@@ -199,13 +361,30 @@ public class SkillUnlockUI : MonoBehaviour
 
         waitingForClose = false;
 
-        if (animator == null && panel != null)
-            animator = panel.GetComponent<Animator>();
+        CacheComponents();
 
         if (animator != null)
         {
+            animator.enabled = false;
+
             animator.ResetTrigger("Show");
             animator.ResetTrigger("Hide");
+        }
+
+        if (panel != null)
+        {
+            panel.transform.localScale =
+                Vector3.one;
+
+            panel.transform.localRotation =
+                Quaternion.identity;
+        }
+
+        if (panelCanvasGroup != null)
+        {
+            panelCanvasGroup.alpha = 0f;
+            panelCanvasGroup.interactable = false;
+            panelCanvasGroup.blocksRaycasts = false;
         }
 
         if (dimBackground != null)
@@ -214,13 +393,18 @@ public class SkillUnlockUI : MonoBehaviour
         if (panel != null)
             panel.SetActive(false);
 
-        // Không được dùng gameObject.SetActive(false).
+        /*
+         * Bật lại để lần sau ShowPanel có thể Play state.
+         */
+        if (animator != null)
+            animator.enabled = true;
     }
 
     private void OnDestroy()
     {
-        // Chỉ xóa Instance khi đúng object hiện tại bị Destroy.
         if (Instance == this)
+        {
             Instance = null;
+        }
     }
 }

@@ -4,65 +4,173 @@ using UnityEngine.UI;
 
 public class CoinUI : MonoBehaviour
 {
-    public static CoinUI Instance;
-
-    public Image coinIcon;
-
-    [Header("UI")]
-    public GameObject coinPanel;
-    public TextMeshProUGUI coinText;
-
-    [Header("Hide")]
-    public float hideDelay = 5f;
-
-    private int coin;
-    private float timer;
-
-    void Awake()
+    public static CoinUI Instance
     {
-        Instance = this;
+        get;
+        private set;
     }
 
-    void Start()
+    [Header("UI")]
+    [SerializeField] private GameObject coinPanel;
+    [SerializeField] private Image coinIcon;
+    [SerializeField] private TextMeshProUGUI coinText;
+
+    [Header("Hide")]
+    [SerializeField] private float hideDelay = 5f;
+
+    [Header("Data")]
+    [SerializeField] private int coin;
+
+    private float hideTimer;
+    private bool panelVisible;
+
+    public int Coin => coin;
+
+    private void Awake()
     {
-        coin = 0;
+        if (Instance != null &&
+            Instance != this)
+        {
+            Debug.LogWarning(
+                $"CoinUI trùng, xóa bản mới ở scene: " +
+                $"{gameObject.scene.name}"
+            );
+
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
+        /*
+         * Chỉ dùng dòng này nếu CoinUI là root object.
+         * Nếu CoinUI nằm dưới Canvas persistent thì
+         * Canvas cha đã DontDestroyOnLoad là đủ.
+         */
+        if (transform.parent == null)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+
+    private void Start()
+    {
+        /*
+         * Không đặt coin = 0 ở đây.
+         * Nếu đặt lại, mỗi lần scene tạo UI mới
+         * coin sẽ bị reset.
+         */
+        coin = Mathf.Max(0, coin);
 
         UpdateUI();
 
-        coinPanel.SetActive(false);
-    }
-
-    void Update()
-    {
-        if (!coinPanel.activeSelf)
-            return;
-
-        timer -= Time.deltaTime;
-
-        if (timer <= 0)
+        if (coinPanel != null)
         {
             coinPanel.SetActive(false);
         }
     }
 
+    private void Update()
+    {
+        if (!panelVisible)
+            return;
+
+        hideTimer -= Time.unscaledDeltaTime;
+
+        if (hideTimer <= 0f)
+        {
+            HidePanel();
+        }
+    }
+
     public void AddCoin(int amount)
     {
+        if (amount <= 0)
+            return;
+
         coin += amount;
 
         UpdateUI();
+        ShowPanel();
 
-        coinPanel.SetActive(true);
-
-        timer = hideDelay;
+        Debug.Log(
+            $"Đã cộng {amount} coin. Tổng coin: {coin}"
+        );
     }
 
-    void UpdateUI()
+    public bool SpendCoin(int amount)
     {
-        coinText.text = coin.ToString();
+        if (amount <= 0)
+            return false;
+
+        if (coin < amount)
+        {
+            Debug.Log(
+                $"Không đủ coin. Cần {amount}, hiện có {coin}."
+            );
+
+            return false;
+        }
+
+        coin -= amount;
+
+        UpdateUI();
+        ShowPanel();
+
+        return true;
     }
 
-    public int GetCoin()
+    public bool HasEnoughCoin(int amount)
     {
-        return coin;
+        return amount >= 0 &&
+               coin >= amount;
+    }
+
+    public void SetCoin(int amount)
+    {
+        coin = Mathf.Max(0, amount);
+
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        if (coinText != null)
+        {
+            coinText.text = coin.ToString();
+        }
+    }
+
+    private void ShowPanel()
+    {
+        panelVisible = true;
+        hideTimer = Mathf.Max(0f, hideDelay);
+
+        if (coinPanel != null)
+        {
+            coinPanel.SetActive(true);
+        }
+    }
+
+    private void HidePanel()
+    {
+        panelVisible = false;
+
+        if (coinPanel != null)
+        {
+            coinPanel.SetActive(false);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        /*
+         * Bản duplicate bị Destroy không được phép
+         * xóa Instance của bản persistent.
+         */
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

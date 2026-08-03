@@ -8,18 +8,21 @@ public class ElementEquipmentManager : MonoBehaviour
         private set;
     }
 
-    [Header("Element Slots")]
-    [SerializeField] private ElementSlotUI slot4;
-    [SerializeField] private ElementSlotUI slot5;
+    [Header("Element Slot")]
+    [SerializeField]
+    private ElementSlotUI slot5;
 
-    [Header("Slot Keys")]
-    [SerializeField] private KeyCode slot4Key =
-        KeyCode.F;
+    [Header("Slot Key")]
+    [SerializeField]
+    private KeyCode slot5Key =
+        KeyCode.Q;
 
-    [SerializeField] private KeyCode slot5Key =
-        KeyCode.R;
+    [Header("Equipped Element")]
+    [SerializeField]
+    private ElementData equippedElement;
 
-    private bool initialized;
+    public ElementData EquippedElement =>
+        equippedElement;
 
     private void Awake()
     {
@@ -31,195 +34,173 @@ public class ElementEquipmentManager : MonoBehaviour
         }
 
         Instance = this;
-
-        InitializeSlots();
     }
 
-    private void InitializeSlots()
+    private void Start()
     {
-        if (initialized)
-            return;
-
-        initialized = true;
-
-        InitializeSlot(slot4);
-        InitializeSlot(slot5);
-    }
-
-    private void InitializeSlot(
-        ElementSlotUI slot)
-    {
-        if (slot == null)
-            return;
-
-        slot.Clear();
-        slot.gameObject.SetActive(false);
+        RefreshSlot();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(slot4Key))
-        {
-            TryOpenElementSlot(slot4);
-        }
-
         if (Input.GetKeyDown(slot5Key))
         {
-            TryOpenElementSlot(slot5);
+            TryOpenElementSlot();
         }
     }
 
-    private void TryOpenElementSlot(
-        ElementSlotUI slot)
+    private void TryOpenElementSlot()
     {
-        if (slot == null ||
-            !slot.gameObject.activeInHierarchy ||
-            slot.IsEmpty)
+        if (slot5 == null ||
+            !slot5.gameObject.activeInHierarchy ||
+            slot5.IsEmpty)
         {
             return;
         }
 
         OpenElement(
-            slot.ElementData
+            slot5.ElementData
         );
     }
 
     public bool EquipElement(
         ElementData element)
     {
+        return EquipElementToSlot(
+            element,
+            5
+        );
+    }
+
+    public bool EquipElementToSlot(
+        ElementData element,
+        int slotNumber)
+    {
         if (element == null)
         {
             Debug.LogError(
-                "ElementData truyền vào EquipElement đang null."
+                "ElementData truyền vào đang null."
             );
 
             return false;
         }
 
-        if (IsElementEquipped(element))
+        if (slotNumber != 5)
         {
-            Debug.Log(
-                $"{element.elementName} đã được trang bị."
+            Debug.LogError(
+                "Element chỉ được trang bị vào Slot 5."
             );
 
-            return true;
+            return false;
         }
 
-        if (slot4 != null &&
-            slot4.IsEmpty)
+        if (slot5 == null)
         {
-            ActivateSlot(
-                slot4,
-                element,
-                slot4Key
+            Debug.LogError(
+                "ElementEquipmentManager chưa gán Slot 5."
             );
 
-            return true;
+            return false;
         }
 
-        if (slot5 != null &&
-            slot5.IsEmpty)
-        {
-            ActivateSlot(
-                slot5,
-                element,
-                slot5Key
-            );
+        equippedElement =
+            element;
 
-            return true;
+        ActivateParents(
+            slot5.transform
+        );
+
+        slot5.gameObject.SetActive(true);
+
+        slot5.Setup(
+            element,
+            slot5Key
+        );
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .PlayInventoryEquip();
         }
 
         Debug.Log(
-            $"Slot4 và Slot5 đã đầy. " +
-            $"{element.elementName} sẽ được đưa vào Inventory."
+            $"Đã trang bị Element " +
+            $"{element.elementName} " +
+            "vào Slot 5."
         );
 
-        // Giai đoạn sau:
-        // ElementInventoryUI.Instance.AddElement(element);
-
-        return false;
+        return true;
     }
 
-    public void EquipElementToSlot(
-        ElementData element,
+    public void UnequipElement()
+    {
+        ElementData removedElement =
+            equippedElement;
+
+        equippedElement = null;
+
+        if (slot5 != null)
+        {
+            slot5.Clear();
+            slot5.gameObject.SetActive(false);
+        }
+
+        if (ElementSkillBarUI.Instance != null &&
+            ElementSkillBarUI.Instance
+                .CurrentElement == removedElement)
+        {
+            ElementSkillBarUI.Instance.Hide();
+        }
+
+        Debug.Log(
+            "Đã tháo Element khỏi Slot 5."
+        );
+    }
+
+    public void UnequipElement(
         int slotNumber)
     {
-        if (element == null)
-            return;
-
-        switch (slotNumber)
+        if (slotNumber != 5)
         {
-            case 4:
-                ActivateSlot(
-                    slot4,
-                    element,
-                    slot4Key
-                );
-                break;
+            Debug.LogError(
+                "Element chỉ tồn tại ở Slot 5."
+            );
 
-            case 5:
-                ActivateSlot(
-                    slot5,
-                    element,
-                    slot5Key
-                );
-                break;
-
-            default:
-                Debug.LogError(
-                    "Element chỉ được trang bị vào Slot4 hoặc Slot5."
-                );
-                break;
+            return;
         }
+
+        UnequipElement();
     }
 
-    private void ActivateSlot(
-        ElementSlotUI slot,
-        ElementData element,
-        KeyCode key)
+    public bool IsElementEquipped(
+        ElementData element)
     {
-        if (slot == null ||
-            element == null)
+        return element != null &&
+               equippedElement == element;
+    }
+
+    public void RefreshSlot()
+    {
+        if (slot5 == null)
+            return;
+
+        if (equippedElement == null)
         {
+            slot5.Clear();
+            slot5.gameObject.SetActive(false);
             return;
         }
 
         ActivateParents(
-            slot.transform
+            slot5.transform
         );
 
-        slot.gameObject.SetActive(true);
+        slot5.gameObject.SetActive(true);
 
-        slot.Setup(
-            element,
-            key
+        slot5.Setup(
+            equippedElement,
+            slot5Key
         );
-
-        Debug.Log(
-            $"Đã trang bị {element.elementName} " +
-            $"vào {slot.gameObject.name}."
-        );
-    }
-
-    private void ActivateParents(
-        Transform target)
-    {
-        if (target == null)
-            return;
-
-        Transform current =
-            target.parent;
-
-        while (current != null &&
-               current != transform.root)
-        {
-            if (!current.gameObject.activeSelf)
-            {
-                current.gameObject.SetActive(true);
-            }
-
-            current = current.parent;
-        }
     }
 
     private void OpenElement(
@@ -249,51 +230,38 @@ public class ElementEquipmentManager : MonoBehaviour
             .ShowElement(element);
     }
 
-    private bool IsElementEquipped(
-        ElementData element)
+    private void ActivateParents(
+        Transform target)
     {
-        bool inSlot4 =
-            slot4 != null &&
-            slot4.ElementData == element;
-
-        bool inSlot5 =
-            slot5 != null &&
-            slot5.ElementData == element;
-
-        return inSlot4 || inSlot5;
-    }
-
-    public void UnequipElement(
-        int slotNumber)
-    {
-        ElementSlotUI targetSlot = null;
-
-        switch (slotNumber)
-        {
-            case 4:
-                targetSlot = slot4;
-                break;
-
-            case 5:
-                targetSlot = slot5;
-                break;
-
-            default:
-                return;
-        }
-
-        if (targetSlot == null)
+        if (target == null)
             return;
 
-        ElementData removedElement =
-            targetSlot.ElementData;
+        Transform current =
+            target.parent;
 
-        targetSlot.Clear();
-        targetSlot.gameObject.SetActive(false);
+        while (current != null &&
+               current != transform.root)
+        {
+            if (!current.gameObject.activeSelf)
+            {
+                current.gameObject.SetActive(true);
+            }
 
-        if (ElementSkillBarUI.Instance != null &&
-            ElementSkillBarUI.Instance
-                .CurrentElement == removedElement)
+            current = current.parent;
+        }
+    }
+
+    public void ClearElement()
+    {
+        equippedElement = null;
+
+        if (slot5 != null)
+        {
+            slot5.Clear();
+            slot5.gameObject.SetActive(false);
+        }
+
+        if (ElementSkillBarUI.Instance != null)
         {
             ElementSkillBarUI.Instance.Hide();
         }
@@ -302,6 +270,8 @@ public class ElementEquipmentManager : MonoBehaviour
     private void OnDestroy()
     {
         if (Instance == this)
+        {
             Instance = null;
+        }
     }
 }
