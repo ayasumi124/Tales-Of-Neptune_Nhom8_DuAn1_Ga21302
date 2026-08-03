@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 7450391081814005210}
   - component: {fileID: 7947812308503660795}
   - component: {fileID: 6129834820399778356}
+  - component: {fileID: 1588249608872232504}
   m_Layer: 6
   m_Name: Slime_Idle_0
   m_TagString: Enermy
@@ -481,6 +482,38 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1588249608872232504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1864687900062010503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e9f2ccaf89ba44bbaf28f1c79bb758, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyItemDrop
+  worldItemPickupPrefab: {fileID: 7594625257939238490, guid: 95ca19bb02e04594a8cd3efc079c9385, type: 3}
+  lootEntries:
+  - itemData: {fileID: 11400000, guid: 1ddd3a8e1f27cef4699170b0f2c3109b, type: 2}
+    dropChance: 10
+    minQuantity: 1
+    maxQuantity: 1
+  - itemData: {fileID: 11400000, guid: 8e3ccfafc3850184c9dff00c793c6b62, type: 2}
+    dropChance: 10
+    minQuantity: 1
+    maxQuantity: 1
+  - itemData: {fileID: 11400000, guid: 84bc2f9b944bb3e48b21f6a7bc887483, type: 2}
+    dropChance: 0
+    minQuantity: 0
+    maxQuantity: 0
+  - itemData: {fileID: 0}
+    dropChance: 0
+    minQuantity: 0
+    maxQuantity: 0
+  dropPoint: {fileID: 0}
+  scatterRadius: 0.4
 --- !u!1 &3820028505791273046
 GameObject:
   m_ObjectHideFlags: 0

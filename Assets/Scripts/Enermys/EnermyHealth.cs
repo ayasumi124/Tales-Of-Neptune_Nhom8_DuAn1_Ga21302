@@ -69,7 +69,7 @@ public class EnermyHealth : MonoBehaviour
                 damage,
                 transform.position + Vector3.up * 0.8f);
         }
-        
+
     }
     void ShowHP()
     {
@@ -123,6 +123,13 @@ public class EnermyHealth : MonoBehaviour
         if (isDead)
             return;
         isDead = true;
+        EnermyItemDrop itemDrop =
+    GetComponent<EnermyItemDrop>();
+
+        if (itemDrop != null)
+        {
+            itemDrop.DropItems();
+        }
 
         animator.SetTrigger("Death");
         Invoke(nameof(ForceDestroy), 2f);
