@@ -36,7 +36,15 @@ public class SkeletonSlashAttack :
     private float projectileDelay = 0.25f;
 
     private bool projectileSpawned;
+    private EnermyHealth health;
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        health =
+            GetComponent<EnermyHealth>();
+    }
     protected override void OnAttackStarted()
     {
         projectileSpawned = false;
@@ -78,12 +86,19 @@ public class SkeletonSlashAttack :
     // Animation Event đặt tại frame vung kiếm
     public void SpawnSlashProjectile()
     {
+
         if (!isAttacking)
             return;
 
+        if (health != null &&
+            health.IsHurting)
+        {
+            CancelAttack();
+            return;
+        }
+
         if (projectileSpawned)
             return;
-
         if (slashPrefab == null)
         {
             Debug.LogError(
@@ -176,6 +191,7 @@ public class SkeletonSlashAttack :
             slashObject
         );
     }
+
 
     public override void EndAttack()
     {

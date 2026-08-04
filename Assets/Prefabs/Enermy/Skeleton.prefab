@@ -521,7 +521,7 @@ MonoBehaviour:
   attackTrigger: Attack
   slashSpawnPoint: {fileID: 7607142104434093044}
   slashPrefab: {fileID: 3395659506950850694, guid: b06a36d865f9e70479039e27efdbadf4, type: 3}
-  projectileDamage: 2
+  projectileDamage: 1
   projectileSpeed: 6
   useAnimationEvent: 1
   projectileDelay: 0.25

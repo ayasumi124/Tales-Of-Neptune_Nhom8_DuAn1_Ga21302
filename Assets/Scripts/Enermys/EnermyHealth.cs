@@ -64,6 +64,7 @@ public class EnermyHealth : MonoBehaviour
 
     private EnermyAttack normalAttack;
     private EnermyAttackBase specialAttack;
+    public bool IsHurting { get; private set; }
 
     private Coroutine hurtCoroutine;
     private Coroutine knockbackCoroutine;
@@ -273,6 +274,7 @@ public class EnermyHealth : MonoBehaviour
 
     private IEnumerator HurtRoutine()
     {
+        IsHurting = true;
         if (normalAttack != null)
         {
             normalAttack.CancelAttack();
@@ -309,10 +311,12 @@ public class EnermyHealth : MonoBehaviour
         }
 
         hurtCoroutine = null;
+        IsHurting = false;
     }
 
     public void EndHurt()
     {
+        IsHurting = false;
         if (isDead)
             return;
 
@@ -363,6 +367,7 @@ public class EnermyHealth : MonoBehaviour
 
     private void Die()
     {
+        IsHurting = false;
         if (isDead)
             return;
 

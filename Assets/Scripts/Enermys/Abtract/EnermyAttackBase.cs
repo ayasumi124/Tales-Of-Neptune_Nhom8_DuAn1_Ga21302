@@ -32,7 +32,7 @@ public abstract class EnermyAttackBase : MonoBehaviour
 
     protected bool isAttacking;
     protected float cooldownTimer;
-
+    protected EnermyHealth health;
     private Coroutine attackCoroutine;
 
     public bool IsAttacking =>
@@ -55,6 +55,11 @@ public abstract class EnermyAttackBase : MonoBehaviour
 
     protected virtual void CacheComponents()
     {
+        if (health == null)
+        {
+            health =
+                GetComponent<EnermyHealth>();
+        }
         if (movement == null)
         {
             movement =
@@ -76,6 +81,11 @@ public abstract class EnermyAttackBase : MonoBehaviour
 
     protected virtual bool CanStartAttack()
     {
+        if (health != null &&
+            health.IsHurting)
+        {
+            return false;
+        }
         if (isAttacking)
             return false;
 
