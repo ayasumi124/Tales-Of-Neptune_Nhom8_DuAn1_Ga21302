@@ -17,10 +17,10 @@ GameObject:
   - component: {fileID: 243117127134320416}
   - component: {fileID: 5088090117542271298}
   - component: {fileID: 8585157797995810004}
-  - component: {fileID: 6390951041599858689}
   - component: {fileID: 4635225780731794488}
   - component: {fileID: 6008080852566421305}
-  - component: {fileID: 6523612923182049694}
+  - component: {fileID: 442805700103191579}
+  - component: {fileID: 1237828555163398203}
   m_Layer: 6
   m_Name: Skeleton
   m_TagString: Enermy
@@ -151,7 +151,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &9203038825791255570
 CapsuleCollider2D:
@@ -187,8 +187,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.00012397766, y: -0.011189938}
-  m_Size: {x: 0.35912704, y: 0.35912704}
+  m_Offset: {x: -0.028489113, y: -0.0071378946}
+  m_Size: {x: 0.41585732, y: 0.513108}
   m_Direction: 0
 --- !u!114 &2511498753273345357
 MonoBehaviour:
@@ -206,11 +206,15 @@ MonoBehaviour:
   currentHealth: 0
   deathDelay: 1
   hpCanvas: {fileID: 7823013287755213746}
+  hpDisplayTime: 2
+  hurtLockTime: 0.2
   coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
   dropRate: 0.8
+  minCoinCount: 1
+  maxCoinCount: 1
+  coinScatterRadius: 0.25
   knockbackForce: 10
   knockbackTime: 0.1
-  manaReward: 10
 --- !u!114 &243117127134320416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -239,9 +243,9 @@ MonoBehaviour:
   footstepSource: {fileID: 4635225780731794488}
   sfxSource: {fileID: 6008080852566421305}
   footstepClip: {fileID: 0}
-  attackClip: {fileID: 8300000, guid: f16fc7bea6ef85549b0513f5046263ef, type: 3}
-  hurtClip: {fileID: 8300000, guid: bc73b132c56a44e4aa8d36d2c5c82d95, type: 3}
-  deathClip: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
+  attackClip: {fileID: 8300000, guid: 87eee8bf7c04fda46bd80534d016063e, type: 3}
+  hurtClip: {fileID: 8300000, guid: 7f16cdce04a1fd944b6200caec494a11, type: 3}
+  deathClip: {fileID: 8300000, guid: f26dac696b55b304ea3a86aeb98c3054, type: 3}
 --- !u!114 &8585157797995810004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,40 +258,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ef9af40f4dbff45b8442b646460357, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyMovement
-  player: {fileID: 0}
-  moveSpeed: 1
-  detectRange: 2
-  attackRange: 0.35
   target: {fileID: 0}
   targetTags:
   - Player
   - Clone
+  targetSearchInterval: 0.25
+  player: {fileID: 0}
+  moveSpeed: 1
+  detectRange: 2
+  attackRange: 0.35
+  arrivalDistance: 0.15
   roamRadius: 2
   idleTime: 2
-  CanMove: 1
-  externalVelocity: {x: 0, y: 0}
+  wanderImmediatelyOnStart: 1
   knockbackDecay: 4
---- !u!114 &6390951041599858689
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 292828303164793014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fe9f5748438b9f4ca39c4f598d78c1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnermyAttack
-  movement: {fileID: 8585157797995810004}
-  attackPoint: {fileID: 7607142104434093044}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  attackDistance: 0.25
-  attackRadius: 0.15
-  attackCooldown: 1
-  damage: 3
+  externalVelocity: {x: 0, y: 0}
+  CanMove: 1
 --- !u!82 &4635225780731794488
 AudioSource:
   m_ObjectHideFlags: 0
@@ -300,7 +286,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.521
   m_Pitch: 1
   Loop: 0
@@ -482,7 +468,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &6523612923182049694
+--- !u!114 &442805700103191579
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -493,14 +479,10 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8e9f2ccaf89ba44bbaf28f1c79bb758, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyItemDrop
-  worldItemPickupPrefab: {fileID: 7594625257939238490, guid: 95ca19bb02e04594a8cd3efc079c9385, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::EnermyItemDrop
+  worldItemPickupPrefab: {fileID: 8606729471579303333, guid: 7a08fde8af373934da12ffb92910a3dd, type: 3}
   lootEntries:
   - itemData: {fileID: 11400000, guid: 1ddd3a8e1f27cef4699170b0f2c3109b, type: 2}
-    dropChance: 10
-    minQuantity: 1
-    maxQuantity: 1
-  - itemData: {fileID: 11400000, guid: 8e3ccfafc3850184c9dff00c793c6b62, type: 2}
     dropChance: 10
     minQuantity: 1
     maxQuantity: 1
@@ -508,12 +490,41 @@ MonoBehaviour:
     dropChance: 0
     minQuantity: 0
     maxQuantity: 0
-  - itemData: {fileID: 0}
+  - itemData: {fileID: 11400000, guid: 84bc2f9b944bb3e48b21f6a7bc887483, type: 2}
+    dropChance: 0
+    minQuantity: 0
+    maxQuantity: 0
+  - itemData: {fileID: 11400000, guid: 84bc2f9b944bb3e48b21f6a7bc887483, type: 2}
     dropChance: 0
     minQuantity: 0
     maxQuantity: 0
   dropPoint: {fileID: 0}
   scatterRadius: 0.4
+--- !u!114 &1237828555163398203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292828303164793014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 774e805ed6304c549a58ba86f8c1fbae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkeletonSlashAttack
+  movement: {fileID: 8585157797995810004}
+  animator: {fileID: 8048794286040021762}
+  enemyAudio: {fileID: 5088090117542271298}
+  attackRange: 1.5
+  attackCooldown: 1
+  attackLockTime: 0.6
+  attackTrigger: Attack
+  slashSpawnPoint: {fileID: 7607142104434093044}
+  slashPrefab: {fileID: 3395659506950850694, guid: b06a36d865f9e70479039e27efdbadf4, type: 3}
+  projectileDamage: 2
+  projectileSpeed: 6
+  useAnimationEvent: 1
+  projectileDelay: 0.25
 --- !u!1 &1058383548838551858
 GameObject:
   m_ObjectHideFlags: 0

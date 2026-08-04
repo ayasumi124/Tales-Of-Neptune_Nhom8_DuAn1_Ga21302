@@ -1,66 +1,85 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnermyAttack : MonoBehaviour
 {
-    public EnermyMovement movement;
+    [Header("References")]
+    [SerializeField]
+    private EnermyMovement movement;
 
-    public Transform attackPoint;
+    [SerializeField]
+    private Transform attackPoint;
 
-    public LayerMask playerLayer;
+    [SerializeField]
+    private Animator animator;
+
+    [SerializeField]
+    private EnermyAudio enemyAudio;
+
+    [Header("Target Layer")]
+    [SerializeField]
+    private LayerMask playerLayer;
+
+    [Header("Attack")]
+    [Min(0f)]
+    [SerializeField]
+    private float attackDistance = 0.6f;
+
+    [Min(0f)]
+    [SerializeField]
+    private float attackRadius = 0.35f;
+
+    [Min(0.05f)]
+    [SerializeField]
+    private float attackCooldown = 1f;
+
+    [Min(1)]
+    [SerializeField]
+    private int damage = 1;
+
+    [Header("Animator")]
+    [SerializeField]
+    private string attackTrigger = "Attack";
+
     private bool isAttacking;
+    private float cooldownTimer;
 
-    public float attackDistance = 0.6f;
-    public float attackRadius = 0.35f;
-    public float attackCooldown = 1f;
+    private Vector2 attackDirection =
+        Vector2.down;
 
-    public int damage = 1;
+    private readonly HashSet<GameObject>
+        damagedTargets =
+            new HashSet<GameObject>();
 
-    Animator animator;
-    EnermyAudio enemyAudio;
+    public bool IsAttacking =>
+        isAttacking;
 
-    SpriteRenderer sr;
-    float timer;
-    private Health playerHealth;
-
-    void Start()
+    private void Awake()
     {
-        animator = GetComponent<Animator>();
-        enemyAudio = GetComponent<EnermyAudio>();
-        sr = GetComponent<SpriteRenderer>();
-
-        playerHealth = FindFirstObjectByType<Health>();
-        if (movement == null)
-            movement = GetComponent<EnermyMovement>();
+        CacheComponents();
     }
 
-    void Update()
+    private void Start()
     {
-        if (movement == null || movement.player == null)
+        CacheComponents();
+    }
+
+    private void Update()
+    {
+        UpdateCooldown();
+
+        if (movement == null)
             return;
 
-        if (playerHealth != null && playerHealth.IsDead)
+        if (!movement.HasTarget())
         {
-            isAttacking = false;
-            movement.StopMove();
+            if (isAttacking)
+            {
+                CancelAttack();
+            }
+
             return;
         }
-
-        if (!isAttacking)
-        {
-            FacePlayer();
-        }
-
-        float dis = Vector2.Distance(
-    transform.position,
-    movement.target.position);
-
-        if (dis > movement.attackRange)
-        {
-            isAttacking = false;
-            movement.CanMove = true;
-            return;
-        }
-
 
         if (isAttacking)
         {
@@ -68,114 +87,315 @@ public class EnermyAttack : MonoBehaviour
             return;
         }
 
-        timer -= Time.deltaTime;
+        movement.FaceTarget();
 
-        if (timer > 0)
-            return;
+        float distance =
+            movement.DistanceToTarget();
 
-        if (timer <= 0)
+        if (distance >
+            movement.attackRange)
         {
-            Attack();
+            movement.CanMove = true;
+            return;
         }
-    }
-
-    void Attack()
-    {
-        isAttacking = true;
-
-        FacePlayer();
 
         movement.StopMove();
 
-        enemyAudio.PlayAttack();
-
-        animator.SetTrigger("Attack");
-    }
-    private void FacePlayer()
-    {
-        if (movement.target == null)
+        if (cooldownTimer > 0f)
             return;
 
-        Vector2 dir =
-            ((Vector2)movement.target.position -
-            (Vector2)transform.position).normalized;
+        BeginAttack();
+    }
 
-
-        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+    private void CacheComponents()
+    {
+        if (movement == null)
         {
+            movement =
+                GetComponent<EnermyMovement>();
+        }
 
+        if (animator == null)
+        {
+            animator =
+                GetComponent<Animator>();
+        }
+
+        if (enemyAudio == null)
+        {
+            enemyAudio =
+                GetComponent<EnermyAudio>();
+        }
+    }
+
+    private void UpdateCooldown()
+    {
+        if (cooldownTimer <= 0f)
+            return;
+
+        cooldownTimer -=
+            Time.deltaTime;
+
+        if (cooldownTimer < 0f)
+        {
+            cooldownTimer = 0f;
+        }
+    }
+
+    private void BeginAttack()
+    {
+        if (isAttacking ||
+            movement == null ||
+            !movement.HasTarget())
+        {
+            return;
+        }
+
+        isAttacking = true;
+
+        damagedTargets.Clear();
+
+        movement.CanMove = false;
+        movement.StopMove();
+        movement.FaceTarget();
+
+        attackDirection =
+            movement.DirectionToTarget();
+
+        UpdateAttackPoint(
+            attackDirection
+        );
+
+        if (enemyAudio != null)
+        {
+            enemyAudio.PlayAttack();
+        }
+
+        if (animator != null)
+        {
+            animator.ResetTrigger(
+                attackTrigger
+            );
+
+            animator.SetTrigger(
+                attackTrigger
+            );
+        }
+        else
+        {
+            DealDamage();
+            EndAttack();
+        }
+    }
+
+    private void UpdateAttackPoint(
+        Vector2 direction)
+    {
+        if (attackPoint == null)
+            return;
+
+        if (direction.sqrMagnitude <=
+            0.001f)
+        {
+            direction =
+                Vector2.down;
+        }
+
+        if (Mathf.Abs(direction.x) >
+            Mathf.Abs(direction.y))
+        {
             attackPoint.localPosition =
                 new Vector2(
-                    Mathf.Sign(dir.x) * attackDistance,
-                    0
+                    Mathf.Sign(direction.x) *
+                    attackDistance,
+                    0f
                 );
         }
         else
         {
             attackPoint.localPosition =
                 new Vector2(
-                    0,
-                    Mathf.Sign(dir.y) * attackDistance
+                    0f,
+                    Mathf.Sign(direction.y) *
+                    attackDistance
                 );
         }
     }
-    // Animation Event
+
+    // Animation Event tại frame chạm mục tiêu
     public void DealDamage()
     {
-
-        if (playerHealth != null && playerHealth.IsDead)
+        if (!isAttacking)
             return;
 
+        if (attackPoint == null)
+        {
+            Debug.LogError(
+                $"{name}: chưa gán AttackPoint.",
+                this
+            );
+
+            return;
+        }
+
+        UpdateAttackPoint(
+            attackDirection
+        );
 
         Collider2D[] hits =
             Physics2D.OverlapCircleAll(
                 attackPoint.position,
-                attackRadius,
-                playerLayer);
+                Mathf.Max(
+                    0f,
+                    attackRadius
+                ),
+                playerLayer
+            );
 
-        foreach (Collider2D hit in hits)
+        foreach (Collider2D hit
+                 in hits)
         {
-            Health playerHp = hit.GetComponentInParent<Health>();
+            if (hit == null)
+                continue;
 
-            if (playerHp != null)
+            GameObject rootObject =
+                hit.transform.root.gameObject;
+
+            // Tránh một mục tiêu có nhiều collider
+            // bị nhận damage nhiều lần trong cùng một đòn.
+            if (!damagedTargets.Add(
+                    rootObject))
             {
-                playerHp.TakeDamage(damage);
+                continue;
             }
 
-            CloneHealth cloneHp = hit.GetComponentInParent<CloneHealth>();
+            Health health =
+                hit.GetComponentInParent<Health>();
 
-            if (cloneHp != null)
+            if (health != null &&
+                !health.IsDead)
             {
-                cloneHp.TakeDamage(damage);
+                health.TakeDamage(
+                    damage
+                );
+
+                continue;
+            }
+
+            CloneHealth cloneHealth =
+                hit.GetComponentInParent<
+                    CloneHealth
+                >();
+
+            if (cloneHealth != null)
+            {
+                cloneHealth.TakeDamage(
+                    damage
+                );
             }
         }
     }
 
-    // Animation Event
+    // Animation Event ở frame cuối
     public void EndAttack()
+    {
+        if (!isAttacking)
+            return;
+
+        isAttacking = false;
+
+        cooldownTimer =
+            Mathf.Max(
+                0.05f,
+                attackCooldown
+            );
+
+        damagedTargets.Clear();
+
+        if (movement != null)
+        {
+            movement.CanMove = true;
+            movement.ResumeAI();
+        }
+    }
+
+    public void CancelAttack()
     {
         isAttacking = false;
 
-        movement.CanMove = true;
+        damagedTargets.Clear();
 
-        // cho AI cập nhật lại
-        movement.ResumeAI();
+        if (animator != null)
+        {
+            animator.ResetTrigger(
+                attackTrigger
+            );
+        }
+
+        if (movement != null &&
+            movement.enabled &&
+            gameObject.activeInHierarchy)
+        {
+            movement.CanMove = true;
+            movement.ResumeAI();
+        }
+    }
+
+    private void OnDisable()
+    {
+        isAttacking = false;
+        damagedTargets.Clear();
     }
 
     private void OnDrawGizmosSelected()
     {
+        if (attackPoint == null)
+            return;
 
-        Gizmos.color = Color.green;
+        Gizmos.color =
+            Color.green;
+
         Gizmos.DrawLine(
             transform.position,
             attackPoint.position
         );
-        if (attackPoint == null)
-            return;
 
-        Gizmos.color = Color.red;
+        Gizmos.color =
+            Color.red;
+
         Gizmos.DrawWireSphere(
             attackPoint.position,
-            attackRadius);
+            Mathf.Max(
+                0f,
+                attackRadius
+            )
+        );
+    }
+
+    private void OnValidate()
+    {
+        attackDistance =
+            Mathf.Max(
+                0f,
+                attackDistance
+            );
+
+        attackRadius =
+            Mathf.Max(
+                0f,
+                attackRadius
+            );
+
+        attackCooldown =
+            Mathf.Max(
+                0.05f,
+                attackCooldown
+            );
+
+        damage =
+            Mathf.Max(
+                1,
+                damage
+            );
     }
 }
