@@ -286,16 +286,16 @@ public class Attack : MonoBehaviour
                     continue;
 
                 Vector2 knockbackDirection =
-                    (
-                        enemyHealth.transform.position -
-                        transform.position
-                    ).normalized;
+    (
+        enemyHealth.transform.position -
+        transform.position
+    ).normalized;
 
-                enemyHealth.knockbackForce =
+                float knockbackStrength =
                     GetArrayValue(
                         comboKnockback,
                         currentCombo,
-                        4f
+                        2.5f
                     );
 
                 enemyHealth.TakeDamage(
@@ -304,7 +304,8 @@ public class Attack : MonoBehaviour
                         currentCombo,
                         damage
                     ),
-                    knockbackDirection
+                    knockbackDirection,
+                    knockbackStrength
                 );
             }
         }
