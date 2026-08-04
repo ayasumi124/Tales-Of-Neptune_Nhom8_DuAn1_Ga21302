@@ -36,7 +36,7 @@ public class SkeletonSlashAttack :
     private float projectileDelay = 0.25f;
 
     private bool projectileSpawned;
-    private EnermyHealth health;
+
 
     protected override void Awake()
     {
@@ -89,6 +89,7 @@ public class SkeletonSlashAttack :
 
         if (!isAttacking)
             return;
+       
 
         if (health != null &&
             health.IsHurting)
