@@ -20,5 +20,23 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Town.unity
     guid: 27c87c27346e3f944b3fe52f464d495f
+  - enabled: 1
+    path: Assets/Scenes/Forest.unity
+    guid: 185d4d1f11dd82c4991e566eb848fed6
+  - enabled: 1
+    path: Assets/Scenes/Castle.unity
+    guid: b28cd9993d675ae4eb78af8cc09fe6e0
+  - enabled: 1
+    path: Assets/Scenes/Snow2.unity
+    guid: b35f93bed26187b4b955cb04b06abd18
+  - enabled: 1
+    path: Assets/Scenes/Dungeon 1.unity
+    guid: f3e8de50440fda645ab926c4dee49684
+  - enabled: 1
+    path: Assets/Scenes/Cave.unity
+    guid: 413653c043920674fadaed42bfb398fd
+  - enabled: 1
+    path: Assets/Scenes/CaveSnow.unity
+    guid: 618d4f011e6f10a4cb987d2f3fffcbfa
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
