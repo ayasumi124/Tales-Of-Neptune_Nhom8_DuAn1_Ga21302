@@ -23,6 +23,18 @@ public class WorldItemPickup : MonoBehaviour
     private bool playerInside;
     private bool pickedUp;
 
+    public void Setup(ItemData data, int amount)
+    {
+        itemData = data;
+        quantity = Mathf.Max(1, amount);
+
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+
+        if (sr != null)
+        {
+            sr.sprite = data.Icon;
+        }
+    }
     private void Start()
     {
         if (keyIcon != null)
@@ -125,10 +137,10 @@ public class WorldItemPickup : MonoBehaviour
         if (AudioManager.Instance != null &&
      itemData.pickupSound != null)
         {
-            AudioManager.Instance.PlaySFX(
-                itemData.pickupSound,
-                itemData.pickupVolume
-            );
+            AudioManager.Instance.PlayItemSFX(
+    itemData.pickupSound,
+    itemData.pickupVolume
+);
         }
 
         Debug.Log(

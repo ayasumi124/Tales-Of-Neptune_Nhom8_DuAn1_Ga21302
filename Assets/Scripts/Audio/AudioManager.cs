@@ -26,6 +26,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private float musicVolume = 1f;
 
     [SerializeField] private float musicFadeDuration = 0.5f;
+    [SerializeField]
+    private float itemVolumeMultiplier = 2f;
 
     [Header("Player")]
     public AudioClip footstepSound;
@@ -241,6 +243,17 @@ public class AudioManager : MonoBehaviour
             Mathf.Clamp01(volume)
         );
     }
+
+    public void PlayItemSFX(AudioClip clip, float volume)
+{
+    if (clip == null)
+        return;
+
+    sfxSource.PlayOneShot(
+        clip,
+        Mathf.Clamp01(volume * itemVolumeMultiplier)
+    );
+}
 
     public void PlayElementSkillLoop(
         AudioClip clip,

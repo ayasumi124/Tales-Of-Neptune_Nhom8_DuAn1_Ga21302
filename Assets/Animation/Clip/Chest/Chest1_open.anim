@@ -24,7 +24,7 @@ AnimationClip:
       value: {fileID: -5801566434257123781, guid: 3bbd1bf84c0d413409e10f23a366f763, type: 3}
     - time: 0.5
       value: {fileID: -7113724523317483968, guid: 3bbd1bf84c0d413409e10f23a366f763, type: 3}
-    - time: 0.98333335
+    - time: 1
       value: {fileID: 1581624475758528257, guid: 3bbd1bf84c0d413409e10f23a366f763, type: 3}
     - time: 1.5
       value: {fileID: 7208404788074594048, guid: 3bbd1bf84c0d413409e10f23a366f763, type: 3}
@@ -80,7 +80,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 1.8
-    functionName: GiveReward
+    functionName: OnRewardAnimationEvent
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

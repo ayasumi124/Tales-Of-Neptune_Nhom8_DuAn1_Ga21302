@@ -12,7 +12,8 @@ public class InventoryManager : MonoBehaviour
 
     [Header("Inventory")]
     [Min(1)]
-    [SerializeField] private int inventorySize = 30;
+    [SerializeField]
+    private int inventorySize = 30;
 
     [SerializeField]
     private List<InventoryItem> items =
@@ -21,6 +22,26 @@ public class InventoryManager : MonoBehaviour
     [Header("Player")]
     [SerializeField]
     private PlayerItemUser playerItemUser;
+
+    [Header("Drop")]
+    [Tooltip(
+        "Prefab chung có WorldItemPickup."
+    )]
+    [SerializeField]
+    private WorldItemPickup worldItemPrefab;
+
+    [SerializeField]
+    private float dropDistance = 0.8f;
+
+    [Header("Save")]
+    [SerializeField]
+    private ItemDatabase itemDatabase;
+
+    [SerializeField]
+    private bool loadInventoryOnStart;
+
+    [SerializeField]
+    private bool saveOnApplicationQuit = true;
 
     [Header("Test")]
     [SerializeField]
@@ -34,6 +55,14 @@ public class InventoryManager : MonoBehaviour
 
     [SerializeField]
     private ItemData testHeartContainer;
+    [Header("Test Input")]
+    [SerializeField] private bool enableTestInput = true;
+
+    [SerializeField]
+    private KeyCode addTestItemKey =
+        KeyCode.R;
+
+    [SerializeField] private int testAddAmount = 10;
 
     public static event Action OnInventoryChanged;
 
@@ -54,6 +83,8 @@ public class InventoryManager : MonoBehaviour
 
         Instance = this;
 
+        DontDestroyOnLoad(gameObject);
+
         InitializeInventory();
     }
 
@@ -61,34 +92,65 @@ public class InventoryManager : MonoBehaviour
     {
         FindPlayerItemUser();
 
-        if (addTestItemsOnStart)
+        if (loadInventoryOnStart)
         {
-            AddItem(
-                testHealthPotion,
-                5
-            );
-
-            AddItem(
-                testManaPotion,
-                5
-            );
-
-            AddItem(
-                testHeartContainer,
-                1
-            );
+            LoadInventory();
+        }
+        else if (addTestItemsOnStart)
+        {
+            AddItem(testHealthPotion, 5);
+            AddItem(testManaPotion, 5);
+            AddItem(testHeartContainer, 1);
         }
     }
-
     private void Update()
 {
-    if (Input.GetKeyDown(KeyCode.R))
-    {
-        AddItem(testHealthPotion, 10);
-        AddItem(testManaPotion, 10);
-        AddItem(testHeartContainer, 10);
-    }
+    if (!enableTestInput)
+        return;
+
+    if (!Input.GetKeyDown(addTestItemKey))
+        return;
+
+    AddTestItems();
 }
+
+private void AddTestItems()
+{
+    int amount =
+        Mathf.Max(
+            1,
+            testAddAmount
+        );
+
+    if (testHealthPotion != null)
+    {
+        AddItem(
+            testHealthPotion,
+            amount
+        );
+    }
+
+    if (testManaPotion != null)
+    {
+        AddItem(
+            testManaPotion,
+            amount
+        );
+    }
+
+    if (testHeartContainer != null)
+    {
+        AddItem(
+            testHeartContainer,
+            amount
+        );
+    }
+
+    Debug.Log(
+        $"Đã thêm item test x{amount}."
+    );
+}
+
     private void InitializeInventory()
     {
         inventorySize =
@@ -103,9 +165,6 @@ public class InventoryManager : MonoBehaviour
                 new List<InventoryItem>();
         }
 
-        /*
-         * Thêm các ô trống cho đủ số lượng.
-         */
         while (items.Count <
                inventorySize)
         {
@@ -114,10 +173,6 @@ public class InventoryManager : MonoBehaviour
             );
         }
 
-        /*
-         * Nếu giảm Inventory Size trong Inspector,
-         * xóa các ô dư phía cuối.
-         */
         while (items.Count >
                inventorySize)
         {
@@ -126,9 +181,6 @@ public class InventoryManager : MonoBehaviour
             );
         }
 
-        /*
-         * Tránh phần tử null trong danh sách.
-         */
         for (int i = 0;
              i < items.Count;
              i++)
@@ -141,74 +193,99 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    // =====================================================
+    // ADD
+    // =====================================================
+
     public bool CanAddItem(
-    ItemData itemData,
-    int amount = 1)
-{
-    if (itemData == null ||
-        amount <= 0)
+        ItemData itemData,
+        int amount = 1)
     {
+        if (itemData == null ||
+            amount <= 0)
+        {
+            return false;
+        }
+
+        int availableSpace = 0;
+
+        foreach (InventoryItem slot in items)
+        {
+            if (slot == null ||
+                slot.IsEmpty())
+            {
+                availableSpace +=
+                    itemData.Stackable
+                        ? itemData.MaxStack
+                        : 1;
+            }
+            else if (slot.CanStackWith(
+                         itemData))
+            {
+                availableSpace +=
+                    slot.RemainingSpace();
+            }
+
+            if (availableSpace >= amount)
+                return true;
+        }
+
         return false;
     }
-
-    int availableSpace = 0;
-
-    foreach (InventoryItem slot in items)
-    {
-        if (slot == null ||
-            slot.IsEmpty())
-        {
-            availableSpace +=
-                itemData.Stackable
-                    ? itemData.MaxStack
-                    : 1;
-        }
-        else if (slot.CanStackWith(
-                     itemData))
-        {
-            availableSpace +=
-                slot.RemainingSpace();
-        }
-
-        if (availableSpace >= amount)
-            return true;
-    }
-
-    return false;
-}
 
     public bool AddItem(
         ItemData itemData,
         int amount = 1)
     {
-        if (itemData == null)
+        if (itemData == null ||
+            amount <= 0)
         {
-            Debug.LogError(
-                "Không thể thêm ItemData null."
+            return false;
+        }
+
+        /*
+         * Ngăn tình trạng thêm được một phần
+         * rồi báo Inventory đầy.
+         */
+        if (!CanAddItem(
+                itemData,
+                amount))
+        {
+            Debug.Log(
+                $"Không đủ chỗ cho " +
+                $"{itemData.ItemName} x{amount}."
             );
 
             return false;
         }
 
-        if (amount <= 0)
-            return false;
+        AddItemInternal(
+            itemData,
+            amount
+        );
 
+        OnInventoryChanged?.Invoke();
+
+        Debug.Log(
+            $"Đã thêm {itemData.ItemName} " +
+            $"x{amount}."
+        );
+
+        return true;
+    }
+
+    private void AddItemInternal(
+        ItemData itemData,
+        int amount)
+    {
         int remainingAmount =
             amount;
 
-        /*
-         * Trước tiên tìm các stack cùng loại
-         * chưa đạt giới hạn.
-         */
         if (itemData.Stackable)
         {
-            for (int i = 0;
-                 i < items.Count;
-                 i++)
+            foreach (InventoryItem slot
+                     in items)
             {
-                InventoryItem slot =
-                    items[i];
-
                 if (!slot.CanStackWith(
                         itemData))
                 {
@@ -221,32 +298,19 @@ public class InventoryManager : MonoBehaviour
                     );
 
                 if (remainingAmount <= 0)
-                    break;
+                    return;
             }
         }
 
-        /*
-         * Nếu vẫn còn item, tìm ô trống.
-         */
         while (remainingAmount > 0)
         {
             int emptyIndex =
                 FindEmptySlotIndex();
 
             if (emptyIndex < 0)
-            {
-                Debug.Log(
-                    $"Inventory đã đầy. " +
-                    $"Còn dư {remainingAmount} " +
-                    $"{itemData.ItemName}."
-                );
+                return;
 
-                OnInventoryChanged?.Invoke();
-
-                return false;
-            }
-
-            int amountForNewSlot =
+            int amountForSlot =
                 itemData.Stackable
                     ? Mathf.Min(
                         remainingAmount,
@@ -257,49 +321,32 @@ public class InventoryManager : MonoBehaviour
             items[emptyIndex] =
                 new InventoryItem(
                     itemData,
-                    amountForNewSlot
+                    amountForSlot
                 );
 
             remainingAmount -=
-                amountForNewSlot;
+                amountForSlot;
         }
-
-        Debug.Log(
-            $"Đã thêm {amount} " +
-            $"{itemData.ItemName}."
-        );
-
-        OnInventoryChanged?.Invoke();
-
-        return true;
     }
+
+    // =====================================================
+    // REMOVE
+    // =====================================================
 
     public bool RemoveItem(
         ItemData itemData,
         int amount = 1)
     {
         if (itemData == null ||
-            amount <= 0)
+            amount <= 0 ||
+            GetQuantity(itemData) < amount)
         {
-            return false;
-        }
-
-        if (GetQuantity(itemData) <
-            amount)
-        {
-            Debug.Log(
-                $"Không đủ {itemData.ItemName}."
-            );
-
             return false;
         }
 
         int remainingAmount =
             amount;
 
-        /*
-         * Trừ từ các stack phía cuối trước.
-         */
         for (int i = items.Count - 1;
              i >= 0;
              i--)
@@ -307,7 +354,8 @@ public class InventoryManager : MonoBehaviour
             InventoryItem slot =
                 items[i];
 
-            if (slot.IsEmpty() ||
+            if (slot == null ||
+                slot.IsEmpty() ||
                 slot.itemData != itemData)
             {
                 continue;
@@ -330,27 +378,259 @@ public class InventoryManager : MonoBehaviour
                 break;
         }
 
-        Debug.Log(
-            $"Đã trừ {amount} " +
-            $"{itemData.ItemName}."
-        );
-
         OnInventoryChanged?.Invoke();
+
+        NotifyShortcutIfNeeded(
+            itemData
+        );
 
         return true;
     }
 
-    public bool UseItemAt(
-        int slotIndex)
+    public bool RemoveItemAt(
+        int slotIndex,
+        int amount)
     {
-        if (slotIndex < 0 ||
-            slotIndex >= items.Count)
+        InventoryItem slot =
+            GetItemAt(slotIndex);
+
+        if (slot == null ||
+            slot.IsEmpty() ||
+            amount <= 0 ||
+            slot.quantity < amount)
         {
             return false;
         }
 
+        ItemData removedData =
+            slot.itemData;
+
+        slot.RemoveAmount(amount);
+
+        OnInventoryChanged?.Invoke();
+
+        NotifyShortcutIfNeeded(
+            removedData
+        );
+
+        return true;
+    }
+
+    // =====================================================
+    // DROP
+    // =====================================================
+
+    public bool DropItemAt(
+        int slotIndex,
+        int amount = 1)
+    {
         InventoryItem slot =
-            items[slotIndex];
+            GetItemAt(slotIndex);
+
+        if (slot == null ||
+            slot.IsEmpty())
+        {
+            return false;
+        }
+
+        if (worldItemPrefab == null)
+        {
+            Debug.LogError(
+                "InventoryManager chưa gán World Item Prefab."
+            );
+
+            return false;
+        }
+
+        int dropAmount =
+            Mathf.Clamp(
+                amount,
+                1,
+                slot.quantity
+            );
+
+        ItemData droppedItem =
+            slot.itemData;
+
+        Transform playerTransform =
+            FindPlayerTransform();
+
+        if (playerTransform == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy Player để Drop item."
+            );
+
+            return false;
+        }
+
+        Vector2 direction =
+            Vector2.down;
+
+        Players players =
+            playerTransform.GetComponent<Players>();
+
+        if (players != null &&
+            players.LastDirection.sqrMagnitude >
+            0.001f)
+        {
+            direction =
+                players.LastDirection.normalized;
+        }
+
+        Vector3 spawnPosition =
+            playerTransform.position +
+            (Vector3)(
+                direction *
+                Mathf.Max(
+                    0.2f,
+                    dropDistance
+                )
+            );
+
+        WorldItemPickup worldItem =
+            Instantiate(
+                worldItemPrefab,
+                spawnPosition,
+                Quaternion.identity
+            );
+
+        worldItem.Setup(
+            droppedItem,
+            dropAmount
+        );
+
+        if (!RemoveItemAt(
+                slotIndex,
+                dropAmount))
+        {
+            Destroy(
+                worldItem.gameObject
+            );
+
+            return false;
+        }
+
+        Debug.Log(
+            $"Đã vứt {droppedItem.ItemName} " +
+            $"x{dropAmount}."
+        );
+
+        return true;
+    }
+
+    public bool DropEntireStack(
+        int slotIndex)
+    {
+        InventoryItem slot =
+            GetItemAt(slotIndex);
+
+        if (slot == null ||
+            slot.IsEmpty())
+        {
+            return false;
+        }
+
+        return DropItemAt(
+            slotIndex,
+            slot.quantity
+        );
+    }
+
+    // =====================================================
+    // SORT
+    // =====================================================
+
+    public void SortInventory()
+    {
+        /*
+         * Gộp tất cả quantity theo ItemData trước.
+         */
+        Dictionary<ItemData, int>
+            totals =
+                new Dictionary<ItemData, int>();
+
+        foreach (InventoryItem slot
+                 in items)
+        {
+            if (slot == null ||
+                slot.IsEmpty())
+            {
+                continue;
+            }
+
+            if (!totals.ContainsKey(
+                    slot.itemData))
+            {
+                totals.Add(
+                    slot.itemData,
+                    0
+                );
+            }
+
+            totals[slot.itemData] +=
+                slot.quantity;
+        }
+
+        List<ItemData> sortedItems =
+            new List<ItemData>(
+                totals.Keys
+            );
+
+        sortedItems.Sort(
+            CompareItems
+        );
+
+        foreach (InventoryItem slot
+                 in items)
+        {
+            slot.Clear();
+        }
+
+        foreach (ItemData data
+                 in sortedItems)
+        {
+            AddItemInternal(
+                data,
+                totals[data]
+            );
+        }
+
+        OnInventoryChanged?.Invoke();
+
+        Debug.Log(
+            "Đã sắp xếp Inventory."
+        );
+    }
+
+    private int CompareItems(
+        ItemData a,
+        ItemData b)
+    {
+        int typeComparison =
+            ((int)a.ItemType).CompareTo(
+                (int)b.ItemType
+            );
+
+        if (typeComparison != 0)
+            return typeComparison;
+
+        return string.Compare(
+            a.ItemName,
+            b.ItemName,
+            StringComparison.OrdinalIgnoreCase
+        );
+    }
+
+    // =====================================================
+    // USE
+    // =====================================================
+
+    public bool UseItemAt(
+        int slotIndex)
+    {
+        InventoryItem slot =
+            GetItemAt(slotIndex);
 
         if (slot == null ||
             slot.IsEmpty())
@@ -362,13 +642,7 @@ public class InventoryManager : MonoBehaviour
             slot.itemData;
 
         if (!itemData.Usable)
-        {
-            Debug.Log(
-                $"{itemData.ItemName} không thể sử dụng."
-            );
-
             return false;
-        }
 
         FindPlayerItemUser();
 
@@ -381,10 +655,6 @@ public class InventoryManager : MonoBehaviour
             return false;
         }
 
-        /*
-         * TryUse trả về true nghĩa là Player
-         * đã chấp nhận bắt đầu sử dụng item.
-         */
         bool accepted =
             playerItemUser.TryUse(
                 itemData
@@ -395,11 +665,11 @@ public class InventoryManager : MonoBehaviour
 
         slot.RemoveAmount(1);
 
-        Debug.Log(
-            $"Đã dùng {itemData.ItemName}."
-        );
-
         OnInventoryChanged?.Invoke();
+
+        NotifyShortcutIfNeeded(
+            itemData
+        );
 
         return true;
     }
@@ -412,26 +682,21 @@ public class InventoryManager : MonoBehaviour
                 itemData
             );
 
-        if (slotIndex < 0)
-            return false;
-
-        return UseItemAt(
-            slotIndex
-        );
+        return slotIndex >= 0 &&
+               UseItemAt(slotIndex);
     }
+
+    // =====================================================
+    // GET
+    // =====================================================
 
     public bool HasItem(
         ItemData itemData,
         int amount = 1)
     {
-        if (itemData == null ||
-            amount <= 0)
-        {
-            return false;
-        }
-
-        return GetQuantity(itemData) >=
-               amount;
+        return itemData != null &&
+               amount > 0 &&
+               GetQuantity(itemData) >= amount;
     }
 
     public int GetQuantity(
@@ -445,14 +710,9 @@ public class InventoryManager : MonoBehaviour
         foreach (InventoryItem slot
                  in items)
         {
-            if (slot == null ||
-                slot.IsEmpty())
-            {
-                continue;
-            }
-
-            if (slot.itemData ==
-                itemData)
+            if (slot != null &&
+                !slot.IsEmpty() &&
+                slot.itemData == itemData)
             {
                 total += slot.quantity;
             }
@@ -473,16 +733,157 @@ public class InventoryManager : MonoBehaviour
         return items[slotIndex];
     }
 
-    public void ClearInventory()
+    // =====================================================
+    // SAVE / LOAD
+    // =====================================================
+
+    public bool SaveInventory()
     {
-        for (int i = 0;
-             i < items.Count;
-             i++)
+        InventorySaveData saveData =
+            new InventorySaveData();
+
+        foreach (InventoryItem slot
+                 in items)
         {
-            items[i].Clear();
+            if (slot == null ||
+                slot.IsEmpty() ||
+                string.IsNullOrWhiteSpace(
+                    slot.itemData.ItemID))
+            {
+                continue;
+            }
+
+            saveData.items.Add(
+                new InventoryItemSaveData(
+                    slot.itemData.ItemID,
+                    slot.quantity
+                )
+            );
+        }
+
+        if (ItemShortcutManager.Instance != null &&
+            ItemShortcutManager.Instance
+                .EquippedItem != null)
+        {
+            saveData.shortcutItemID =
+                ItemShortcutManager.Instance
+                    .EquippedItem.ItemID;
+        }
+
+        return InventorySaveSystem.Save(
+            saveData
+        );
+    }
+
+    public bool LoadInventory()
+    {
+        if (itemDatabase == null)
+        {
+            Debug.LogError(
+                "InventoryManager chưa gán Item Database."
+            );
+
+            return false;
+        }
+
+        InventorySaveData saveData =
+            InventorySaveSystem.Load();
+
+        if (saveData == null)
+            return false;
+
+        ClearInventory(false);
+
+        foreach (InventoryItemSaveData entry
+                 in saveData.items)
+        {
+            ItemData data =
+                itemDatabase.GetItemByID(
+                    entry.itemID
+                );
+
+            if (data == null)
+            {
+                Debug.LogWarning(
+                    $"Không tìm thấy Item ID: " +
+                    $"{entry.itemID}"
+                );
+
+                continue;
+            }
+
+            if (CanAddItem(
+                    data,
+                    entry.quantity))
+            {
+                AddItemInternal(
+                    data,
+                    entry.quantity
+                );
+            }
+        }
+
+        if (ItemShortcutManager.Instance != null)
+        {
+            ItemData shortcutItem =
+                itemDatabase.GetItemByID(
+                    saveData.shortcutItemID
+                );
+
+            ItemShortcutManager.Instance
+                .RestoreShortcut(
+                    shortcutItem
+                );
         }
 
         OnInventoryChanged?.Invoke();
+
+        Debug.Log(
+            "Đã load Inventory."
+        );
+
+        return true;
+    }
+
+    public void DeleteInventorySave()
+    {
+        InventorySaveSystem.DeleteSave();
+    }
+
+    // =====================================================
+    // CLEAR
+    // =====================================================
+
+    public void ClearInventory(
+        bool notify = true)
+    {
+        foreach (InventoryItem slot
+                 in items)
+        {
+            slot.Clear();
+        }
+
+        if (notify)
+        {
+            OnInventoryChanged?.Invoke();
+        }
+    }
+
+    // =====================================================
+    // HELPERS
+    // =====================================================
+
+    private void NotifyShortcutIfNeeded(
+        ItemData itemData)
+    {
+        if (itemData == null ||
+            ItemShortcutManager.Instance == null)
+        {
+            return;
+        }
+
+        ItemShortcutManager
+            .OnInventoryItemQuantityChanged();
     }
 
     private int FindEmptySlotIndex()
@@ -514,14 +915,9 @@ public class InventoryManager : MonoBehaviour
             InventoryItem slot =
                 items[i];
 
-            if (slot == null ||
-                slot.IsEmpty())
-            {
-                continue;
-            }
-
-            if (slot.itemData ==
-                itemData)
+            if (slot != null &&
+                !slot.IsEmpty() &&
+                slot.itemData == itemData)
             {
                 return i;
             }
@@ -530,25 +926,35 @@ public class InventoryManager : MonoBehaviour
         return -1;
     }
 
+    private Transform FindPlayerTransform()
+    {
+        if (GameManager.Instance != null &&
+            GameManager.Instance.Player != null)
+        {
+            return GameManager.Instance.Player
+                .transform;
+        }
+
+        Players players =
+            FindFirstObjectByType<Players>();
+
+        return players != null
+            ? players.transform
+            : null;
+    }
+
     private void FindPlayerItemUser()
     {
         if (playerItemUser != null)
             return;
 
-        if (GameManager.Instance != null &&
-            GameManager.Instance.Player != null)
-        {
-            playerItemUser =
-                GameManager.Instance.Player
-                    .GetComponent<
-                        PlayerItemUser
-                    >();
-        }
+        Transform playerTransform =
+            FindPlayerTransform();
 
-        if (playerItemUser == null)
+        if (playerTransform != null)
         {
             playerItemUser =
-                FindFirstObjectByType<
+                playerTransform.GetComponent<
                     PlayerItemUser
                 >();
         }
@@ -561,6 +967,14 @@ public class InventoryManager : MonoBehaviour
                 1,
                 inventorySize
             );
+    }
+
+    private void OnApplicationQuit()
+    {
+        if (saveOnApplicationQuit)
+        {
+            SaveInventory();
+        }
     }
 
     private void OnDestroy()
