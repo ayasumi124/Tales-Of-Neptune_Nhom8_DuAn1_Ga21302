@@ -516,13 +516,13 @@ MonoBehaviour:
   animator: {fileID: 8048794286040021762}
   enemyAudio: {fileID: 5088090117542271298}
   attackRange: 1.5
-  attackCooldown: 1
+  attackCooldown: 3
   attackLockTime: 0.6
   attackTrigger: Attack
   slashSpawnPoint: {fileID: 7607142104434093044}
   slashPrefab: {fileID: 3395659506950850694, guid: b06a36d865f9e70479039e27efdbadf4, type: 3}
-  projectileDamage: 1
-  projectileSpeed: 6
+  projectileDamage: 2
+  projectileSpeed: 5
   useAnimationEvent: 1
   projectileDelay: 0.25
 --- !u!1 &1058383548838551858
