@@ -629,7 +629,7 @@ GameObject:
   m_Component:
   - component: {fileID: 374884330}
   m_Layer: 0
-  m_Name: LeftEastValletStart
+  m_Name: LeftEastValleyStart
   m_TagString: Untagged
   m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -756,7 +756,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a74bd87ecab5684090e11ff8588b029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnID: FromForest
+  spawnID: FromDownForest
   exitStartPoint: {fileID: 971816092}
   exitSpeed: 2
 --- !u!1 &562019422
@@ -804,8 +804,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf986eaf0b764e418ce9ab709752dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
-  targetScene: 
-  targetSpawnID: 
+  targetScene: Forest
+  targetSpawnID: FromUpEastValley
   requireKey: 0
   interactKey: 101
   enterDirection: {x: 0, y: 1}
@@ -845,7 +845,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.040712833, y: -0.22256383}
+  m_Offset: {x: 0.10964197, y: -0.29149315}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -855,7 +855,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.1345334, y: 0.55487233}
+  m_Size: {x: 2.1470656, y: 0.69273096}
   m_EdgeRadius: 0
 --- !u!1 &745055849
 GameObject:
@@ -25689,7 +25689,7 @@ GameObject:
   m_Component:
   - component: {fileID: 971816092}
   m_Layer: 0
-  m_Name: DownEastValletStart
+  m_Name: UpEastValleyStart
   m_TagString: Untagged
   m_Icon: {fileID: 7422848464349959988, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
