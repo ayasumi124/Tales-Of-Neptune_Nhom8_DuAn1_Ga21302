@@ -430,10 +430,9 @@ public class FireTornado : MonoBehaviour
                     transform.position
                 ).normalized;
 
-            enemy.TakeDamage(
-                damagePerTick,
-                knockbackDirection
-            );
+            enemy.TakeDamageNoKnockback(
+    damagePerTick
+);
 
             ApplyBurn(enemy);
         }

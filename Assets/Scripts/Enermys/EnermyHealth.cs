@@ -168,10 +168,13 @@ public class EnermyHealth : MonoBehaviour
 
         StartHurt();
 
-        ApplyKnockback(
-            knockbackDirection,
-            knockbackStrength
-        );
+        if (knockbackStrength > 0f)
+{
+    ApplyKnockback(
+        knockbackDirection,
+        knockbackStrength
+    );
+}
     }
 
     /*
@@ -179,15 +182,23 @@ public class EnermyHealth : MonoBehaviour
      * truyền hướng nhưng dùng lực mặc định của enemy.
      */
     public void TakeDamage(
-        int damage,
-        Vector2 knockbackDirection)
-    {
-        TakeDamage(
-            damage,
-            knockbackDirection,
-            knockbackForce
-        );
-    }
+    int damage,
+    Vector2 knockbackDirection)
+{
+    TakeDamage(
+        damage,
+        knockbackDirection,
+        0f
+    );
+}
+    public void TakeDamageNoKnockback(int damage)
+{
+    TakeDamage(
+        damage,
+        Vector2.zero,
+        0f
+    );
+}
 
     /*
      * Damage không có hướng thì không knockback.

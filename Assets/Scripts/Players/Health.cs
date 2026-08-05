@@ -4,7 +4,9 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     [Header("Health")]
+    [Min(1)]
     public int maxHealth = 8;
+
     public float currentHealth = 7f;
 
     public static event System.Action onPlayerDamaged;
@@ -12,41 +14,106 @@ public class Health : MonoBehaviour
     public static event System.Action onMaxHealthChanged;
     public static event System.Action onPlayerDeath;
 
-    private PlayerAudio audioPlayer;
-    private Animator animator;
-
-    private bool isHurting;
-    public bool IsHurting => isHurting;
+    [Header("Hurt")]
+    [Tooltip(
+        "Thời gian Player đứng yên khi bị đánh. " +
+        "Nên đặt bằng thời lượng animation Hurt hoặc Hit Effect."
+    )]
+    [Min(0.01f)]
+    [SerializeField]
+    private float hurtLockTime = 0.25f;
 
     [Header("Invincible")]
+    [Tooltip(
+        "Thời gian bất tử thêm sau khi kết thúc trạng thái Hurt."
+    )]
+    [Min(0f)]
     public float invincibleTime = 0.2f;
 
+    private PlayerAudio audioPlayer;
+    private Animator animator;
+    private Rigidbody2D rb;
+    private Players players;
+    private Attack attack;
+    private PlayerDash dash;
+
+    private Coroutine hurtCoroutine;
+
+    private bool isHurting;
     private bool isInvincible;
+
+    public bool IsHurting => isHurting;
     public bool IsInvincible => isInvincible;
 
-    public bool IsDead { get; private set; }
+    public bool IsDead
+    {
+        get;
+        private set;
+    }
 
     private void Awake()
     {
-        audioPlayer = GetComponent<PlayerAudio>();
-        animator = GetComponent<Animator>();
+        CacheComponents();
     }
 
     private void Start()
     {
-        currentHealth = Mathf.Clamp(
-            currentHealth,
-            0f,
-            maxHealth
-        );
+        currentHealth =
+            Mathf.Clamp(
+                currentHealth,
+                0f,
+                maxHealth
+            );
 
         /*
-         * Nếu muốn mỗi lần chạy game luôn đầy máu,
-         * giữ dòng này.
+         * Mỗi lần bắt đầu game, Player đầy máu.
          */
         currentHealth = maxHealth;
 
+        IsDead = false;
+        isHurting = false;
+        isInvincible = false;
+
         NotifyHealthChanged();
+    }
+
+    private void CacheComponents()
+    {
+        if (audioPlayer == null)
+        {
+            audioPlayer =
+                GetComponent<PlayerAudio>();
+        }
+
+        if (animator == null)
+        {
+            animator =
+                GetComponent<Animator>();
+        }
+
+        if (rb == null)
+        {
+            rb =
+                GetComponent<Rigidbody2D>();
+        }
+
+        if (players == null)
+        {
+            players =
+                GetComponent<Players>();
+        }
+
+        if (attack == null)
+        {
+            attack =
+                GetComponent<Attack>();
+        }
+
+        if (dash == null)
+        {
+            dash =
+                GetComponent<PlayerDash>();
+        }
     }
 
     public void SetInvincible(bool value)
@@ -66,32 +133,34 @@ public class Health : MonoBehaviour
         if (amount <= 0f)
             return;
 
-        if (isHurting || isInvincible)
+        if (isHurting ||
+            isInvincible)
+        {
             return;
+        }
 
-        PlayerDash dash =
-            GetComponent<PlayerDash>();
-
+        /*
+         * Không nhận damage trong lúc Dash.
+         */
         if (dash != null &&
             dash.IsDashing)
         {
             return;
         }
 
-        Attack attack =
-            GetComponent<Attack>();
-
-        if (attack != null)
+        if (hurtCoroutine != null)
         {
-            attack.CancelAttack();
+            StopCoroutine(
+                hurtCoroutine
+            );
 
-            if (animator != null)
-                animator.speed = 1f;
+            hurtCoroutine = null;
         }
 
-        StartCoroutine(
-            HurtRoutine(amount)
-        );
+        hurtCoroutine =
+            StartCoroutine(
+                HurtRoutine(amount)
+            );
     }
 
     private IEnumerator HurtRoutine(
@@ -99,6 +168,9 @@ public class Health : MonoBehaviour
     {
         isHurting = true;
         isInvincible = true;
+
+        CancelCurrentActions();
+        LockPlayerForHurt();
 
         currentHealth =
             Mathf.Clamp(
@@ -111,31 +183,229 @@ public class Health : MonoBehaviour
 
         if (animator != null)
         {
-            animator.ResetTrigger("Attack");
-            animator.ResetTrigger("Dash");
-            animator.SetTrigger("Hurt");
+            animator.speed = 1f;
+
+            animator.SetBool(
+                "IsMoving",
+                false
+            );
+
+            animator.SetBool(
+                "IsRunning",
+                false
+            );
+
+            animator.ResetTrigger(
+                "Attack"
+            );
+
+            animator.ResetTrigger(
+                "Dash"
+            );
+
+            animator.ResetTrigger(
+                "Hurt"
+            );
+
+            animator.SetTrigger(
+                "Hurt"
+            );
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .StopFootstep();
         }
 
         if (audioPlayer != null)
+        {
             audioPlayer.PlayHurt();
+        }
 
-        yield return new WaitForSeconds(
-            0.25f
-        );
+        /*
+         * Player đứng yên trong toàn bộ thời gian Hurt.
+         */
+        float hurtTimer =
+            Mathf.Max(
+                0.01f,
+                hurtLockTime
+            );
 
-        isHurting = false;
+        while (hurtTimer > 0f)
+        {
+            KeepPlayerStopped();
+
+            hurtTimer -=
+                Time.deltaTime;
+
+            yield return null;
+        }
 
         if (currentHealth <= 0f)
         {
+            isHurting = false;
+            hurtCoroutine = null;
+
             Die();
             yield break;
         }
 
+        isHurting = false;
+
+        UnlockPlayerAfterHurt();
+
+        /*
+         * Tiếp tục bất tử một khoảng ngắn
+         * sau khi Player được phép di chuyển lại.
+         */
+        float invincibleTimer =
+            Mathf.Max(
+                0f,
+                invincibleTime
+            );
+
+        while (invincibleTimer > 0f)
+        {
+            if (IsDead)
+            {
+                hurtCoroutine = null;
+                yield break;
+            }
+
+            invincibleTimer -=
+                Time.deltaTime;
+
+            yield return null;
+        }
+
+        if (!IsDead)
+        {
+            isInvincible = false;
+        }
+
+        hurtCoroutine = null;
+    }
+
+    private void CancelCurrentActions()
+    {
+        if (attack != null)
+        {
+            attack.CancelAttack();
+        }
+
+        if (dash != null &&
+            dash.IsDashing)
+        {
+            dash.CancelDash();
+        }
+
+        if (animator != null)
+        {
+            animator.speed = 1f;
+        }
+    }
+
+    private void LockPlayerForHurt()
+    {
+        if (players != null)
+        {
+            players.StopAutoWalk();
+            players.LockControl();
+        }
+
+        KeepPlayerStopped();
+    }
+
+    private void KeepPlayerStopped()
+    {
+        if (rb == null)
+            return;
+
+        rb.linearVelocity =
+            Vector2.zero;
+
+        rb.angularVelocity =
+            0f;
+    }
+
+    private void UnlockPlayerAfterHurt()
+    {
+        if (IsDead ||
+            players == null)
+        {
+            return;
+        }
+
+        /*
+         * Không mở điều khiển khi đang load scene.
+         */
+        bool sceneLoading =
+            SceneLoader.Instance != null &&
+            SceneLoader.Instance.IsLoading;
+
+        if (sceneLoading)
+            return;
+
+        /*
+         * Không mở điều khiển nếu Inventory đang mở.
+         */
+        bool inventoryOpen =
+            SkillInventoryUI.Instance != null &&
+            SkillInventoryUI.Instance.IsOpen;
+
+        if (inventoryOpen)
+            return;
+
+        players.UnlockControl();
+    }
+
+    /*
+     * Có thể đặt Animation Event này ở frame cuối clip Hurt.
+     * Không bắt buộc vì coroutine đã tự xử lý theo hurtLockTime.
+     */
+    public void EndHurt()
+    {
+        if (IsDead ||
+            !isHurting)
+        {
+            return;
+        }
+
+        if (hurtCoroutine != null)
+        {
+            StopCoroutine(
+                hurtCoroutine
+            );
+
+            hurtCoroutine = null;
+        }
+
+        isHurting = false;
+
+        UnlockPlayerAfterHurt();
+
+        StartCoroutine(
+            InvincibilityAfterHurtRoutine()
+        );
+    }
+
+    private IEnumerator
+        InvincibilityAfterHurtRoutine()
+    {
+        isInvincible = true;
+
         yield return new WaitForSeconds(
-            invincibleTime
+            Mathf.Max(
+                0f,
+                invincibleTime
+            )
         );
 
-        isInvincible = false;
+        if (!IsDead)
+        {
+            isInvincible = false;
+        }
     }
 
     public bool Heal(float amount)
@@ -148,7 +418,10 @@ public class Health : MonoBehaviour
 
         if (currentHealth >= maxHealth)
         {
-            Debug.Log("Máu đã đầy.");
+            Debug.Log(
+                "Máu đã đầy."
+            );
+
             return false;
         }
 
@@ -163,7 +436,8 @@ public class Health : MonoBehaviour
             );
 
         float healedAmount =
-            currentHealth - oldHealth;
+            currentHealth -
+            oldHealth;
 
         if (healedAmount <= 0f)
             return false;
@@ -191,7 +465,9 @@ public class Health : MonoBehaviour
         maxHealth += amount;
 
         if (maxHealth < 1)
+        {
             maxHealth = 1;
+        }
 
         if (healToFull)
         {
@@ -201,7 +477,8 @@ public class Health : MonoBehaviour
         else
         {
             currentHealth +=
-                maxHealth - oldMaxHealth;
+                maxHealth -
+                oldMaxHealth;
 
             currentHealth =
                 Mathf.Clamp(
@@ -225,15 +502,12 @@ public class Health : MonoBehaviour
 
     public bool IsHealthFull()
     {
-        return currentHealth >= maxHealth;
+        return currentHealth >=
+               maxHealth;
     }
 
     private void NotifyHealthChanged()
     {
-        /*
-         * Dùng event damage để ép UI vẽ lại
-         * khi khởi tạo hoặc reset.
-         */
         onPlayerDamaged?.Invoke();
     }
 
@@ -246,83 +520,94 @@ public class Health : MonoBehaviour
         isHurting = false;
         isInvincible = true;
 
-        Rigidbody2D rb =
-            GetComponent<Rigidbody2D>();
+        if (hurtCoroutine != null)
+        {
+            StopCoroutine(
+                hurtCoroutine
+            );
 
-        Players players =
-            GetComponent<Players>();
+            hurtCoroutine = null;
+        }
 
-        Attack attack =
-            GetComponent<Attack>();
+        CancelCurrentActions();
 
-        PlayerDash dash =
-            GetComponent<PlayerDash>();
-
-        /*
-         * Dừng Dash trước để coroutine Dash
-         * không tiếp tục gán velocity.
-         */
         if (dash != null)
         {
             dash.CancelDash();
             dash.enabled = false;
         }
 
-        /*
-         * Dừng Attack và coroutine Lunge.
-         */
         if (attack != null)
         {
             attack.CancelAttack();
             attack.enabled = false;
         }
 
-        /*
-         * Tắt script di chuyển sau khi
-         * các trạng thái combat đã được hủy.
-         */
         if (players != null)
         {
             players.StopAutoWalk();
+            players.LockControl();
             players.enabled = false;
         }
 
-        /*
-         * Xóa toàn bộ vận tốc cuối cùng.
-         */
         if (rb != null)
         {
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0f;
+            rb.linearVelocity =
+                Vector2.zero;
 
-            /*
-             * Freeze Position để đảm bảo Player
-             * không bị lực hoặc va chạm đẩy trượt.
-             */
+            rb.angularVelocity =
+                0f;
+
             rb.constraints =
-                RigidbodyConstraints2D.FreezeAll;
+                RigidbodyConstraints2D
+                    .FreezeAll;
         }
 
         if (animator != null)
         {
             animator.speed = 1f;
 
-            animator.SetBool("IsMoving", false);
-            animator.SetBool("IsRunning", false);
+            animator.SetBool(
+                "IsMoving",
+                false
+            );
 
-            animator.ResetTrigger("Attack");
-            animator.ResetTrigger("Dash");
-            animator.ResetTrigger("Hurt");
-            animator.ResetTrigger("Death");
+            animator.SetBool(
+                "IsRunning",
+                false
+            );
 
-            animator.SetTrigger("Death");
+            animator.ResetTrigger(
+                "Attack"
+            );
+
+            animator.ResetTrigger(
+                "Dash"
+            );
+
+            animator.ResetTrigger(
+                "Hurt"
+            );
+
+            animator.ResetTrigger(
+                "Death"
+            );
+
+            animator.SetTrigger(
+                "Death"
+            );
         }
 
         if (AudioManager.Instance != null)
-            AudioManager.Instance.StopFootstep();
+        {
+            AudioManager.Instance
+                .StopFootstep();
+        }
 
         if (audioPlayer != null)
+        {
             audioPlayer.PlayDeath();
+        }
     }
 
     public void OnDeathAnimationFinished()
@@ -348,59 +633,50 @@ public class Health : MonoBehaviour
             );
         }
 
-        Debug.Log("Player is dead");
+        Debug.Log(
+            "Player is dead"
+        );
     }
 
     public void ResetHealth()
     {
         StopAllCoroutines();
 
-        currentHealth = maxHealth;
+        CacheComponents();
+
+        currentHealth =
+            maxHealth;
 
         IsDead = false;
         isHurting = false;
         isInvincible = true;
-
-        if (audioPlayer == null)
-        {
-            audioPlayer =
-                GetComponent<PlayerAudio>();
-        }
-
-        if (animator == null)
-        {
-            animator =
-                GetComponent<Animator>();
-        }
-
-        Rigidbody2D rb =
-            GetComponent<Rigidbody2D>();
+        hurtCoroutine = null;
 
         if (rb != null)
         {
             rb.constraints =
-                RigidbodyConstraints2D.FreezeRotation;
+                RigidbodyConstraints2D
+                    .FreezeRotation;
 
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0f;
+            rb.linearVelocity =
+                Vector2.zero;
+
+            rb.angularVelocity =
+                0f;
         }
 
-        Players players =
-            GetComponent<Players>();
-
         if (players != null)
+        {
             players.enabled = true;
-
-        Attack attack =
-            GetComponent<Attack>();
+            players.StopAutoWalk();
+            players.UnlockControl();
+        }
 
         if (attack != null)
         {
             attack.enabled = true;
             attack.CancelAttack();
         }
-        PlayerDash dash =
-    GetComponent<PlayerDash>();
 
         if (dash != null)
         {
@@ -415,12 +691,95 @@ public class Health : MonoBehaviour
             animator.Rebind();
             animator.Update(0f);
 
-            animator.ResetTrigger("Death");
-            animator.ResetTrigger("Hurt");
-            animator.ResetTrigger("Attack");
-            animator.ResetTrigger("Dash");
+            animator.ResetTrigger(
+                "Death"
+            );
+
+            animator.ResetTrigger(
+                "Hurt"
+            );
+
+            animator.ResetTrigger(
+                "Attack"
+            );
+
+            animator.ResetTrigger(
+                "Dash"
+            );
+
+            animator.SetBool(
+                "IsMoving",
+                false
+            );
+
+            animator.SetBool(
+                "IsRunning",
+                false
+            );
         }
 
         NotifyHealthChanged();
+
+        StartCoroutine(
+            ResetInvincibilityRoutine()
+        );
+    }
+
+    private IEnumerator
+        ResetInvincibilityRoutine()
+    {
+        yield return new WaitForSeconds(
+            Mathf.Max(
+                0f,
+                invincibleTime
+            )
+        );
+
+        if (!IsDead)
+        {
+            isInvincible = false;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (hurtCoroutine != null)
+        {
+            StopCoroutine(
+                hurtCoroutine
+            );
+
+            hurtCoroutine = null;
+        }
+
+        KeepPlayerStopped();
+    }
+
+    private void OnValidate()
+    {
+        maxHealth =
+            Mathf.Max(
+                1,
+                maxHealth
+            );
+
+        currentHealth =
+            Mathf.Clamp(
+                currentHealth,
+                0f,
+                maxHealth
+            );
+
+        hurtLockTime =
+            Mathf.Max(
+                0.01f,
+                hurtLockTime
+            );
+
+        invincibleTime =
+            Mathf.Max(
+                0f,
+                invincibleTime
+            );
     }
 }

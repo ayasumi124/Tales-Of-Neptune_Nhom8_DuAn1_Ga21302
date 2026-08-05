@@ -12,6 +12,8 @@ public abstract class EnermyAttackBase : MonoBehaviour
 
     [SerializeField]
     protected EnermyAudio enemyAudio;
+    [SerializeField]
+    protected Rigidbody2D rb;
 
     [Header("Common Attack")]
     [Min(0f)]
@@ -32,6 +34,8 @@ public abstract class EnermyAttackBase : MonoBehaviour
 
     protected bool isAttacking;
     protected float cooldownTimer;
+
+    [SerializeField]
     protected EnermyHealth health;
     private Coroutine attackCoroutine;
 
@@ -55,28 +59,20 @@ public abstract class EnermyAttackBase : MonoBehaviour
 
     protected virtual void CacheComponents()
     {
-        if (health == null)
-        {
-            health =
-                GetComponent<EnermyHealth>();
-        }
         if (movement == null)
-        {
-            movement =
-                GetComponent<EnermyMovement>();
-        }
+            movement = GetComponent<EnermyMovement>();
+
+        if (health == null)
+            health = GetComponent<EnermyHealth>();
 
         if (animator == null)
-        {
-            animator =
-                GetComponent<Animator>();
-        }
+            animator = GetComponent<Animator>();
 
         if (enemyAudio == null)
-        {
-            enemyAudio =
-                GetComponent<EnermyAudio>();
-        }
+            enemyAudio = GetComponent<EnermyAudio>();
+
+        if (rb == null)
+            rb = GetComponent<Rigidbody2D>();
     }
 
     protected virtual bool CanStartAttack()
@@ -249,6 +245,28 @@ public abstract class EnermyAttackBase : MonoBehaviour
             return null;
 
         return movement.Target;
+    }
+
+    protected bool IsDeadOrHurt()
+    {
+        if (health == null)
+            return false;
+
+        return health.IsDead ||
+               health.IsHurting;
+    }
+    protected bool HasTarget()
+    {
+        return movement != null &&
+               movement.HasTarget();
+    }
+
+    protected float DistanceToTarget()
+    {
+        if (movement == null)
+            return Mathf.Infinity;
+
+        return movement.DistanceToTarget();
     }
 
     private void UpdateCooldown()
