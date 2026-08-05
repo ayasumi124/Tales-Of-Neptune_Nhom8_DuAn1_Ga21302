@@ -10,273 +10,1080 @@ public class EnermyMovement : MonoBehaviour
         Return
     }
 
+    // =====================================================
+    // TARGET
+    // =====================================================
+
     [Header("Target")]
+    [SerializeField]
+    private Transform target;
+
+    [Tooltip("Những Tag mà enemy có thể chọn làm mục tiêu.")]
+    [SerializeField]
+    private string[] targetTags =
+    {
+        "Player",
+        "Clone"
+    };
+
+    [Tooltip("Khoảng thời gian giữa các lần tìm lại mục tiêu.")]
+    [Min(0.05f)]
+    [SerializeField]
+    private float targetSearchInterval = 0.3f;
+    private float stuckTimer;
+    private Vector2 lastPosition;
+
+    /*
+     * Giữ lại để các script cũ dùng movement.player
+     * không bị lỗi. Script mới nên dùng Target.
+     */
+    [HideInInspector]
     public Transform player;
 
+    public Transform Target => target;
+
+    // =====================================================
+    // MOVEMENT
+    // =====================================================
+
     [Header("Movement")]
+    [Min(0f)]
     public float moveSpeed = 2f;
+
+    [Min(0f)]
     public float detectRange = 6f;
+
+    [Min(0f)]
     public float attackRange = 0.8f;
 
-    [Header("Target")]
-    public Transform target;
+    [Tooltip("Khoảng cách được xem là đã tới đích.")]
+    [Min(0.01f)]
+    [SerializeField]
+    private float arrivalDistance = 0.15f;
 
-    public string[] targetTags = { "Player", "Clone" };
+    // =====================================================
+    // WANDER
+    // =====================================================
 
     [Header("Wander")]
+    [Min(0.1f)]
     public float roamRadius = 3f;
+
+    [Tooltip("Thời gian đứng nghỉ giữa các lần đi random.")]
+    [Min(0.1f)]
     public float idleTime = 2f;
 
-    public bool CanMove = true;
+    [Tooltip("Enemy bắt đầu đi random ngay khi Play.")]
+    [SerializeField]
+    private bool wanderImmediatelyOnStart = true;
 
-    public EnemyState CurrentState { get; private set; }
-
-    Rigidbody2D rb;
-    Animator animator;
-    EnermyAudio enemyAudio;
-
-    Vector2 spawnPos;
-    Vector2 targetPos;
-
-    float idleTimer;
-    public Vector2 externalVelocity;
-
-    public Vector2 LastMoveDirection { get; private set; } = Vector2.down;
-
-    private SpriteRenderer sr;
+    // =====================================================
+    // KNOCKBACK
+    // =====================================================
 
     [Header("Knockback")]
-    public float knockbackDecay = 5f;
+    [Min(0f)]
+    public float knockbackDecay = 12f;
 
-    void Start()
+    public Vector2 externalVelocity;
+
+    // =====================================================
+    // PUBLIC STATE
+    // =====================================================
+
+    [Header("Runtime")]
+    public bool CanMove = true;
+
+    public EnemyState CurrentState
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        enemyAudio = GetComponent<EnermyAudio>();
-        sr = GetComponent<SpriteRenderer>();
-
-        spawnPos = transform.position;
-
-        if (player == null)
-        {
-            GameObject obj = GameObject.FindGameObjectWithTag("Player");
-
-            if (obj != null)
-                player = obj.transform;
-        }
-
-        EnterIdle();
+        get;
+        private set;
     }
 
-    void Update()
+    public Vector2 SpawnPosition =>
+        spawnPosition;
+
+    public Vector2 LastMoveDirection
     {
-        if (target == null)
-        {
-            FindNearestTarget();
+        get;
+        private set;
+    } = Vector2.down;
 
-            if (target == null)
-            {
-                StopMove();
-                return;
-            }
+    // =====================================================
+    // COMPONENTS
+    // =====================================================
+
+    private Rigidbody2D rb;
+    private Animator animator;
+    private EnermyAudio enemyAudio;
+
+    // =====================================================
+    // RUNTIME DATA
+    // =====================================================
+
+    private Vector2 spawnPosition;
+    private Vector2 wanderTargetPosition;
+    private Vector2 desiredVelocity;
+
+    private float idleTimer;
+    private float targetSearchTimer;
+
+    private bool initialized;
+    private bool stoppedImmediately;
+
+    // =====================================================
+    // UNITY METHODS
+    // =====================================================
+
+    private void Awake()
+    {
+        CacheComponents();
+    }
+
+    private void Start()
+    {
+        Initialize();
+    }
+
+    private void Update()
+    {
+        CheckIfStuck();
+        if (!initialized)
+        {
+            Initialize();
         }
 
-        if (Vector2.Distance(transform.position, target.position) > detectRange)
-        {
-            FindNearestTarget();
-        }
+        UpdateExternalVelocity();
+        UpdateTargetSearch();
 
-        externalVelocity = Vector2.Lerp(
-          externalVelocity,
-          Vector2.zero,
-          knockbackDecay * Time.deltaTime);
-
-        if (!CanMove)
+        if (!CanMove ||
+            stoppedImmediately)
         {
             StopMove();
             return;
         }
 
-        Health hp = FindFirstObjectByType<Health>();
-
-        if (hp != null && hp.IsDead)
-        {
-            StopMove();
-            return;
-        }
-
-        float distance =
-            Vector2.Distance(transform.position, target.position);
+        float distanceToTarget =
+            DistanceToTarget();
 
         switch (CurrentState)
         {
             case EnemyState.Idle:
-
-                idleTimer -= Time.deltaTime;
-
-                if (distance <= detectRange)
-                {
-                    CurrentState = EnemyState.Chase;
-                    break;
-                }
-
-                if (idleTimer <= 0)
-                {
-                    ChooseRandomPoint();
-                    CurrentState = EnemyState.Wander;
-                }
-
+                UpdateIdle(
+                    distanceToTarget
+                );
                 break;
 
             case EnemyState.Wander:
-
-                if (distance <= detectRange)
-                {
-                    CurrentState = EnemyState.Chase;
-                    break;
-                }
-
-                MoveTo(targetPos);
-
-                if (Vector2.Distance(transform.position, targetPos) < 0.2f)
-                    EnterIdle();
-
+                UpdateWander(
+                    distanceToTarget
+                );
                 break;
 
             case EnemyState.Chase:
-
-                if (distance > detectRange)
-                {
-                    CurrentState = EnemyState.Return;
-                    break;
-                }
-                if (distance <= attackRange)
-                {
-                    StopMove();
-                    break;
-                }
-
-                // Hướng từ enemy tới mục tiêu
-                Vector2 dir =
-                    ((Vector2)target.position - rb.position).normalized;
-
-                // Đứng cách mục tiêu đúng tầm đánh
-                Vector2 stopPos =
-                (Vector2)target.position - dir * (attackRange - 0.1f);
-
-                float disToStop =
-                    Vector2.Distance(rb.position, stopPos);
-
-                if (disToStop > 0.05f)
-                {
-                    MoveTo(stopPos);
-                }
-                else
-                {
-                    StopMove();
-                }
-
+                UpdateChase(
+                    distanceToTarget
+                );
                 break;
+
             case EnemyState.Return:
-
-                MoveTo(spawnPos);
-
-                if (distance <= detectRange)
-                {
-                    CurrentState = EnemyState.Chase;
-                    break;
-                }
-
-                if (Vector2.Distance(transform.position, spawnPos) < 0.2f)
-                    EnterIdle();
-
+                UpdateReturn(
+                    distanceToTarget
+                );
                 break;
         }
     }
 
-    void FindNearestTarget()
+    private void OnDisable()
     {
-        float nearestDistance = Mathf.Infinity;
-        Transform nearest = null;
+        desiredVelocity =
+            Vector2.zero;
 
-        foreach (string tag in targetTags)
+        if (rb != null)
         {
-            GameObject[] objects = GameObject.FindGameObjectsWithTag(tag);
+            rb.linearVelocity =
+                Vector2.zero;
+        }
 
-            foreach (GameObject obj in objects)
+        SetMovingVisual(false);
+    }
+
+    // =====================================================
+    // INITIALIZATION
+    // =====================================================
+
+    private void CacheComponents()
+    {
+        if (rb == null)
+        {
+            rb =
+                GetComponent<Rigidbody2D>();
+        }
+
+        if (animator == null)
+        {
+            animator =
+                GetComponent<Animator>();
+        }
+
+        if (enemyAudio == null)
+        {
+            enemyAudio =
+                GetComponent<EnermyAudio>();
+        }
+    }
+
+    private void Initialize()
+    {
+        lastPosition = transform.position;
+        if (initialized)
+            return;
+
+        initialized = true;
+
+        CacheComponents();
+
+        spawnPosition =
+            transform.position;
+
+        CanMove = true;
+        stoppedImmediately = false;
+
+        desiredVelocity =
+            Vector2.zero;
+
+        externalVelocity =
+            Vector2.zero;
+
+        if (rb != null)
+        {
+            rb.linearVelocity =
+                Vector2.zero;
+
+            rb.angularVelocity =
+                0f;
+        }
+
+        FindNearestTarget();
+
+        if (IsTargetInDetectRange())
+        {
+            CurrentState =
+                EnemyState.Chase;
+        }
+        else if (wanderImmediatelyOnStart)
+        {
+            BeginWander();
+        }
+        else
+        {
+            EnterIdle();
+        }
+    }
+
+    // =====================================================
+    // STATE UPDATES
+    // =====================================================
+
+    private void UpdateIdle(
+        float distanceToTarget)
+    {
+        StopMove();
+
+        if (IsTargetInDetectRange())
+        {
+            CurrentState =
+                EnemyState.Chase;
+
+            return;
+        }
+
+        idleTimer -=
+            Time.deltaTime;
+
+        if (idleTimer > 0f)
+            return;
+
+        BeginWander();
+    }
+
+    private void UpdateWander(
+        float distanceToTarget)
+    {
+        if (IsTargetInDetectRange())
+        {
+            CurrentState =
+                EnemyState.Chase;
+
+            return;
+        }
+
+        float distanceToPoint =
+            Vector2.Distance(
+                GetCurrentPosition(),
+                wanderTargetPosition
+            );
+
+        if (distanceToPoint <=
+            arrivalDistance)
+        {
+            EnterIdle();
+            return;
+        }
+
+        MoveTo(
+            wanderTargetPosition
+        );
+    }
+
+    private void UpdateChase(
+        float distanceToTarget)
+    {
+        if (!HasTarget())
+        {
+            EnterReturnOrIdle();
+            return;
+        }
+
+        if (distanceToTarget >
+            detectRange)
+        {
+            EnterReturnOrIdle();
+            return;
+        }
+
+        if (distanceToTarget <=
+            attackRange)
+        {
+            StopMove();
+            FaceTarget();
+            return;
+        }
+
+        Vector2 direction =
+            DirectionToTarget();
+
+        float stoppingDistance =
+            Mathf.Max(
+                0f,
+                attackRange - 0.1f
+            );
+
+        Vector2 stoppingPosition =
+            (Vector2)target.position -
+            direction *
+            stoppingDistance;
+
+        MoveTo(
+            stoppingPosition
+        );
+    }
+
+    private void UpdateReturn(
+        float distanceToTarget)
+    {
+        if (IsTargetInDetectRange())
+        {
+            CurrentState =
+                EnemyState.Chase;
+
+            return;
+        }
+
+        float distanceToSpawn =
+            Vector2.Distance(
+                GetCurrentPosition(),
+                spawnPosition
+            );
+
+        if (distanceToSpawn <=
+            arrivalDistance)
+        {
+            /*
+             * Sau khi quay về điểm spawn,
+             * enemy tiếp tục đi random.
+             */
+            BeginWander();
+            return;
+        }
+
+        MoveTo(
+            spawnPosition
+        );
+    }
+
+    private void EnterReturnOrIdle()
+    {
+        float distanceToSpawn =
+            Vector2.Distance(
+                GetCurrentPosition(),
+                spawnPosition
+            );
+
+        if (distanceToSpawn >
+            arrivalDistance)
+        {
+            CurrentState =
+                EnemyState.Return;
+        }
+        else
+        {
+            BeginWander();
+        }
+    }
+
+    // =====================================================
+    // IDLE / WANDER
+    // =====================================================
+
+    private void EnterIdle()
+    {
+        CurrentState =
+            EnemyState.Idle;
+
+        idleTimer =
+            Random.Range(
+                0.5f,
+                Mathf.Max(
+                    0.6f,
+                    idleTime
+                )
+            );
+
+        StopMove();
+    }
+
+    private void BeginWander()
+    {
+        stuckTimer = 0f;
+        lastPosition = transform.position;
+        ChooseRandomPoint();
+
+        CurrentState =
+            EnemyState.Wander;
+    }
+
+    private void ChooseRandomPoint()
+    {
+        float safeRadius =
+            Mathf.Max(
+                0.1f,
+                roamRadius
+            );
+
+        Vector2 direction =
+            Random.insideUnitCircle;
+
+        /*
+         * Tránh chọn vector quá nhỏ,
+         * khiến enemy nhìn như đứng yên.
+         */
+        if (direction.sqrMagnitude <
+            0.1f)
+        {
+            direction =
+                Random.value < 0.5f
+                    ? Vector2.right
+                    : Vector2.left;
+        }
+
+        direction =
+Random.insideUnitCircle.normalized;
+
+        float angle =
+        Random.Range(-35f, 35f);
+
+        direction =
+        Quaternion.Euler(0, 0, angle)
+        * direction;
+
+        float randomDistance =
+        Random.Range(
+        roamRadius * 0.3f,
+        roamRadius);
+
+        wanderTargetPosition =
+            spawnPosition +
+            direction *
+            randomDistance;
+    }
+
+    // =====================================================
+    // TARGET SEARCH
+    // =====================================================
+
+    private void UpdateTargetSearch()
+    {
+        targetSearchTimer -=
+            Time.deltaTime;
+
+        if (targetSearchTimer > 0f)
+            return;
+
+        targetSearchTimer =
+            Mathf.Max(
+                0.05f,
+                targetSearchInterval
+            );
+
+        FindNearestTarget();
+    }
+
+    public void FindNearestTarget()
+    {
+        float nearestDistanceSquared =
+            Mathf.Infinity;
+
+        Transform nearestTarget =
+            null;
+
+        if (targetTags == null)
+        {
+            SetTarget(null);
+            return;
+        }
+
+        foreach (string targetTag
+                 in targetTags)
+        {
+            if (string.IsNullOrWhiteSpace(
+                    targetTag))
             {
-                float distance = Vector2.Distance(
-                    transform.position,
-                    obj.transform.position);
+                continue;
+            }
 
-                if (distance < nearestDistance)
+            GameObject[] objects;
+
+            try
+            {
+                objects =
+                    GameObject
+                        .FindGameObjectsWithTag(
+                            targetTag
+                        );
+            }
+            catch (UnityException)
+            {
+                Debug.LogError(
+                    $"{name}: Tag '{targetTag}' " +
+                    "chưa tồn tại trong Tag Manager.",
+                    this
+                );
+
+                continue;
+            }
+
+            foreach (GameObject obj
+                     in objects)
+            {
+                if (obj == null ||
+                    obj == gameObject ||
+                    !obj.activeInHierarchy)
                 {
-                    nearestDistance = distance;
-                    nearest = obj.transform;
+                    continue;
                 }
+
+                Transform candidate =
+                    obj.transform;
+
+                if (!IsTargetValid(
+                        candidate))
+                {
+                    continue;
+                }
+
+                float distanceSquared =
+                    (
+                        candidate.position -
+                        transform.position
+                    ).sqrMagnitude;
+
+                if (distanceSquared >=
+                    nearestDistanceSquared)
+                {
+                    continue;
+                }
+
+                nearestDistanceSquared =
+                    distanceSquared;
+
+                nearestTarget =
+                    candidate;
             }
         }
 
-        target = nearest;
+        SetTarget(
+            nearestTarget
+        );
     }
-    void MoveTo(Vector2 target)
-    {
-        Vector2 dir = (target - (Vector2)transform.position).normalized;
 
-        if (dir.sqrMagnitude > 0.01f)
+    public void SetTarget(
+        Transform newTarget)
+    {
+        target =
+            newTarget;
+
+        /*
+         * Giữ tương thích với script cũ.
+         */
+        player =
+            newTarget;
+    }
+
+    public void ClearTarget()
+    {
+        SetTarget(null);
+
+        targetSearchTimer =
+            0f;
+    }
+
+    private bool IsTargetValid(
+        Transform possibleTarget)
+    {
+        if (possibleTarget == null)
+            return false;
+
+        if (!possibleTarget.gameObject
+                .activeInHierarchy)
         {
-            LastMoveDirection = dir;
+            return false;
         }
 
-        rb.linearVelocity = dir * moveSpeed + externalVelocity;
+        Health playerHealth =
+            possibleTarget
+                .GetComponentInParent<Health>();
 
-        animator.SetBool("IsMoving", true);
+        if (playerHealth != null &&
+            playerHealth.IsDead)
+        {
+            return false;
+        }
 
-        enemyAudio.PlayFootstep(true);
+        CloneHealth cloneHealth =
+            possibleTarget
+                .GetComponentInParent<CloneHealth>();
 
-        transform.localScale = new Vector3(
-    dir.x < 0 ? -1 : 1,
-    1,
-    1
-);
+        if (cloneHealth != null &&
+            !cloneHealth.enabled)
+        {
+            return false;
+        }
+
+        return true;
     }
+
+    public bool HasTarget()
+    {
+        return IsTargetValid(
+            target
+        );
+    }
+
+    public bool IsTargetInDetectRange()
+    {
+        if (!HasTarget())
+            return false;
+
+        float detectRangeSquared =
+            detectRange *
+            detectRange;
+
+        float distanceSquared =
+            (
+                target.position -
+                transform.position
+            ).sqrMagnitude;
+
+        return distanceSquared <=
+               detectRangeSquared;
+    }
+    private void CheckIfStuck()
+    {
+        if (CurrentState != EnemyState.Wander)
+        {
+            stuckTimer = 0f;
+            lastPosition = transform.position;
+            return;
+        }
+
+        float moved =
+            Vector2.Distance(
+                lastPosition,
+                transform.position);
+
+        if (moved < 0.02f)
+        {
+            stuckTimer += Time.deltaTime;
+
+            if (stuckTimer >= 0.5f)
+            {
+                ChooseRandomPoint();
+
+                stuckTimer = 0f;
+            }
+        }
+        else
+        {
+            stuckTimer = 0f;
+        }
+
+        lastPosition = transform.position;
+    }
+
+    public float DistanceToTarget()
+    {
+        if (!HasTarget())
+        {
+            return Mathf.Infinity;
+        }
+
+        return Vector2.Distance(
+            transform.position,
+            target.position
+        );
+    }
+
+    public Vector2 DirectionToTarget()
+    {
+        if (!HasTarget())
+        {
+            return LastMoveDirection;
+        }
+
+        Vector2 direction =
+            (Vector2)target.position -
+            GetCurrentPosition();
+
+        if (direction.sqrMagnitude <=
+            0.001f)
+        {
+            return LastMoveDirection;
+        }
+
+        return direction.normalized;
+    }
+
+    // =====================================================
+    // MOVEMENT
+    // =====================================================
+
+    private Vector2 GetCurrentPosition()
+    {
+        return rb != null
+            ? rb.position
+            : (Vector2)transform.position;
+    }
+
+    private void MoveTo(
+        Vector2 destination)
+    {
+        if (rb == null)
+            return;
+
+        Vector2 direction =
+            destination -
+            rb.position;
+
+        if (direction.sqrMagnitude <=
+            0.0001f)
+        {
+            StopMove();
+            return;
+        }
+
+        direction.Normalize();
+
+        LastMoveDirection =
+            direction;
+
+        desiredVelocity =
+            direction *
+            Mathf.Max(
+                0f,
+                moveSpeed
+            );
+
+        rb.linearVelocity =
+            desiredVelocity +
+            externalVelocity;
+
+        SetMovingVisual(true);
+        FaceDirection(direction);
+    }
+
+    private void FaceDirection(
+        Vector2 direction)
+    {
+        if (Mathf.Abs(direction.x) <=
+            0.01f)
+        {
+            return;
+        }
+
+        Vector3 scale =
+            transform.localScale;
+
+        float absoluteX =
+            Mathf.Abs(
+                scale.x
+            );
+
+        scale.x =
+            direction.x < 0f
+                ? -absoluteX
+                : absoluteX;
+
+        transform.localScale =
+            scale;
+    }
+
+    public void FaceTarget()
+    {
+        if (!HasTarget())
+            return;
+
+        FaceDirection(
+            DirectionToTarget()
+        );
+    }
+
+    // =====================================================
+    // STOP / RESUME
+    // =====================================================
 
     public void StopMove()
     {
-        rb.linearVelocity = externalVelocity;
+        desiredVelocity =
+            Vector2.zero;
 
-        animator.SetBool("IsMoving", false);
+        if (rb != null)
+        {
+            rb.linearVelocity =
+                externalVelocity;
+        }
 
-        enemyAudio.PlayFootstep(false);
+        SetMovingVisual(false);
+    }
+
+    public void StopImmediately()
+    {
+        CanMove = false;
+        stoppedImmediately = true;
+
+        desiredVelocity =
+            Vector2.zero;
+
+        externalVelocity =
+            Vector2.zero;
+
+        if (rb != null)
+        {
+            rb.linearVelocity =
+                Vector2.zero;
+
+            rb.angularVelocity =
+                0f;
+        }
+
+        SetMovingVisual(false);
+    }
+
+    public void PauseAI()
+    {
+        CanMove = false;
+        StopMove();
     }
 
     public void ResumeAI()
     {
-        CurrentState = EnemyState.Chase;
+        stoppedImmediately = false;
+        CanMove = true;
+
+        if (!HasTarget())
+        {
+            FindNearestTarget();
+        }
+
+        if (IsTargetInDetectRange())
+        {
+            CurrentState =
+                EnemyState.Chase;
+
+            return;
+        }
+
+        float distanceToSpawn =
+            Vector2.Distance(
+                GetCurrentPosition(),
+                spawnPosition
+            );
+
+        if (distanceToSpawn >
+            arrivalDistance)
+        {
+            CurrentState =
+                EnemyState.Return;
+        }
+        else
+        {
+            BeginWander();
+        }
     }
-    void ChooseRandomPoint()
+
+    // =====================================================
+    // KNOCKBACK
+    // =====================================================
+
+    private void UpdateExternalVelocity()
     {
-        targetPos = spawnPos + Random.insideUnitCircle * roamRadius;
+        externalVelocity =
+            Vector2.MoveTowards(
+                externalVelocity,
+                Vector2.zero,
+                Mathf.Max(
+                    0f,
+                    knockbackDecay
+                ) *
+                Time.deltaTime
+            );
     }
 
-    void EnterIdle()
+    // =====================================================
+    // VISUAL / AUDIO
+    // =====================================================
+
+    private void SetMovingVisual(
+        bool moving)
     {
-        CurrentState = EnemyState.Idle;
+        if (animator != null)
+        {
+            animator.SetBool(
+                "IsMoving",
+                moving
+            );
+        }
 
-        idleTimer = Random.Range(1f, idleTime);
+        if (enemyAudio != null)
+        {
+            enemyAudio.PlayFootstep(
+                moving
+            );
+        }
     }
 
-    void OnDrawGizmosSelected()
+    // =====================================================
+    // GIZMOS
+    // =====================================================
+
+    private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.color =
+            Color.yellow;
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.DrawWireSphere(
+            transform.position,
+            Mathf.Max(
+                0f,
+                detectRange
+            )
+        );
 
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(Application.isPlaying ? (Vector3)spawnPos : transform.position, roamRadius);
+        Gizmos.color =
+            Color.red;
+
+        Gizmos.DrawWireSphere(
+            transform.position,
+            Mathf.Max(
+                0f,
+                attackRange
+            )
+        );
+
+        Gizmos.color =
+            Color.cyan;
+
+        Vector3 center =
+            Application.isPlaying
+                ? (Vector3)spawnPosition
+                : transform.position;
+
+        Gizmos.DrawWireSphere(
+            center,
+            Mathf.Max(
+                0f,
+                roamRadius
+            )
+        );
+
+        if (Application.isPlaying &&
+            CurrentState ==
+            EnemyState.Wander)
+        {
+            Gizmos.color =
+                Color.magenta;
+
+            Gizmos.DrawLine(
+                transform.position,
+                wanderTargetPosition
+            );
+
+            Gizmos.DrawWireSphere(
+                wanderTargetPosition,
+                0.12f
+            );
+        }
     }
 
+    private void OnValidate()
+    {
+        moveSpeed =
+            Mathf.Max(
+                0f,
+                moveSpeed
+            );
 
+        detectRange =
+            Mathf.Max(
+                0f,
+                detectRange
+            );
+
+        attackRange =
+            Mathf.Clamp(
+                attackRange,
+                0f,
+                detectRange
+            );
+
+        roamRadius =
+            Mathf.Max(
+                0.1f,
+                roamRadius
+            );
+
+        idleTime =
+            Mathf.Max(
+                0.1f,
+                idleTime
+            );
+
+        arrivalDistance =
+            Mathf.Max(
+                0.01f,
+                arrivalDistance
+            );
+
+        knockbackDecay =
+            Mathf.Max(
+                0f,
+                knockbackDecay
+            );
+
+        targetSearchInterval =
+            Mathf.Max(
+                0.05f,
+                targetSearchInterval
+            );
+    }
 }

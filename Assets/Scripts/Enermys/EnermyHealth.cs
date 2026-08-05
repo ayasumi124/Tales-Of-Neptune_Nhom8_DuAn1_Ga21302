@@ -1,65 +1,343 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class EnermyHealth : MonoBehaviour
 {
     [Header("Health")]
+    [Min(1)]
     public int maxHealth = 100;
+
     public int currentHealth;
 
     [Header("Death")]
+    [Min(0f)]
     public float deathDelay = 1f;
 
     [Header("HP UI")]
     public Canvas hpCanvas;
-    private float hpTimer;
-
-    [SerializeField] GameObject coinPrefab;
 
     [SerializeField]
-    [Range(0, 1)]
-    float dropRate = 0.8f;
+    private float hpDisplayTime = 2f;
+
+    [Header("Hurt")]
+    [Min(0f)]
+    [SerializeField]
+    private float hurtLockTime = 0.2f;
+
+    [Header("Coin Reward")]
+    [SerializeField]
+    private GameObject coinPrefab;
+
+    [Range(0f, 1f)]
+    [SerializeField]
+    private float dropRate = 0.8f;
+
+    [Min(1)]
+    [SerializeField]
+    private int minCoinCount = 1;
+
+    [Min(1)]
+    [SerializeField]
+    private int maxCoinCount = 1;
+
+    [Min(0f)]
+    [SerializeField]
+    private float coinScatterRadius = 0.25f;
 
     [Header("Knockback")]
-    public float knockbackForce = 6f;
-    public float knockbackTime = 0.1f;
+    [Tooltip("Tốc độ đẩy ban đầu.")]
+    [Min(0f)]
+    [SerializeField]
+    private float knockbackForce = 2.5f;
+    public float KnockbackForce => knockbackForce;
+
+    [Tooltip("Khoảng thời gian giữ lực đẩy.")]
+    [Min(0f)]
+    [SerializeField]
+    private float knockbackTime = 0.08f;
 
     private Rigidbody2D rb;
-
-
-
     private Animator animator;
+    private EnermyAudio enermyAudio;
+    private EnermyMovement movement;
+    private EnermyItemDrop itemDrop;
+
+    private EnermyAttack normalAttack;
+    private EnermyAttackBase specialAttack;
+    public bool IsHurting { get; private set; }
+
+    private Coroutine hurtCoroutine;
+    private Coroutine knockbackCoroutine;
+    private Coroutine destroyCoroutine;
+
+    private float hpTimer;
 
     private bool isDead;
-    private EnermyAudio enermyAudio;
-    private EnermyHealthBar enermyHealthBar;
-    [Header("Mana Reward")]
-    public float manaReward = 10f;
+    private bool rewardsGiven;
 
+    public bool IsDead => isDead;
 
-    void Start()
+    private void Awake()
     {
-
-        currentHealth = maxHealth;
-        if (hpCanvas != null)
-            hpCanvas.enabled = false;
-        enermyAudio = GetComponent<EnermyAudio>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        enermyAudio = GetComponent<EnermyAudio>();
+        movement = GetComponent<EnermyMovement>();
+        itemDrop = GetComponent<EnermyItemDrop>();
+
+        normalAttack = GetComponent<EnermyAttack>();
+        specialAttack = GetComponent<EnermyAttackBase>();
     }
 
-    void Update()
+    private void Start()
     {
-        if (hpCanvas == null) return;
+        currentHealth =
+            Mathf.Max(
+                1,
+                maxHealth
+            );
+
+        if (hpCanvas != null)
+        {
+            hpCanvas.enabled = false;
+        }
+    }
+
+    private void Update()
+    {
+        if (hpCanvas == null ||
+            !hpCanvas.enabled)
+        {
+            return;
+        }
 
         hpTimer -= Time.deltaTime;
 
-        if (hpTimer <= 0)
+        if (hpTimer <= 0f)
+        {
             hpCanvas.enabled = false;
+        }
     }
 
+    public void TakeDamage(
+     int damage,
+     Vector2 knockbackDirection,
+     float knockbackStrength)
+    {
+        if (isDead ||
+            damage <= 0)
+        {
+            return;
+        }
 
-    IEnumerator ShowDamagePopup(int damage)
+        currentHealth -= damage;
+
+        currentHealth =
+            Mathf.Max(
+                0,
+                currentHealth
+            );
+
+        Debug.Log(
+            $"{gameObject.name} HP: " +
+            $"{currentHealth}/{maxHealth}"
+        );
+
+        StartCoroutine(
+            ShowDamagePopup(damage)
+        );
+
+        ShowHP();
+
+        if (enermyAudio != null)
+        {
+            enermyAudio.PlayHurt();
+        }
+
+        if (currentHealth <= 0)
+        {
+            Die();
+            return;
+        }
+
+        if (animator != null)
+        {
+            animator.ResetTrigger("Hurt");
+            animator.SetTrigger("Hurt");
+        }
+
+        StartHurt();
+
+        ApplyKnockback(
+            knockbackDirection,
+            knockbackStrength
+        );
+    }
+
+    /*
+     * Dành cho FireBreath, Tornado và các skill
+     * truyền hướng nhưng dùng lực mặc định của enemy.
+     */
+    public void TakeDamage(
+        int damage,
+        Vector2 knockbackDirection)
+    {
+        TakeDamage(
+            damage,
+            knockbackDirection,
+            knockbackForce
+        );
+    }
+
+    /*
+     * Damage không có hướng thì không knockback.
+     */
+    public void TakeDamage(int damage)
+    {
+        TakeDamage(
+            damage,
+            Vector2.zero,
+            0f
+        );
+    }
+    private void ApplyKnockback(
+    Vector2 direction,
+    float strength)
+    {
+        if (movement == null ||
+            direction.sqrMagnitude <= 0.001f ||
+            strength <= 0f)
+        {
+            return;
+        }
+
+        if (knockbackCoroutine != null)
+        {
+            StopCoroutine(
+                knockbackCoroutine
+            );
+        }
+
+        knockbackCoroutine =
+            StartCoroutine(
+                KnockbackRoutine(
+                    direction.normalized,
+                    strength
+                )
+            );
+    }
+
+    private IEnumerator KnockbackRoutine(
+    Vector2 direction,
+    float strength)
+    {
+        if (movement == null)
+            yield break;
+
+        movement.externalVelocity =
+            direction *
+            Mathf.Max(
+                0f,
+                strength
+            );
+
+        yield return new WaitForSeconds(
+            Mathf.Max(
+                0.01f,
+                knockbackTime
+            )
+        );
+
+        if (movement != null)
+        {
+            movement.externalVelocity =
+                Vector2.zero;
+        }
+
+        knockbackCoroutine = null;
+    }
+
+    private void StartHurt()
+    {
+        if (hurtCoroutine != null)
+        {
+            StopCoroutine(
+                hurtCoroutine
+            );
+        }
+
+        hurtCoroutine =
+            StartCoroutine(
+                HurtRoutine()
+            );
+    }
+
+    private IEnumerator HurtRoutine()
+    {
+        IsHurting = true;
+        if (normalAttack != null)
+        {
+            normalAttack.CancelAttack();
+        }
+
+        if (specialAttack != null)
+        {
+            specialAttack.CancelAttack();
+        }
+
+        if (movement != null)
+        {
+            movement.CanMove = false;
+            movement.StopMove();
+        }
+
+        yield return new WaitForSeconds(
+            Mathf.Max(
+                0.01f,
+                hurtLockTime
+            )
+        );
+
+        if (isDead)
+        {
+            hurtCoroutine = null;
+            yield break;
+        }
+
+        if (movement != null)
+        {
+            movement.CanMove = true;
+            movement.ResumeAI();
+        }
+
+        hurtCoroutine = null;
+        IsHurting = false;
+    }
+
+    public void EndHurt()
+    {
+        IsHurting = false;
+        if (isDead)
+            return;
+
+        if (hurtCoroutine != null)
+        {
+            StopCoroutine(
+                hurtCoroutine
+            );
+
+            hurtCoroutine = null;
+        }
+
+        if (movement != null)
+        {
+            movement.CanMove = true;
+            movement.ResumeAI();
+        }
+    }
+
+    private IEnumerator ShowDamagePopup(
+        int damage)
     {
         yield return null;
 
@@ -67,119 +345,286 @@ public class EnermyHealth : MonoBehaviour
         {
             DamagePopupManager.Instance.ShowDamage(
                 damage,
-                transform.position + Vector3.up * 0.8f);
+                transform.position +
+                Vector3.up * 0.8f
+            );
         }
-
     }
-    void ShowHP()
+
+    private void ShowHP()
     {
-        if (hpCanvas == null) return;
+        if (hpCanvas == null)
+            return;
 
         hpCanvas.enabled = true;
-        hpTimer = 2f;
+
+        hpTimer =
+            Mathf.Max(
+                0.1f,
+                hpDisplayTime
+            );
     }
 
-    public void TakeDamage(int damage, Vector2 knockbackDir)
+    private void Die()
     {
+        IsHurting = false;
         if (isDead)
             return;
 
-        currentHealth -= damage;
+        isDead = true;
+        currentHealth = 0;
 
-        Debug.Log(gameObject.name + " HP: " + currentHealth);
+        StopRunningCoroutines();
 
-        StartCoroutine(ShowDamagePopup(damage));
-        Debug.Log(gameObject.name + " HP: " + currentHealth);
+        if (movement != null)
+        {
+            movement.externalVelocity =
+                Vector2.zero;
+
+            movement.StopImmediately();
+            movement.enabled = false;
+        }
+        else if (rb != null)
+        {
+            rb.linearVelocity =
+                Vector2.zero;
+
+            rb.angularVelocity =
+                0f;
+        }
+
+        if (normalAttack != null)
+        {
+            normalAttack.enabled = false;
+        }
+
+        if (specialAttack != null)
+        {
+            specialAttack.enabled = false;
+        }
+
+        foreach (
+            Collider2D col
+            in GetComponentsInChildren<Collider2D>())
+        {
+            col.enabled = false;
+        }
+
+        if (hpCanvas != null)
+        {
+            hpCanvas.enabled = false;
+        }
 
         if (enermyAudio != null)
-            enermyAudio.PlayHurt();
-
-        ShowHP();
-
-
-        animator.SetTrigger("Hurt");
-
-        // Knockback
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-
-        if (rb != null)
         {
-            EnermyMovement movement = GetComponent<EnermyMovement>();
-
-            if (movement != null)
-            {
-                movement.externalVelocity =
-                    knockbackDir.normalized * knockbackForce;
-            }
+            enermyAudio.PlayDeath();
         }
-        if (currentHealth <= 0)
+
+        if (animator != null)
         {
-            Die();
+            animator.ResetTrigger("Hurt");
+            animator.ResetTrigger("Death");
+            animator.SetTrigger("Death");
+        }
+
+        Debug.Log(
+            $"{gameObject.name} Dead"
+        );
+
+        destroyCoroutine =
+            StartCoroutine(
+                DeathRoutine()
+            );
+    }
+
+    private void StopRunningCoroutines()
+    {
+        if (hurtCoroutine != null)
+        {
+            StopCoroutine(hurtCoroutine);
+            hurtCoroutine = null;
+        }
+
+        if (knockbackCoroutine != null)
+        {
+            StopCoroutine(knockbackCoroutine);
+            knockbackCoroutine = null;
+        }
+
+        if (destroyCoroutine != null)
+        {
+            StopCoroutine(destroyCoroutine);
+            destroyCoroutine = null;
         }
     }
 
-    void Die()
+    private IEnumerator DeathRoutine()
     {
-        if (isDead)
-            return;
-        isDead = true;
-        EnermyItemDrop itemDrop =
-    GetComponent<EnermyItemDrop>();
+        yield return new WaitForSeconds(
+            Mathf.Max(
+                0f,
+                deathDelay
+            )
+        );
 
+        CompleteDeath();
+    }
+
+    private void CompleteDeath()
+    {
+        if (!isDead)
+            return;
+
+        GiveDeathRewards();
+
+        if (destroyCoroutine != null)
+        {
+            StopCoroutine(
+                destroyCoroutine
+            );
+
+            destroyCoroutine = null;
+        }
+
+        Destroy(gameObject);
+    }
+
+    private void GiveDeathRewards()
+    {
+        if (rewardsGiven)
+            return;
+
+        rewardsGiven = true;
+
+        /*
+         * EnermyItemDrop tự xử lý ItemData
+         * và phần thưởng riêng của nó.
+         */
         if (itemDrop != null)
         {
             itemDrop.DropItems();
         }
 
-        animator.SetTrigger("Death");
-        Invoke(nameof(ForceDestroy), 2f);
+        DropCoins();
+    }
 
-        Debug.Log(gameObject.name + " Dead");
-
-
-
-        EnermyMovement movement = GetComponent<EnermyMovement>();
-        if (movement != null)
-            movement.enabled = false;
-
-        EnermyAttack attack = GetComponent<EnermyAttack>();
-        if (attack != null)
-            attack.enabled = false;
-
-        foreach (Collider2D col in GetComponents<Collider2D>())
+    private void DropCoins()
+    {
+        if (coinPrefab == null)
         {
-            col.enabled = false;
+            Debug.LogWarning(
+                $"{name}: chưa gán Coin Prefab.",
+                this
+            );
+
+            return;
         }
 
-        if (enermyAudio != null)
-            enermyAudio.PlayDeath();
+        if (Random.value > dropRate)
+            return;
 
+        int minimum =
+            Mathf.Max(
+                1,
+                minCoinCount
+            );
 
-    }
-    void ForceDestroy()
-    {
-        if (gameObject != null)
-            Destroy(gameObject);
-    }
-    // Animation Event
-    public void OnDeathFinished()
-    {
-        Destroy(gameObject);
+        int maximum =
+            Mathf.Max(
+                minimum,
+                maxCoinCount
+            );
 
-        PlayerMana mana = FindFirstObjectByType<PlayerMana>();
+        int amount =
+            Random.Range(
+                minimum,
+                maximum + 1
+            );
 
-        if (mana != null)
+        for (int i = 0;
+             i < amount;
+             i++)
         {
-            mana.RestoreMana(5);
-        }
-        if (Random.value <= dropRate)
-        {
+            Vector2 offset =
+                Random.insideUnitCircle *
+                Mathf.Max(
+                    0f,
+                    coinScatterRadius
+                );
+
             Instantiate(
                 coinPrefab,
-                transform.position,
-                Quaternion.identity);
+                transform.position +
+                (Vector3)offset,
+                Quaternion.identity
+            );
         }
 
+        Debug.Log(
+            $"{name} rơi {amount} coin."
+        );
+    }
 
+    // Animation Event ở cuối animation Death
+    public void OnDeathFinished()
+    {
+        CompleteDeath();
+    }
+
+    private void OnValidate()
+    {
+        maxHealth =
+            Mathf.Max(
+                1,
+                maxHealth
+            );
+
+        deathDelay =
+            Mathf.Max(
+                0f,
+                deathDelay
+            );
+
+        hpDisplayTime =
+            Mathf.Max(
+                0.1f,
+                hpDisplayTime
+            );
+
+        hurtLockTime =
+            Mathf.Max(
+                0f,
+                hurtLockTime
+            );
+
+        knockbackForce =
+            Mathf.Max(
+                0f,
+                knockbackForce
+            );
+
+        knockbackTime =
+            Mathf.Max(
+                0.01f,
+                knockbackTime
+            );
+
+        minCoinCount =
+            Mathf.Max(
+                1,
+                minCoinCount
+            );
+
+        maxCoinCount =
+            Mathf.Max(
+                minCoinCount,
+                maxCoinCount
+            );
+
+        coinScatterRadius =
+            Mathf.Max(
+                0f,
+                coinScatterRadius
+            );
     }
 }

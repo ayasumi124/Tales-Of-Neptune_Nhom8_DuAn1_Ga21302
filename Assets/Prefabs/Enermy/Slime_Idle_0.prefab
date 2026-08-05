@@ -206,11 +206,15 @@ MonoBehaviour:
   currentHealth: 0
   deathDelay: 1
   hpCanvas: {fileID: 4441943256739025041}
+  hpDisplayTime: 2
+  hurtLockTime: 0.2
   coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
   dropRate: 0.8
-  knockbackForce: 10
+  minCoinCount: 1
+  maxCoinCount: 1
+  coinScatterRadius: 0.25
+  knockbackForce: 8
   knockbackTime: 0.1
-  manaReward: 10
 --- !u!114 &1103410256815555851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,19 +258,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ef9af40f4dbff45b8442b646460357, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyMovement
-  player: {fileID: 0}
-  moveSpeed: 1
-  detectRange: 2
-  attackRange: 0.35
   target: {fileID: 0}
   targetTags:
   - Player
   - Clone
-  roamRadius: 2
+  targetSearchInterval: 0.25
+  player: {fileID: 0}
+  moveSpeed: 1
+  detectRange: 2
+  attackRange: 0.35
+  arrivalDistance: 0.15
+  roamRadius: 3
   idleTime: 2
-  CanMove: 1
-  externalVelocity: {x: 0, y: 0}
+  wanderImmediatelyOnStart: 1
   knockbackDecay: 4
+  externalVelocity: {x: 0, y: 0}
+  CanMove: 1
 --- !u!114 &7450391081814005210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,13 +288,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnermyAttack
   movement: {fileID: 1508673582511101674}
   attackPoint: {fileID: 6268556560499626042}
+  animator: {fileID: 4783220491504769878}
+  enemyAudio: {fileID: 5218853899728729679}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 4104
   attackDistance: 0.25
   attackRadius: 0.15
   attackCooldown: 1
   damage: 1
+  attackTrigger: Attack
 --- !u!82 &7947812308503660795
 AudioSource:
   m_ObjectHideFlags: 0

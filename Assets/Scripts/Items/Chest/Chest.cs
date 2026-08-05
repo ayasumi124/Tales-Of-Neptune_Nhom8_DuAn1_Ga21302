@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Chest : MonoBehaviour
+public class Chest : SaveObject
 {
     public enum ChestSkillRewardType
     {
@@ -27,9 +27,6 @@ public class Chest : MonoBehaviour
         "Mỗi rương phải có một ID khác nhau."
     )]
     [SerializeField]
-    private string chestID;
-
-    [SerializeField]
     private bool opened;
 
     [Header("Animator")]
@@ -51,18 +48,19 @@ public class Chest : MonoBehaviour
     private ChestReward chestReward;
 
     public string FullChestID =>
-        SceneManager.GetActiveScene().name +
-        "_" +
-        chestID;
+    BuildSceneSaveID();
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         animator =
             GetComponent<Animator>();
 
         chestReward =
             GetComponent<ChestReward>();
     }
+
 
     private void Start()
     {
@@ -124,16 +122,15 @@ public class Chest : MonoBehaviour
         if (opened)
             return;
 
-        if (string.IsNullOrWhiteSpace(
-                chestID))
+        if (!HasValidSaveID)
         {
             Debug.LogError(
-                $"{name} chưa có Chest ID."
+                $"{name} chưa có Persistent ID hợp lệ.",
+                this
             );
 
             return;
         }
-
         /*
          * Khóa tại scene hiện tại để người chơi
          * không thể bấm mở nhiều lần trong animation.
@@ -184,155 +181,155 @@ public class Chest : MonoBehaviour
      * trùng với component khác.
      */
     // Animation Event gọi duy nhất hàm này.
-public void OnRewardAnimationEvent()
-{
-    if (rewardGiven)
-        return;
-
-    bool success;
-
-    // Rương Coin, Potion, Heart Container.
-    if (chestReward != null)
+    public void OnRewardAnimationEvent()
     {
-        success = chestReward.ClaimReward();
+        if (rewardGiven)
+            return;
+
+        bool success;
+
+        // Rương Coin, Potion, Heart Container.
+        if (chestReward != null)
+        {
+            success = chestReward.ClaimReward();
+
+            if (success)
+            {
+                CompleteReward();
+                ResumeGame();
+            }
+            else
+            {
+                CancelFailedReward();
+            }
+
+            return;
+        }
+
+        // Rương Ability hoặc Element.
+        success = ClaimSkillReward();
 
         if (success)
         {
             CompleteReward();
-            ResumeGame();
+
+            /*
+             * Không ResumeGame ở đây.
+             * SkillUnlockUI sẽ gọi ResumeGame
+             * sau khi người chơi đóng panel.
+             */
         }
         else
         {
             CancelFailedReward();
         }
-
-        return;
     }
-
-    // Rương Ability hoặc Element.
-    success = ClaimSkillReward();
-
-    if (success)
-    {
-        CompleteReward();
-
-        /*
-         * Không ResumeGame ở đây.
-         * SkillUnlockUI sẽ gọi ResumeGame
-         * sau khi người chơi đóng panel.
-         */
-    }
-    else
-    {
-        CancelFailedReward();
-    }
-}
 
     private bool ClaimSkillReward()
-{
-    switch (skillRewardType)
     {
-        case ChestSkillRewardType.Ability:
-            return ClaimAbilityReward();
+        switch (skillRewardType)
+        {
+            case ChestSkillRewardType.Ability:
+                return ClaimAbilityReward();
 
-        case ChestSkillRewardType.Element:
-            return ClaimElementReward();
+            case ChestSkillRewardType.Element:
+                return ClaimElementReward();
 
-        default:
+            default:
+                Debug.LogError(
+                    $"{name}: Skill Reward Type không hợp lệ."
+                );
+
+                return false;
+        }
+    }
+
+    private bool ClaimAbilityReward()
+    {
+        if (abilityReward == null)
+        {
             Debug.LogError(
-                $"{name}: Skill Reward Type không hợp lệ."
+                $"{name} chưa gán AbilityData."
             );
 
             return false;
-    }
-}
+        }
 
-private bool ClaimAbilityReward()
-{
-    if (abilityReward == null)
-    {
-        Debug.LogError(
-            $"{name} chưa gán AbilityData."
+        if (AbilityManager.Instance != null)
+        {
+            AbilityManager.Instance.UnlockAbility(
+                abilityReward.type
+            );
+        }
+
+        if (SkillInventoryUI.Instance == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy SkillInventoryUI."
+            );
+
+            return false;
+        }
+
+        SkillInventoryUI.Instance.AddAbility(
+            abilityReward
         );
 
-        return false;
-    }
+        if (SkillUnlockUI.Instance == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy SkillUnlockUI."
+            );
 
-    if (AbilityManager.Instance != null)
-    {
-        AbilityManager.Instance.UnlockAbility(
-            abilityReward.type
-        );
-    }
+            return false;
+        }
 
-    if (SkillInventoryUI.Instance == null)
-    {
-        Debug.LogError(
-            "Không tìm thấy SkillInventoryUI."
+        SkillUnlockUI.Instance.ShowAbility(
+            abilityReward
         );
 
-        return false;
+        return true;
     }
 
-    SkillInventoryUI.Instance.AddAbility(
-        abilityReward
-    );
-
-    if (SkillUnlockUI.Instance == null)
+    private bool ClaimElementReward()
     {
-        Debug.LogError(
-            "Không tìm thấy SkillUnlockUI."
+        if (elementReward == null)
+        {
+            Debug.LogError(
+                $"{name} chưa gán ElementData."
+            );
+
+            return false;
+        }
+
+        if (SkillInventoryUI.Instance == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy SkillInventoryUI."
+            );
+
+            return false;
+        }
+
+        SkillInventoryUI.Instance.AddElement(
+            elementReward
         );
 
-        return false;
-    }
+        if (SkillUnlockUI.Instance == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy SkillUnlockUI."
+            );
 
-    SkillUnlockUI.Instance.ShowAbility(
-        abilityReward
-    );
+            return false;
+        }
 
-    return true;
-}
-
-private bool ClaimElementReward()
-{
-    if (elementReward == null)
-    {
-        Debug.LogError(
-            $"{name} chưa gán ElementData."
+        SkillUnlockUI.Instance.ShowElement(
+            elementReward
         );
 
-        return false;
+        return true;
     }
-
-    if (SkillInventoryUI.Instance == null)
-    {
-        Debug.LogError(
-            "Không tìm thấy SkillInventoryUI."
-        );
-
-        return false;
-    }
-
-    SkillInventoryUI.Instance.AddElement(
-        elementReward
-    );
-
-    if (SkillUnlockUI.Instance == null)
-    {
-        Debug.LogError(
-            "Không tìm thấy SkillUnlockUI."
-        );
-
-        return false;
-    }
-
-    SkillUnlockUI.Instance.ShowElement(
-        elementReward
-    );
-
-    return true;
-}
 
     private void CompleteReward()
     {
@@ -528,11 +525,11 @@ private bool ClaimElementReward()
 
     private void ValidateRuntimeChestID()
     {
-        if (string.IsNullOrWhiteSpace(
-                chestID))
+        if (!HasValidSaveID)
         {
             Debug.LogError(
-                $"{name} chưa được gán Chest ID."
+                $"{name} chưa có Persistent ID.",
+                this
             );
 
             return;
@@ -540,6 +537,7 @@ private bool ClaimElementReward()
 
         Chest[] chests =
             FindObjectsByType<Chest>(
+                FindObjectsInactive.Include,
                 FindObjectsSortMode.None
             );
 
@@ -558,26 +556,16 @@ private bool ClaimElementReward()
                 Debug.LogError(
                     $"TRÙNG CHEST ID: {FullChestID}\n" +
                     $"Rương 1: {name}\n" +
-                    $"Rương 2: {other.name}\n" +
-                    "Hãy chọn một rương và dùng " +
-                    "'Generate New Chest ID'."
+                    $"Rương 2: {other.name}",
+                    this
                 );
+
+                return;
             }
         }
     }
 
-    [ContextMenu("Generate New Chest ID")]
-    private void GenerateNewChestID()
-    {
-        chestID =
-            Guid.NewGuid()
-                .ToString("N");
 
-        Debug.Log(
-            $"{name} có Chest ID mới: {chestID}",
-            this
-        );
-    }
 
     [ContextMenu("Reset This Chest In Session")]
     private void ResetThisChestInSession()
@@ -607,24 +595,6 @@ private bool ClaimElementReward()
             animator.Update(0f);
         }
     }
-
-    private void OnValidate()
-    {
-        /*
-         * Chỉ tự tạo ID khi đang rỗng.
-         * Duplicate prefab sẽ giữ ID cũ,
-         * nên sau khi duplicate cần chọn:
-         * Generate New Chest ID.
-         */
-        if (string.IsNullOrWhiteSpace(
-                chestID))
-        {
-            chestID =
-                Guid.NewGuid()
-                    .ToString("N");
-        }
-    }
-
     private void OnDestroy()
     {
         SkillUnlockUI.OnSkillPanelClosed -=

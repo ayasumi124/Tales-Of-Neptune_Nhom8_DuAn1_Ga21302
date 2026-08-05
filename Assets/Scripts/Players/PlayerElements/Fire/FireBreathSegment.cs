@@ -4,47 +4,88 @@ using UnityEngine;
 public class FireBreathSegment : MonoBehaviour
 {
     [Header("Lifetime")]
-    [SerializeField] private float lifeTime = 0.35f;
+    [SerializeField]
+    private float lifeTime = 0.35f;
 
     [Header("Damage")]
-    [SerializeField] private int damage = 10;
-    [SerializeField] private int burnDamage = 10;
-    [SerializeField] private float burnInterval = 1f;
-    [SerializeField] private float burnDuration = 3f;
+    [SerializeField]
+    private int damage = 10;
+
+    [SerializeField]
+    private int burnDamage = 10;
+
+    [SerializeField]
+    private float burnInterval = 1f;
+
+    [SerializeField]
+    private float burnDuration = 3f;
 
     [Header("Damage Check")]
-    [Tooltip("Khoảng thời gian giữa mỗi lần kiểm tra Enemy.")]
-    [SerializeField] private float damageCheckInterval = 0.05f;
+    [SerializeField]
+    private float damageCheckInterval = 0.05f;
 
     [Tooltip(
         "Cùng một Enemy chỉ nhận damage Fire Breath " +
         "sau mỗi khoảng thời gian này."
     )]
-    [SerializeField] private float sameEnemyDamageInterval = 0.25f;
+    [SerializeField]
+    private float sameEnemyDamageInterval = 0.25f;
 
     [Header("Collision")]
-    [SerializeField] private float damageRadius = 0.45f;
-    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField]
+    private float damageRadius = 0.45f;
+
+    [SerializeField]
+    private LayerMask enemyLayer;
+
+    [Header("Knockback")]
+    [Tooltip(
+        "Fire Breath dùng chính hướng phun để knockback."
+    )]
+    [SerializeField]
+    private bool applyKnockback = true;
 
     [Header("Effects")]
-    [SerializeField] private GameObject burnEffectPrefab;
+    [SerializeField]
+    private GameObject burnEffectPrefab;
 
     [Header("Visual")]
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField]
+    private SpriteRenderer spriteRenderer;
 
     [Tooltip("Bật nếu sprite gốc hướng sang phải.")]
-    [SerializeField] private bool spriteFacesRight = true;
+    [SerializeField]
+    private bool spriteFacesRight = true;
 
     [Header("Scale")]
-    [SerializeField] private float baseScale = 0.3f;
-    [SerializeField] private float scalePerLayer = 0.15f;
-    [Header("Directional Visual Offset")]
-    [SerializeField] private Vector2 rightOffset = Vector2.zero;
-    [SerializeField] private Vector2 leftOffset = Vector2.zero;
-    [SerializeField] private Vector2 upOffset = new Vector2(-0.2f, 0f);
-    [SerializeField] private Vector2 downOffset = new Vector2(0.2f, 0f);
+    [SerializeField]
+    private float baseScale = 0.3f;
 
-    private Vector3 basePosition;
+    [SerializeField]
+    private float scalePerLayer = 0.15f;
+
+    [Header("Directional Visual Offset")]
+    [SerializeField]
+    private Vector2 rightOffset =
+        Vector2.zero;
+
+    [SerializeField]
+    private Vector2 leftOffset =
+        Vector2.zero;
+
+    [SerializeField]
+    private Vector2 upOffset =
+        new Vector2(
+            -0.2f,
+            0f
+        );
+
+    [SerializeField]
+    private Vector2 downOffset =
+        new Vector2(
+            0.2f,
+            0f
+        );
 
     private Transform ownerTransform;
     private Transform followOrigin;
@@ -57,12 +98,8 @@ public class FireBreathSegment : MonoBehaviour
     private float damageCheckTimer;
     private bool initialized;
 
-    /*
-     * Dùng chung cho mọi segment.
-     * Tránh nhiều lớp lửa cùng gây damage
-     * lên một Enemy trong cùng một frame.
-     */
-    private static readonly Dictionary<EnermyHealth, float>
+    private static readonly
+        Dictionary<EnermyHealth, float>
         nextDamageTimes =
             new Dictionary<EnermyHealth, float>();
 
@@ -79,7 +116,9 @@ public class FireBreathSegment : MonoBehaviour
             return;
         }
 
-        ownerTransform = skillOwner.transform;
+        ownerTransform =
+            skillOwner.transform;
+
         ownerPlayer =
             skillOwner.GetComponent<Players>();
 
@@ -87,16 +126,23 @@ public class FireBreathSegment : MonoBehaviour
 
         direction =
             GetCardinalDirection(
-                castDirection.sqrMagnitude > 0.001f
+                castDirection.sqrMagnitude >
+                0.001f
                     ? castDirection
                     : Vector2.down
             );
 
         distanceFromOrigin =
-            Mathf.Max(0f, segmentDistance);
+            Mathf.Max(
+                0f,
+                segmentDistance
+            );
 
         segmentIndex =
-            Mathf.Max(0, index);
+            Mathf.Max(
+                0,
+                index
+            );
 
         initialized = true;
 
@@ -104,25 +150,28 @@ public class FireBreathSegment : MonoBehaviour
             Mathf.Max(
                 0.01f,
                 baseScale +
-                segmentIndex * scalePerLayer
+                segmentIndex *
+                scalePerLayer
             );
 
         transform.localScale =
-            Vector3.one * scaleMultiplier;
+            Vector3.one *
+            scaleMultiplier;
 
         UpdateFollowPosition();
-        basePosition = transform.position;
         ApplyDirectionalOffset();
         ConfigureVisualDirection();
 
-        // Kiểm tra damage ngay khi vừa sinh ra.
         CheckDamage();
 
         damageCheckTimer = 0f;
 
         Destroy(
             gameObject,
-            Mathf.Max(0.05f, lifeTime)
+            Mathf.Max(
+                0.05f,
+                lifeTime
+            )
         );
     }
 
@@ -131,18 +180,19 @@ public class FireBreathSegment : MonoBehaviour
         if (!initialized)
             return;
 
-        damageCheckTimer -= Time.deltaTime;
+        damageCheckTimer -=
+            Time.deltaTime;
 
-        if (damageCheckTimer <= 0f)
-        {
-            damageCheckTimer =
-                Mathf.Max(
-                    0.02f,
-                    damageCheckInterval
-                );
+        if (damageCheckTimer > 0f)
+            return;
 
-            CheckDamage();
-        }
+        damageCheckTimer =
+            Mathf.Max(
+                0.02f,
+                damageCheckInterval
+            );
+
+        CheckDamage();
     }
 
     private void LateUpdate()
@@ -153,12 +203,9 @@ public class FireBreathSegment : MonoBehaviour
             return;
         }
 
-        /*
-         * Cập nhật hướng theo Player.
-         */
         if (ownerPlayer != null &&
-            ownerPlayer.LastDirection.sqrMagnitude >
-            0.001f)
+            ownerPlayer.LastDirection
+                .sqrMagnitude > 0.001f)
         {
             direction =
                 GetCardinalDirection(
@@ -172,20 +219,31 @@ public class FireBreathSegment : MonoBehaviour
     }
 
     private void ApplyDirectionalOffset()
-{
-    Vector2 offset = Vector2.zero;
+    {
+        Vector2 offset =
+            Vector2.zero;
 
-    if (direction == Vector2.right)
-        offset = rightOffset;
-    else if (direction == Vector2.left)
-        offset = leftOffset;
-    else if (direction == Vector2.up)
-        offset = upOffset;
-    else if (direction == Vector2.down)
-        offset = downOffset;
+        if (direction == Vector2.right)
+        {
+            offset = rightOffset;
+        }
+        else if (direction == Vector2.left)
+        {
+            offset = leftOffset;
+        }
+        else if (direction == Vector2.up)
+        {
+            offset = upOffset;
+        }
+        else if (direction == Vector2.down)
+        {
+            offset = downOffset;
+        }
 
-    transform.position += (Vector3)offset;
-}
+        transform.position +=
+            (Vector3)offset;
+    }
+
     private void UpdateFollowPosition()
     {
         if (ownerTransform == null)
@@ -254,9 +312,6 @@ public class FireBreathSegment : MonoBehaviour
         }
         else if (direction == Vector2.up)
         {
-            /*
-             * Sprite ngang quay lên.
-             */
             transform.rotation =
                 Quaternion.Euler(
                     0f,
@@ -279,7 +334,8 @@ public class FireBreathSegment : MonoBehaviour
             spriteRenderer.flipX =
                 spriteFacesRight;
 
-            spriteRenderer.flipY = true;
+            spriteRenderer.flipY =
+                true;
         }
     }
 
@@ -298,21 +354,25 @@ public class FireBreathSegment : MonoBehaviour
                 continue;
 
             EnermyHealth enemy =
-                hit.GetComponentInParent<EnermyHealth>();
+                hit.GetComponentInParent<
+                    EnermyHealth
+                >();
 
-            if (enemy == null)
+            if (enemy == null ||
+                enemy.IsDead)
+            {
                 continue;
+            }
 
-            /*
-             * Enemy đang trong thời gian miễn damage
-             * của Fire Breath thì bỏ qua.
-             */
             if (nextDamageTimes.TryGetValue(
                     enemy,
                     out float nextDamageTime))
             {
-                if (Time.time < nextDamageTime)
+                if (Time.time <
+                    nextDamageTime)
+                {
                     continue;
+                }
             }
 
             nextDamageTimes[enemy] =
@@ -322,9 +382,22 @@ public class FireBreathSegment : MonoBehaviour
                     sameEnemyDamageInterval
                 );
 
+            /*
+             * Dùng đúng hướng Fire Breath,
+             * không dùng vị trí Player nên không
+             * còn bị mặc định đẩy lên trên.
+             */
+            Vector2 knockbackDirection =
+                applyKnockback
+                    ? direction.normalized
+                    : Vector2.zero;
+
+            /*
+             * Chỉ gọi TakeDamage đúng một lần.
+             */
             enemy.TakeDamage(
                 damage,
-                direction
+                knockbackDirection
             );
 
             ApplyBurn(enemy);
@@ -334,18 +407,24 @@ public class FireBreathSegment : MonoBehaviour
     private void ApplyBurn(
         EnermyHealth enemy)
     {
-        if (enemy == null)
+        if (enemy == null ||
+            enemy.IsDead)
+        {
             return;
+        }
 
         EnemyBurnEffect burn =
-            enemy.GetComponent<EnemyBurnEffect>();
+            enemy.GetComponent<
+                EnemyBurnEffect
+            >();
 
         if (burn == null)
         {
             burn =
-                enemy.gameObject.AddComponent<
-                    EnemyBurnEffect
-                >();
+                enemy.gameObject
+                    .AddComponent<
+                        EnemyBurnEffect
+                    >();
         }
 
         burn.ApplyBurn(
@@ -366,25 +445,95 @@ public class FireBreathSegment : MonoBehaviour
 
     private void OnDestroy()
     {
-        /*
-         * Xóa các Enemy đã bị Destroy khỏi Dictionary
-         * để tránh giữ reference rác lâu dài.
-         */
-        List<EnermyHealth> invalidEnemies =
-            new List<EnermyHealth>();
+        List<EnermyHealth>
+            invalidEnemies =
+                new List<EnermyHealth>();
 
         foreach (
-            KeyValuePair<EnermyHealth, float> pair
+            KeyValuePair<
+                EnermyHealth,
+                float
+            > pair
             in nextDamageTimes)
         {
             if (pair.Key == null)
-                invalidEnemies.Add(pair.Key);
+            {
+                invalidEnemies.Add(
+                    pair.Key
+                );
+            }
         }
 
-        foreach (EnermyHealth enemy
-                 in invalidEnemies)
+        foreach (
+            EnermyHealth enemy
+            in invalidEnemies)
         {
-            nextDamageTimes.Remove(enemy);
+            nextDamageTimes.Remove(
+                enemy
+            );
         }
+    }
+
+    private void OnValidate()
+    {
+        lifeTime =
+            Mathf.Max(
+                0.05f,
+                lifeTime
+            );
+
+        damage =
+            Mathf.Max(
+                0,
+                damage
+            );
+
+        burnDamage =
+            Mathf.Max(
+                0,
+                burnDamage
+            );
+
+        burnInterval =
+            Mathf.Max(
+                0.05f,
+                burnInterval
+            );
+
+        burnDuration =
+            Mathf.Max(
+                0f,
+                burnDuration
+            );
+
+        damageCheckInterval =
+            Mathf.Max(
+                0.02f,
+                damageCheckInterval
+            );
+
+        sameEnemyDamageInterval =
+            Mathf.Max(
+                0.05f,
+                sameEnemyDamageInterval
+            );
+
+        damageRadius =
+            Mathf.Max(
+                0f,
+                damageRadius
+            );
+
+        baseScale =
+            Mathf.Max(
+                0.01f,
+                baseScale
+            );
+
+        scalePerLayer =
+            Mathf.Max(
+                0f,
+                scalePerLayer
+            );
     }
 }
