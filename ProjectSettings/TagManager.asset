@@ -72,11 +72,17 @@ TagManager:
   - name: Grass
     uniqueID: 2832959773
     locked: 0
+  - name: Trap
+    uniqueID: 2985969111
+    locked: 0
   - name: Enermy
     uniqueID: 179487883
     locked: 0
   - name: Player
     uniqueID: 2025507539
+    locked: 0
+  - name: Door
+    uniqueID: 2450303671
     locked: 0
   - name: Tree1
     uniqueID: 799678501
