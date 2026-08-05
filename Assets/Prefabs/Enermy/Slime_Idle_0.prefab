@@ -215,6 +215,7 @@ MonoBehaviour:
   coinScatterRadius: 0.25
   knockbackForce: 8
   knockbackTime: 0.1
+  isBoss: 0
 --- !u!114 &1103410256815555851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,11 +242,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyAudio
   footstepSource: {fileID: 7947812308503660795}
-  sfxSource: {fileID: 6129834820399778356}
+  voiceSource: {fileID: 0}
+  impactSource: {fileID: 0}
   footstepClip: {fileID: 0}
-  attackClip: {fileID: 8300000, guid: f16fc7bea6ef85549b0513f5046263ef, type: 3}
-  hurtClip: {fileID: 8300000, guid: bc73b132c56a44e4aa8d36d2c5c82d95, type: 3}
-  deathClip: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
+  footstepVolume: 1
+  attackVoiceClip: {fileID: 0}
+  attackSwingClip: {fileID: 8300000, guid: f16fc7bea6ef85549b0513f5046263ef, type: 3}
+  attackImpactClip: {fileID: 0}
+  hurtVoiceClip: {fileID: 8300000, guid: bc73b132c56a44e4aa8d36d2c5c82d95, type: 3}
+  hurtImpactClip: {fileID: 8300000, guid: bc73b132c56a44e4aa8d36d2c5c82d95, type: 3}
+  hurtVoiceDelay: 0.05
+  deathVoiceClip: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
+  deathImpactClip: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
+  voiceVolume: 1
+  impactVolume: 1
+  attackVoiceMinimumInterval: 0.15
+  attackSwingMinimumInterval: 0.1
+  hurtMinimumInterval: 0.05
 --- !u!114 &1508673582511101674
 MonoBehaviour:
   m_ObjectHideFlags: 0
