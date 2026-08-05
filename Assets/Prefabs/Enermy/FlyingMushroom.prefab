@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 5672889518747257138}
   - component: {fileID: 6427153344507675780}
   - component: {fileID: 1101725972074244909}
-  - component: {fileID: 7099844460995666459}
+  - component: {fileID: 1111518040136760600}
   - component: {fileID: 7877135309140848016}
   - component: {fileID: 8244180196819679577}
   - component: {fileID: 8911579050852237670}
@@ -165,8 +165,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 179487883
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4331948892352828423, guid: 27f7acbbcf15f3547a720660d6e25ac7, type: 3}
@@ -281,11 +281,15 @@ MonoBehaviour:
   currentHealth: 0
   deathDelay: 1
   hpCanvas: {fileID: 306302479091659942}
+  hpDisplayTime: 2
+  hurtLockTime: 0.2
   coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
   dropRate: 0.8
+  minCoinCount: 1
+  maxCoinCount: 1
+  coinScatterRadius: 0.25
   knockbackForce: 10
   knockbackTime: 0.1
-  manaReward: 10
 --- !u!114 &5672889518747257138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,9 +318,9 @@ MonoBehaviour:
   footstepSource: {fileID: 7877135309140848016}
   sfxSource: {fileID: 8244180196819679577}
   footstepClip: {fileID: 0}
-  attackClip: {fileID: 8300000, guid: f16fc7bea6ef85549b0513f5046263ef, type: 3}
-  hurtClip: {fileID: 8300000, guid: bc73b132c56a44e4aa8d36d2c5c82d95, type: 3}
-  deathClip: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
+  attackClip: {fileID: 8300000, guid: bb4996e6a1ffeb84bb700b1de761a13a, type: 3}
+  hurtClip: {fileID: 8300000, guid: 3da348b3ae85b4d42b93465f90d77eaa, type: 3}
+  deathClip: {fileID: 8300000, guid: f88a8aa4bf197fe4597703168b92fdf8, type: 3}
 --- !u!114 &1101725972074244909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,20 +333,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ef9af40f4dbff45b8442b646460357, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyMovement
-  player: {fileID: 0}
-  moveSpeed: 1
-  detectRange: 2
-  attackRange: 0.35
   target: {fileID: 0}
   targetTags:
   - Player
   - Clone
+  targetSearchInterval: 0.3
+  player: {fileID: 0}
+  moveSpeed: 1
+  detectRange: 2
+  attackRange: 0.35
+  arrivalDistance: 0.15
   roamRadius: 2
   idleTime: 2
-  CanMove: 1
-  externalVelocity: {x: 0, y: 0}
+  wanderImmediatelyOnStart: 1
   knockbackDecay: 4
---- !u!114 &7099844460995666459
+  externalVelocity: {x: 0, y: 0}
+  CanMove: 1
+--- !u!114 &1111518040136760600
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -351,18 +358,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 1920187677852773632}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fe9f5748438b9f4ca39c4f598d78c1e, type: 3}
+  m_Script: {fileID: 11500000, guid: 57c09a02ea3c7414c87825acc400d34c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnermyAttack
+  m_EditorClassIdentifier: Assembly-CSharp::FlyingSlamAttack
   movement: {fileID: 1101725972074244909}
-  attackPoint: {fileID: 7228168237228383015}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  attackDistance: 0.25
-  attackRadius: 0.15
-  attackCooldown: 1
+  animator: {fileID: 5084682232764799584}
+  enemyAudio: {fileID: 6427153344507675780}
+  rb: {fileID: 5792623735225057909}
+  attackRange: 1.5
+  attackCooldown: 2
+  attackLockTime: 0.6
+  attackTrigger: Attack
+  health: {fileID: 5040474951416642082}
+  windupTime: 0.35
+  riseHeight: 0.7
+  riseSpeed: 4
+  slamSpeed: 7
+  landingDistance: 0.12
+  maximumSlamTime: 0.8
+  useAnimationEvent: 1
+  animationEventTimeout: 0.7
   damage: 2
+  damageRadius: 0.7
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 4104
+  hitEffectPrefab: {fileID: 1368958316424924904, guid: c82c36512d3c35d4f84eb8d15687c655, type: 3}
+  hitEffectLifeTime: 0.6
+  slamSound: {fileID: 8300000, guid: 2008fa5b002c0b34cb44e5be3a6f9810, type: 3}
+  slamVolume: 1
 --- !u!82 &7877135309140848016
 AudioSource:
   m_ObjectHideFlags: 0

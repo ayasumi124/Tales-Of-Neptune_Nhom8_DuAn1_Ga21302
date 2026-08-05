@@ -257,9 +257,10 @@ public class FireMeteor : MonoBehaviour
             }
 
             enemy.TakeDamage(
-                impactDamage,
-                knockbackDirection
-            );
+    impactDamage,
+    knockbackDirection,
+    1f
+);
 
             ApplyBurn(enemy);
         }
