@@ -336,7 +336,7 @@ MonoBehaviour:
   voiceSource: {fileID: 7987736405716235533}
   impactSource: {fileID: 782547042346892807}
   footstepClip: {fileID: 8300000, guid: 83a302603721c1b40accf0ed1db3387e, type: 3}
-  footstepVolume: 0.5
+  footstepVolume: 0.25
   attackVoiceClip: {fileID: 8300000, guid: 3a85c0420b329194fa68e9fd048e3d59, type: 3}
   attackSwingClip: {fileID: 8300000, guid: 0b507679fdf7e2b42ab45adee8ef7a3f, type: 3}
   attackImpactClip: {fileID: 8300000, guid: 0e2dd41110a56a24aafc23990d8053e0, type: 3}
