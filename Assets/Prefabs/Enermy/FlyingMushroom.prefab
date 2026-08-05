@@ -166,7 +166,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 179487883
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4331948892352828423, guid: 27f7acbbcf15f3547a720660d6e25ac7, type: 3}
@@ -290,6 +290,7 @@ MonoBehaviour:
   coinScatterRadius: 0.25
   knockbackForce: 10
   knockbackTime: 0.1
+  isBoss: 0
 --- !u!114 &5672889518747257138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,11 +317,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyAudio
   footstepSource: {fileID: 7877135309140848016}
-  sfxSource: {fileID: 8244180196819679577}
+  voiceSource: {fileID: 0}
+  impactSource: {fileID: 0}
   footstepClip: {fileID: 0}
-  attackClip: {fileID: 8300000, guid: bb4996e6a1ffeb84bb700b1de761a13a, type: 3}
-  hurtClip: {fileID: 8300000, guid: 3da348b3ae85b4d42b93465f90d77eaa, type: 3}
-  deathClip: {fileID: 8300000, guid: f88a8aa4bf197fe4597703168b92fdf8, type: 3}
+  footstepVolume: 1
+  attackVoiceClip: {fileID: 0}
+  attackSwingClip: {fileID: 8300000, guid: bb4996e6a1ffeb84bb700b1de761a13a, type: 3}
+  attackImpactClip: {fileID: 0}
+  hurtVoiceClip: {fileID: 8300000, guid: 3da348b3ae85b4d42b93465f90d77eaa, type: 3}
+  hurtImpactClip: {fileID: 8300000, guid: 3da348b3ae85b4d42b93465f90d77eaa, type: 3}
+  hurtVoiceDelay: 0.05
+  deathVoiceClip: {fileID: 8300000, guid: f88a8aa4bf197fe4597703168b92fdf8, type: 3}
+  deathImpactClip: {fileID: 8300000, guid: f88a8aa4bf197fe4597703168b92fdf8, type: 3}
+  voiceVolume: 1
+  impactVolume: 1
+  attackVoiceMinimumInterval: 0.15
+  attackSwingMinimumInterval: 0.1
+  hurtMinimumInterval: 0.05
 --- !u!114 &1101725972074244909
 MonoBehaviour:
   m_ObjectHideFlags: 0

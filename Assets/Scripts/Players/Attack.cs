@@ -299,14 +299,15 @@ public class Attack : MonoBehaviour
                     );
 
                 enemyHealth.TakeDamage(
-                    GetArrayValue(
-                        comboDamage,
-                        currentCombo,
-                        damage
-                    ),
-                    knockbackDirection,
-                    knockbackStrength
-                );
+    GetArrayValue(
+        comboDamage,
+        currentCombo,
+        damage
+    ),
+    knockbackDirection,
+    knockbackStrength,
+    true
+);
             }
         }
     }
