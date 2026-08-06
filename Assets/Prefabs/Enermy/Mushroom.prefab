@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1899068144343287622}
   - component: {fileID: 894828382913735208}
   - component: {fileID: 1609949570658592929}
-  - component: {fileID: 2150299844404268072}
+  - component: {fileID: 2927479901290631550}
   - component: {fileID: 8733576558967859964}
   - component: {fileID: 4122547054504577974}
   - component: {fileID: 6299743280627801593}
@@ -206,11 +206,16 @@ MonoBehaviour:
   currentHealth: 0
   deathDelay: 1
   hpCanvas: {fileID: 1544831741664874830}
+  hpDisplayTime: 2
+  hurtLockTime: 0.2
   coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
   dropRate: 0.8
+  minCoinCount: 1
+  maxCoinCount: 1
+  coinScatterRadius: 0.25
   knockbackForce: 10
   knockbackTime: 0.1
-  manaReward: 10
+  isBoss: 0
 --- !u!114 &1899068144343287622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,11 +242,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyAudio
   footstepSource: {fileID: 8733576558967859964}
-  sfxSource: {fileID: 4122547054504577974}
+  voiceSource: {fileID: 0}
+  impactSource: {fileID: 0}
   footstepClip: {fileID: 0}
-  attackClip: {fileID: 8300000, guid: f16fc7bea6ef85549b0513f5046263ef, type: 3}
-  hurtClip: {fileID: 8300000, guid: bc73b132c56a44e4aa8d36d2c5c82d95, type: 3}
-  deathClip: {fileID: 8300000, guid: 8f52c45cc20ac904fb3fac499d438a7a, type: 3}
+  footstepVolume: 1
+  attackVoiceClip: {fileID: 0}
+  attackSwingClip: {fileID: 8300000, guid: 77e404b9439a29f45855d8cfabefe674, type: 3}
+  attackImpactClip: {fileID: 0}
+  hurtVoiceClip: {fileID: 8300000, guid: 0d30f1001da547b4387fbc79ad7380b6, type: 3}
+  hurtImpactClip: {fileID: 8300000, guid: 0d30f1001da547b4387fbc79ad7380b6, type: 3}
+  hurtVoiceDelay: 0.05
+  deathVoiceClip: {fileID: 8300000, guid: 1b0c49eca29a4da4f81c6d13e49d18e7, type: 3}
+  deathImpactClip: {fileID: 8300000, guid: 1b0c49eca29a4da4f81c6d13e49d18e7, type: 3}
+  voiceVolume: 1
+  impactVolume: 1
+  attackVoiceMinimumInterval: 0.15
+  attackSwingMinimumInterval: 0.1
+  hurtMinimumInterval: 0.05
 --- !u!114 &1609949570658592929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,20 +271,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ef9af40f4dbff45b8442b646460357, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyMovement
-  player: {fileID: 0}
-  moveSpeed: 1
-  detectRange: 2
-  attackRange: 0.35
   target: {fileID: 0}
   targetTags:
   - Player
   - Clone
+  targetSearchInterval: 0.3
+  player: {fileID: 0}
+  moveSpeed: 1
+  detectRange: 2
+  attackRange: 0.35
+  arrivalDistance: 0.15
   roamRadius: 2
   idleTime: 2
-  CanMove: 1
-  externalVelocity: {x: 0, y: 0}
+  wanderImmediatelyOnStart: 1
   knockbackDecay: 4
---- !u!114 &2150299844404268072
+  externalVelocity: {x: 0, y: 0}
+  CanMove: 1
+--- !u!114 &2927479901290631550
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -276,18 +296,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1709594348553928756}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fe9f5748438b9f4ca39c4f598d78c1e, type: 3}
+  m_Script: {fileID: 11500000, guid: 59df1e3a109c55a4d8892c727583b69f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnermyAttack
+  m_EditorClassIdentifier: Assembly-CSharp::MushroomLeapAttack
   movement: {fileID: 1609949570658592929}
-  attackPoint: {fileID: 282430828311521624}
-  playerLayer:
+  animator: {fileID: 2507423743182782821}
+  enemyAudio: {fileID: 894828382913735208}
+  rb: {fileID: 2656304950390759550}
+  attackRange: 1.5
+  attackCooldown: 2
+  attackLockTime: 0.6
+  attackTrigger: Attack
+  health: {fileID: 278521524960847116}
+  windupTime: 0.3
+  leapSpeed: 4
+  leapDuration: 0.35
+  useAnimationEvent: 1
+  animationEventTimeout: 0.6
+  damage: 2
+  hitRadius: 0.55
+  targetLayer:
     serializedVersion: 2
-    m_Bits: 8
-  attackDistance: 0.25
-  attackRadius: 0.15
-  attackCooldown: 1
-  damage: 3
+    m_Bits: 4104
+  targetKnockback: 0.1
 --- !u!82 &8733576558967859964
 AudioSource:
   m_ObjectHideFlags: 0

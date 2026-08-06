@@ -64,7 +64,11 @@ public class EnermyHealth : MonoBehaviour
 
     private EnermyAttack normalAttack;
     private EnermyAttackBase specialAttack;
+    private MinotaurosBossAttack bossAttack;
     public bool IsHurting { get; private set; }
+    [Header("Boss")]
+    [SerializeField]
+    private bool isBoss;
 
     private Coroutine hurtCoroutine;
     private Coroutine knockbackCoroutine;
@@ -87,6 +91,7 @@ public class EnermyHealth : MonoBehaviour
 
         normalAttack = GetComponent<EnermyAttack>();
         specialAttack = GetComponent<EnermyAttackBase>();
+        bossAttack = GetComponent<MinotaurosBossAttack>();
     }
 
     private void Start()
@@ -120,90 +125,132 @@ public class EnermyHealth : MonoBehaviour
     }
 
     public void TakeDamage(
-     int damage,
-     Vector2 knockbackDirection,
-     float knockbackStrength)
+    int damage,
+    Vector2 knockbackDirection,
+    float knockbackStrength,
+    bool physicalHit)
+{
+    if (isDead || damage <= 0)
+        return;
+
+    currentHealth -= damage;
+    currentHealth =
+        Mathf.Max(0, currentHealth);
+
+    Debug.Log(
+        $"{gameObject.name} HP: " +
+        $"{currentHealth}/{maxHealth}"
+    );
+
+    StartCoroutine(
+        ShowDamagePopup(damage)
+    );
+
+    ShowHP();
+
+    if (enermyAudio != null)
     {
-        if (isDead ||
-            damage <= 0)
+        if (physicalHit)
         {
-            return;
+            enermyAudio.PlayPhysicalHurt();
         }
-
-        currentHealth -= damage;
-
-        currentHealth =
-            Mathf.Max(
-                0,
-                currentHealth
-            );
-
-        Debug.Log(
-            $"{gameObject.name} HP: " +
-            $"{currentHealth}/{maxHealth}"
-        );
-
-        StartCoroutine(
-            ShowDamagePopup(damage)
-        );
-
-        ShowHP();
-
-        if (enermyAudio != null)
+        else
         {
             enermyAudio.PlayHurt();
         }
+    }
 
-        if (currentHealth <= 0)
-        {
-            Die();
-            return;
-        }
+    if (currentHealth <= 0)
+    {
+        Die();
+        return;
+    }
 
-        if (animator != null)
-        {
-            animator.ResetTrigger("Hurt");
-            animator.SetTrigger("Hurt");
-        }
+    /*
+     * Boss chỉ mất máu và phát âm thanh,
+     * không bị Hurt Lock hay knockback.
+     */
+    if (isBoss)
+        return;
 
-        StartHurt();
+    if (animator != null)
+    {
+        animator.ResetTrigger("Hurt");
+        animator.SetTrigger("Hurt");
+    }
 
+    StartHurt();
+
+    if (knockbackStrength > 0f)
+    {
         ApplyKnockback(
             knockbackDirection,
             knockbackStrength
         );
     }
+}
 
     /*
      * Dành cho FireBreath, Tornado và các skill
      * truyền hướng nhưng dùng lực mặc định của enemy.
      */
-    public void TakeDamage(
-        int damage,
-        Vector2 knockbackDirection)
-    {
-        TakeDamage(
-            damage,
-            knockbackDirection,
-            knockbackForce
-        );
-    }
+    // Có hướng knockback
+public void TakeDamage(
+    int damage,
+    Vector2 knockbackDirection)
+{
+    TakeDamage(
+        damage,
+        knockbackDirection,
+        0f,
+        false
+    );
+}
 
-    /*
-     * Damage không có hướng thì không knockback.
-     */
-    public void TakeDamage(int damage)
-    {
-        TakeDamage(
-            damage,
-            Vector2.zero,
-            0f
-        );
-    }
+// Có hướng + lực knockback
+public void TakeDamage(
+    int damage,
+    Vector2 knockbackDirection,
+    float knockbackStrength)
+{
+    TakeDamage(
+        damage,
+        knockbackDirection,
+        knockbackStrength,
+        false
+    );
+}
+
+// Không knockback
+public void TakeDamageNoKnockback(
+    int damage)
+{
+    TakeDamage(
+        damage,
+        Vector2.zero,
+        0f,
+        false
+    );
+}
+
+// Damage thường
+public void TakeDamage(
+    int damage)
+{
+    TakeDamage(
+        damage,
+        Vector2.zero,
+        0f,
+        false
+    );
+}
     private void ApplyKnockback(
     Vector2 direction,
     float strength)
     {
+        if (isBoss)
+            return;
+
         if (movement == null ||
             direction.sqrMagnitude <= 0.001f ||
             strength <= 0f)
@@ -401,6 +448,11 @@ public class EnermyHealth : MonoBehaviour
         if (specialAttack != null)
         {
             specialAttack.enabled = false;
+        }
+        if (bossAttack != null)
+        {
+            bossAttack.CancelAction();
+            bossAttack.enabled = false;
         }
 
         foreach (

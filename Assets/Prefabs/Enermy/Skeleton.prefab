@@ -202,7 +202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fff177ad658515e429a36faa80a759e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyHealth
-  maxHealth: 400
+  maxHealth: 500
   currentHealth: 0
   deathDelay: 1
   hpCanvas: {fileID: 7823013287755213746}
@@ -215,6 +215,7 @@ MonoBehaviour:
   coinScatterRadius: 0.25
   knockbackForce: 10
   knockbackTime: 0.1
+  isBoss: 0
 --- !u!114 &243117127134320416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,11 +242,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyAudio
   footstepSource: {fileID: 4635225780731794488}
-  sfxSource: {fileID: 6008080852566421305}
+  voiceSource: {fileID: 0}
+  impactSource: {fileID: 0}
   footstepClip: {fileID: 0}
-  attackClip: {fileID: 8300000, guid: 87eee8bf7c04fda46bd80534d016063e, type: 3}
-  hurtClip: {fileID: 8300000, guid: 7f16cdce04a1fd944b6200caec494a11, type: 3}
-  deathClip: {fileID: 8300000, guid: f26dac696b55b304ea3a86aeb98c3054, type: 3}
+  footstepVolume: 1
+  attackVoiceClip: {fileID: 0}
+  attackSwingClip: {fileID: 8300000, guid: 87eee8bf7c04fda46bd80534d016063e, type: 3}
+  attackImpactClip: {fileID: 0}
+  hurtVoiceClip: {fileID: 8300000, guid: 7f16cdce04a1fd944b6200caec494a11, type: 3}
+  hurtImpactClip: {fileID: 8300000, guid: 7f16cdce04a1fd944b6200caec494a11, type: 3}
+  hurtVoiceDelay: 0.05
+  deathVoiceClip: {fileID: 8300000, guid: f26dac696b55b304ea3a86aeb98c3054, type: 3}
+  deathImpactClip: {fileID: 8300000, guid: f26dac696b55b304ea3a86aeb98c3054, type: 3}
+  voiceVolume: 1
+  impactVolume: 1
+  attackVoiceMinimumInterval: 0.15
+  attackSwingMinimumInterval: 0.1
+  hurtMinimumInterval: 0.05
 --- !u!114 &8585157797995810004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -515,13 +528,15 @@ MonoBehaviour:
   movement: {fileID: 8585157797995810004}
   animator: {fileID: 8048794286040021762}
   enemyAudio: {fileID: 5088090117542271298}
+  rb: {fileID: 3241995629044240577}
   attackRange: 1.5
-  attackCooldown: 3
+  attackCooldown: 4
   attackLockTime: 0.6
   attackTrigger: Attack
+  health: {fileID: 2511498753273345357}
   slashSpawnPoint: {fileID: 7607142104434093044}
   slashPrefab: {fileID: 3395659506950850694, guid: b06a36d865f9e70479039e27efdbadf4, type: 3}
-  projectileDamage: 2
+  projectileDamage: 1
   projectileSpeed: 5
   useAnimationEvent: 1
   projectileDelay: 0.25
