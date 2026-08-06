@@ -1,11 +1,51 @@
 fileFormatVersion: 2
-guid: 096324738cf601047afb018b4ec6adba
-timeCreated: 1543202562
-licenseType: Free
+guid: eb9df84e0e8a8474eacbd5b8fd54e9f7
 TextureImporter:
-  fileIDToRecycleName: {}
+  internalIDToNameTable:
+  - first:
+      213: 5580163772662684213
+    second: Shockglow_001_0
+  - first:
+      213: 1827395076412221518
+    second: Shockglow_001_1
+  - first:
+      213: 2199935242700192724
+    second: Shockglow_001_2
+  - first:
+      213: -4528234072924755426
+    second: Shockglow_001_3
+  - first:
+      213: 2582469840792538652
+    second: Shockglow_001_4
+  - first:
+      213: -7231632730059012160
+    second: Shockglow_001_5
+  - first:
+      213: -4373718331803977566
+    second: Shockglow_001_6
+  - first:
+      213: 1666306166359117532
+    second: Shockglow_001_7
+  - first:
+      213: 7429354688262054225
+    second: Shockglow_001_8
+  - first:
+      213: 8040493002060148224
+    second: Shockglow_001_9
+  - first:
+      213: -2760378475598055184
+    second: Shockglow_001_10
+  - first:
+      213: -2084867792427791159
+    second: Shockglow_001_11
+  - first:
+      213: 1680990720637701693
+    second: Shockglow_001_12
+  - first:
+      213: 2622426246562379207
+    second: Shockglow_001_13
   externalObjects: {}
-  serializedVersion: 4
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -22,7 +62,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -31,32 +76,41 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
-    aniso: -1
-    mipBias: -1
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 0
+  textureType: 8
   textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
   platformSettings:
-  - buildTarget: DefaultTexturePlatform
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -65,7 +119,11 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Standalone
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -74,21 +132,350 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Android
-    maxTextureSize: 1024
-    resizeAlgorithm: 0
-    textureFormat: 47
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Shockglow_001_0
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 148
+        width: 71
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53a1012e269b07d40800000000000000
+      internalID: 5580163772662684213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_1
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 162
+        width: 23
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4829d9d3263c5910800000000000000
+      internalID: 1827395076412221518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_2
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 158
+        width: 17
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dbf10e827db78e10800000000000000
+      internalID: 2199935242700192724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_3
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 155
+        width: 45
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1aef7f2a1b7821c0800000000000000
+      internalID: -4528234072924755426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_4
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 126
+        width: 75
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1e499f33a6c6d320800000000000000
+      internalID: 2582469840792538652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_5
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 127
+        width: 61
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c78ebac85414ab90800000000000000
+      internalID: -7231632730059012160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_6
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 108
+        width: 75
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a8b535a95e6d43c0800000000000000
+      internalID: -4373718331803977566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_7
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 58
+        width: 67
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdec0ec31a8ef1710800000000000000
+      internalID: 1666306166359117532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_8
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 87
+        width: 65
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1512e300abe5a1760800000000000000
+      internalID: 7429354688262054225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_9
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 104
+        width: 66
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00e2fc6f8c1959f60800000000000000
+      internalID: 8040493002060148224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_10
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 50
+        width: 42
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f8f75cc66a21b9d0800000000000000
+      internalID: -2760378475598055184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_11
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 19
+        width: 15
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cc40b4f9cf0113e0800000000000000
+      internalID: -2084867792427791159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_12
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 37
+        width: 52
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3e86567724145710800000000000000
+      internalID: 1680990720637701693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shockglow_001_13
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 72
+        width: 49
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c5f20ce6cab46420800000000000000
+      internalID: 2622426246562379207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
+    customData: 
     physicsShape: []
-  spritePackingTag: 
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Shockglow_001_0: 5580163772662684213
+      Shockglow_001_1: 1827395076412221518
+      Shockglow_001_10: -2760378475598055184
+      Shockglow_001_11: -2084867792427791159
+      Shockglow_001_12: 1680990720637701693
+      Shockglow_001_13: 2622426246562379207
+      Shockglow_001_2: 2199935242700192724
+      Shockglow_001_3: -4528234072924755426
+      Shockglow_001_4: 2582469840792538652
+      Shockglow_001_5: -7231632730059012160
+      Shockglow_001_6: -4373718331803977566
+      Shockglow_001_7: 1666306166359117532
+      Shockglow_001_8: 7429354688262054225
+      Shockglow_001_9: 8040493002060148224
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
   userData: 
-  assetBundleName: fx_textures_shock.unity3d
+  assetBundleName: 
   assetBundleVariant: 
