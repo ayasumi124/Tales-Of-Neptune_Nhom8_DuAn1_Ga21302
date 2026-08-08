@@ -17234,6 +17234,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Minotauros
       objectReference: {fileID: 0}
+    - target: {fileID: 4802848743222829618, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
+      propertyPath: m_Size.x
+      value: 1.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 4802848743222829618, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
+      propertyPath: m_Size.y
+      value: 1.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 4802848743222829618, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -4753702385071775785, guid: c826622689a388d45928afc6ba6d2171, type: 3}
+    - target: {fileID: 4802848743222829618, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
