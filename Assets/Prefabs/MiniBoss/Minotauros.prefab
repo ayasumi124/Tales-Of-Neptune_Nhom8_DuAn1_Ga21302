@@ -185,12 +185,12 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -4753702385071775785, guid: 624e957050f0b314f83a8d73b9582f20, type: 3}
+  m_Sprite: {fileID: -4753702385071775785, guid: c826622689a388d45928afc6ba6d2171, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.359375, y: 0.28125}
+  m_Size: {x: 1.06, y: 1.02}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -335,16 +335,16 @@ MonoBehaviour:
   footstepSource: {fileID: 2404158346439798829}
   voiceSource: {fileID: 7987736405716235533}
   impactSource: {fileID: 782547042346892807}
-  footstepClip: {fileID: 8300000, guid: 83a302603721c1b40accf0ed1db3387e, type: 3}
+  footstepClip: {fileID: 8300000, guid: 4a82b40f0ad1145449d1f133ee09c500, type: 3}
   footstepVolume: 0.25
-  attackVoiceClip: {fileID: 8300000, guid: 3a85c0420b329194fa68e9fd048e3d59, type: 3}
-  attackSwingClip: {fileID: 8300000, guid: 0b507679fdf7e2b42ab45adee8ef7a3f, type: 3}
-  attackImpactClip: {fileID: 8300000, guid: 0e2dd41110a56a24aafc23990d8053e0, type: 3}
-  hurtVoiceClip: {fileID: 8300000, guid: 313618757cf66ad43871afe35d0aae1f, type: 3}
-  hurtImpactClip: {fileID: 8300000, guid: 573c4ca475ffe6248a30483f776b1192, type: 3}
+  attackVoiceClip: {fileID: 8300000, guid: cb908dd2878e48e4ab77e5f9698d9fc1, type: 3}
+  attackSwingClip: {fileID: 8300000, guid: 85974327f6dd3684ba771371848cff80, type: 3}
+  attackImpactClip: {fileID: 8300000, guid: 0c6621b262ff3904c8fa399803e9630d, type: 3}
+  hurtVoiceClip: {fileID: 8300000, guid: b7a4f8abb4fd9794794ec0f4eb167215, type: 3}
+  hurtImpactClip: {fileID: 8300000, guid: 480ef605b5555f340acd901856238129, type: 3}
   hurtVoiceDelay: 0.05
-  deathVoiceClip: {fileID: 8300000, guid: d9139cbb9a8d9e149a04846d591564d8, type: 3}
-  deathImpactClip: {fileID: 8300000, guid: 573c4ca475ffe6248a30483f776b1192, type: 3}
+  deathVoiceClip: {fileID: 8300000, guid: 7d439681add80964494528143183be7f, type: 3}
+  deathImpactClip: {fileID: 8300000, guid: 7d439681add80964494528143183be7f, type: 3}
   voiceVolume: 1
   impactVolume: 1
   attackVoiceMinimumInterval: 0.15
@@ -411,7 +411,7 @@ MonoBehaviour:
   slamEffectPrefab: {fileID: 7766524700818477353, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
   slamWaveSpeed: 4.5
   waveSpawnOffset: 0.25
-  slamSound: {fileID: 8300000, guid: 01011fc8789005d47919b1bc97bf8ebd, type: 3}
+  slamSound: {fileID: 8300000, guid: 754c0579d4d020e4eb225dcfbbc7bfe4, type: 3}
   slamVolume: 1
   actionTimeout: 1.5
   normalAttackTrigger: Attack

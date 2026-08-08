@@ -17234,27 +17234,68 @@ PrefabInstance:
       propertyPath: m_Name
       value: Minotauros
       objectReference: {fileID: 0}
-    - target: {fileID: 4802848743222829618, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
-      propertyPath: m_Size.x
-      value: 1.06
-      objectReference: {fileID: 0}
-    - target: {fileID: 4802848743222829618, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
-      propertyPath: m_Size.y
-      value: 1.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 4802848743222829618, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: -4753702385071775785, guid: c826622689a388d45928afc6ba6d2171, type: 3}
-    - target: {fileID: 4802848743222829618, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
+--- !u!1001 &1816498552
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.5939288
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.390972
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1198068145812835820, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7766524700818477353, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
+      propertyPath: m_Name
+      value: WindGround
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
 --- !u!1 &1846815491
 GameObject:
   m_ObjectHideFlags: 0
@@ -18691,3 +18732,4 @@ SceneRoots:
   - {fileID: 624600131}
   - {fileID: 651145491}
   - {fileID: 1806247922}
+  - {fileID: 1816498552}
