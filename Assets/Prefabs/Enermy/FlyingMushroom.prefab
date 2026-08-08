@@ -322,13 +322,13 @@ MonoBehaviour:
   footstepClip: {fileID: 0}
   footstepVolume: 1
   attackVoiceClip: {fileID: 0}
-  attackSwingClip: {fileID: 8300000, guid: bb4996e6a1ffeb84bb700b1de761a13a, type: 3}
+  attackSwingClip: {fileID: 8300000, guid: 192bb7c98da1fb9478098d73ab6553f9, type: 3}
   attackImpactClip: {fileID: 0}
-  hurtVoiceClip: {fileID: 8300000, guid: 3da348b3ae85b4d42b93465f90d77eaa, type: 3}
-  hurtImpactClip: {fileID: 8300000, guid: 3da348b3ae85b4d42b93465f90d77eaa, type: 3}
+  hurtVoiceClip: {fileID: 8300000, guid: d7fbbe961b66784418bb445534f4c980, type: 3}
+  hurtImpactClip: {fileID: 8300000, guid: d7fbbe961b66784418bb445534f4c980, type: 3}
   hurtVoiceDelay: 0.05
-  deathVoiceClip: {fileID: 8300000, guid: f88a8aa4bf197fe4597703168b92fdf8, type: 3}
-  deathImpactClip: {fileID: 8300000, guid: f88a8aa4bf197fe4597703168b92fdf8, type: 3}
+  deathVoiceClip: {fileID: 8300000, guid: e99783791f6b5964dbb129ff76663da3, type: 3}
+  deathImpactClip: {fileID: 8300000, guid: e99783791f6b5964dbb129ff76663da3, type: 3}
   voiceVolume: 1
   impactVolume: 1
   attackVoiceMinimumInterval: 0.15
@@ -398,7 +398,7 @@ MonoBehaviour:
     m_Bits: 4104
   hitEffectPrefab: {fileID: 1368958316424924904, guid: c82c36512d3c35d4f84eb8d15687c655, type: 3}
   hitEffectLifeTime: 0.6
-  slamSound: {fileID: 8300000, guid: 2008fa5b002c0b34cb44e5be3a6f9810, type: 3}
+  slamSound: {fileID: 8300000, guid: b19273d736546c84b8179fac3b5c9319, type: 3}
   slamVolume: 1
 --- !u!82 &7877135309140848016
 AudioSource:

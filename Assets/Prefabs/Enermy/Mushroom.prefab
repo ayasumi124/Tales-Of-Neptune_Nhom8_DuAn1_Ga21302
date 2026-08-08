@@ -247,13 +247,13 @@ MonoBehaviour:
   footstepClip: {fileID: 0}
   footstepVolume: 1
   attackVoiceClip: {fileID: 0}
-  attackSwingClip: {fileID: 8300000, guid: 77e404b9439a29f45855d8cfabefe674, type: 3}
+  attackSwingClip: {fileID: 8300000, guid: 4798a113f4d091446bd9ca64c1267d26, type: 3}
   attackImpactClip: {fileID: 0}
-  hurtVoiceClip: {fileID: 8300000, guid: 0d30f1001da547b4387fbc79ad7380b6, type: 3}
-  hurtImpactClip: {fileID: 8300000, guid: 0d30f1001da547b4387fbc79ad7380b6, type: 3}
+  hurtVoiceClip: {fileID: 8300000, guid: a4aaced89503ed442af37021ef2c6a27, type: 3}
+  hurtImpactClip: {fileID: 8300000, guid: a4aaced89503ed442af37021ef2c6a27, type: 3}
   hurtVoiceDelay: 0.05
-  deathVoiceClip: {fileID: 8300000, guid: 1b0c49eca29a4da4f81c6d13e49d18e7, type: 3}
-  deathImpactClip: {fileID: 8300000, guid: 1b0c49eca29a4da4f81c6d13e49d18e7, type: 3}
+  deathVoiceClip: {fileID: 8300000, guid: 8849f041525ae7345a76a22e0c75b839, type: 3}
+  deathImpactClip: {fileID: 8300000, guid: 8849f041525ae7345a76a22e0c75b839, type: 3}
   voiceVolume: 1
   impactVolume: 1
   attackVoiceMinimumInterval: 0.15
