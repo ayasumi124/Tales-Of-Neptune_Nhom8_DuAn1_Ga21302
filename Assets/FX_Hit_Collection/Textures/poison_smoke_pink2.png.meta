@@ -1,11 +1,57 @@
 fileFormatVersion: 2
-guid: 06470df59eb1fc8438723e18ca972551
-timeCreated: 1543829594
-licenseType: Free
+guid: 63e19b9d76837964f87842f43ae0411f
 TextureImporter:
-  fileIDToRecycleName: {}
+  internalIDToNameTable:
+  - first:
+      213: 6364789289849706435
+    second: poison_smoke_pink2_0
+  - first:
+      213: 7466923118634930477
+    second: poison_smoke_pink2_1
+  - first:
+      213: -899218845783695362
+    second: poison_smoke_pink2_2
+  - first:
+      213: 4990310410506195056
+    second: poison_smoke_pink2_3
+  - first:
+      213: 7875945560298703295
+    second: poison_smoke_pink2_4
+  - first:
+      213: -4720004194958867135
+    second: poison_smoke_pink2_5
+  - first:
+      213: 4932357717917253918
+    second: poison_smoke_pink2_6
+  - first:
+      213: 49490695689628796
+    second: poison_smoke_pink2_7
+  - first:
+      213: 4046481908552828769
+    second: poison_smoke_pink2_8
+  - first:
+      213: -9031711169846904971
+    second: poison_smoke_pink2_9
+  - first:
+      213: -6476643815386608417
+    second: poison_smoke_pink2_10
+  - first:
+      213: -7194768418604944744
+    second: poison_smoke_pink2_11
+  - first:
+      213: 8111985043296884264
+    second: poison_smoke_pink2_12
+  - first:
+      213: -9191932890575150281
+    second: poison_smoke_pink2_13
+  - first:
+      213: -3913501794120040510
+    second: poison_smoke_pink2_14
+  - first:
+      213: 6891655598215657312
+    second: poison_smoke_pink2_15
   externalObjects: {}
-  serializedVersion: 4
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -22,7 +68,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -31,32 +82,41 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
-    aniso: -1
-    mipBias: -1
-    wrapU: -1
-    wrapV: -1
-    wrapW: -1
-  nPOTScale: 1
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 0
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 0
+  textureType: 8
   textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
   platformSettings:
-  - buildTarget: DefaultTexturePlatform
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -65,7 +125,11 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Standalone
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -74,21 +138,396 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Android
-    maxTextureSize: 1024
-    resizeAlgorithm: 0
-    textureFormat: 47
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: poison_smoke_pink2_0
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 204
+        width: 33
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c7d3b31326445850800000000000000
+      internalID: 6364789289849706435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_1
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 201
+        width: 38
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d211363d307df9760800000000000000
+      internalID: 7466923118634930477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_2
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 200
+        width: 42
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: effd9b959355583f0800000000000000
+      internalID: -899218845783695362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_3
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 197
+        width: 47
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 070d729e0e4214540800000000000000
+      internalID: 4990310410506195056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_4
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 131
+        width: 53
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb94bef22cafc4d60800000000000000
+      internalID: 7875945560298703295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_5
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 129
+        width: 57
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1458f1d313d2f7eb0800000000000000
+      internalID: -4720004194958867135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_6
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 129
+        width: 61
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e114d913631437440800000000000000
+      internalID: 4932357717917253918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_7
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 129
+        width: 63
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7c64488683dfa000800000000000000
+      internalID: 49490695689628796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_8
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 65
+        width: 65
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 167065d4bddf72830800000000000000
+      internalID: 4046481908552828769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_9
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 65
+        width: 65
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 577f8570b8ae8a280800000000000000
+      internalID: -9031711169846904971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_10
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 67
+        width: 63
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdc862fb3c65e16a0800000000000000
+      internalID: -6476643815386608417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_11
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 69
+        width: 60
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8927ad72e3c072c90800000000000000
+      internalID: -7194768418604944744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_12
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 5
+        width: 52
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8261ef0fa6f839070800000000000000
+      internalID: 8111985043296884264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_13
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 7
+        width: 45
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 733e90aacb1bf6080800000000000000
+      internalID: -9191932890575150281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_14
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 10
+        width: 30
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cffe955ad270b9c0800000000000000
+      internalID: -3913501794120040510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poison_smoke_pink2_15
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 27
+        width: 25
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 067f9f5c04414af50800000000000000
+      internalID: 6891655598215657312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
+    customData: 
     physicsShape: []
-  spritePackingTag: 
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      poison_smoke_pink2_0: 6364789289849706435
+      poison_smoke_pink2_1: 7466923118634930477
+      poison_smoke_pink2_10: -6476643815386608417
+      poison_smoke_pink2_11: -7194768418604944744
+      poison_smoke_pink2_12: 8111985043296884264
+      poison_smoke_pink2_13: -9191932890575150281
+      poison_smoke_pink2_14: -3913501794120040510
+      poison_smoke_pink2_15: 6891655598215657312
+      poison_smoke_pink2_2: -899218845783695362
+      poison_smoke_pink2_3: 4990310410506195056
+      poison_smoke_pink2_4: 7875945560298703295
+      poison_smoke_pink2_5: -4720004194958867135
+      poison_smoke_pink2_6: 4932357717917253918
+      poison_smoke_pink2_7: 49490695689628796
+      poison_smoke_pink2_8: 4046481908552828769
+      poison_smoke_pink2_9: -9031711169846904971
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
   userData: 
-  assetBundleName: fx_textures_dust.unity3d
+  assetBundleName: 
   assetBundleVariant: 
