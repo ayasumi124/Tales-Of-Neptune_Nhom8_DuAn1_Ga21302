@@ -1,11 +1,36 @@
 fileFormatVersion: 2
-guid: 5afe269ae8a259347a7b822403810b4f
-timeCreated: 1543829608
-licenseType: Free
+guid: 83dbffdc0f84ab341b9b937e9e71f0bf
 TextureImporter:
-  fileIDToRecycleName: {}
+  internalIDToNameTable:
+  - first:
+      213: -177238696830794334
+    second: cannon_muzzle_impact_a_sheet_0
+  - first:
+      213: 1904185881945553620
+    second: cannon_muzzle_impact_a_sheet_1
+  - first:
+      213: 4746920524732783303
+    second: cannon_muzzle_impact_a_sheet_2
+  - first:
+      213: 6359367642462851330
+    second: cannon_muzzle_impact_a_sheet_3
+  - first:
+      213: 7053734879874496326
+    second: cannon_muzzle_impact_a_sheet_4
+  - first:
+      213: -8899048879922595500
+    second: cannon_muzzle_impact_a_sheet_5
+  - first:
+      213: -8534026881519792708
+    second: cannon_muzzle_impact_a_sheet_6
+  - first:
+      213: 6998059009049702770
+    second: cannon_muzzle_impact_a_sheet_7
+  - first:
+      213: -2190988881684117401
+    second: cannon_muzzle_impact_a_sheet_8
   externalObjects: {}
-  serializedVersion: 4
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -22,7 +47,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -31,32 +61,41 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
-    aniso: -1
-    mipBias: -1
-    wrapU: -1
-    wrapV: -1
-    wrapW: -1
-  nPOTScale: 1
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 0
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 0
+  textureType: 8
   textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
   platformSettings:
-  - buildTarget: DefaultTexturePlatform
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -65,7 +104,11 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Standalone
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -74,21 +117,235 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Android
-    maxTextureSize: 1024
-    resizeAlgorithm: 0
-    textureFormat: 47
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 173
+        width: 47
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a582f228525a8df0800000000000000
+      internalID: -177238696830794334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_1
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 198
+        width: 38
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dabda788f60d6a10800000000000000
+      internalID: 1904185881945553620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_2
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 193
+        width: 56
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ca55b5211370e140800000000000000
+      internalID: 4746920524732783303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_3
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 104
+        width: 60
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2019c1d6d23014850800000000000000
+      internalID: 6359367642462851330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_4
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 111
+        width: 58
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 647b3be3086e3e160800000000000000
+      internalID: 7053734879874496326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_5
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 103
+        width: 67
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4593061613a308480800000000000000
+      internalID: -8899048879922595500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_6
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 130
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbdc06734cb019980800000000000000
+      internalID: -8534026881519792708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_7
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 23
+        width: 50
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27131a767991e1160800000000000000
+      internalID: 6998059009049702770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cannon_muzzle_impact_a_sheet_8
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 55
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7684360783b0891e0800000000000000
+      internalID: -2190988881684117401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
+    customData: 
     physicsShape: []
-  spritePackingTag: 
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      cannon_muzzle_impact_a_sheet_0: -177238696830794334
+      cannon_muzzle_impact_a_sheet_1: 1904185881945553620
+      cannon_muzzle_impact_a_sheet_2: 4746920524732783303
+      cannon_muzzle_impact_a_sheet_3: 6359367642462851330
+      cannon_muzzle_impact_a_sheet_4: 7053734879874496326
+      cannon_muzzle_impact_a_sheet_5: -8899048879922595500
+      cannon_muzzle_impact_a_sheet_6: -8534026881519792708
+      cannon_muzzle_impact_a_sheet_7: 6998059009049702770
+      cannon_muzzle_impact_a_sheet_8: -2190988881684117401
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
   userData: 
-  assetBundleName: fx_textures_flare.unity3d
+  assetBundleName: 
   assetBundleVariant: 
