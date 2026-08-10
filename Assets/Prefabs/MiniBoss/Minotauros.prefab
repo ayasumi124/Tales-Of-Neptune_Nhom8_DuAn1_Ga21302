@@ -244,7 +244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fff177ad658515e429a36faa80a759e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnermyHealth
-  maxHealth: 4000
+  maxHealth: 2500
   currentHealth: 0
   deathDelay: 1
   hpCanvas: {fileID: 391173841209319374}
