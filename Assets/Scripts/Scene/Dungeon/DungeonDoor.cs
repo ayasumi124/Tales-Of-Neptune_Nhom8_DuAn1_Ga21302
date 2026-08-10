@@ -1,16 +1,75 @@
-using System.Collections;
 using UnityEngine;
 
 public class DungeonDoor : MonoBehaviour
 {
+    public enum DoorOrientation
+    {
+        Horizontal,
+        Vertical
+    }
+
+    [Header("Door Type")]
+    [SerializeField]
+    private DoorOrientation orientation =
+        DoorOrientation.Horizontal;
+
+    // =====================================================
+    // STATES
+    // =====================================================
+
+    [Header("Closed State")]
+    [Tooltip(
+        "Object chứa Sprite + Collider của cửa khi đóng."
+    )]
+    [SerializeField]
+    private GameObject closedState;
+
+    [Header("Horizontal Open States")]
+    [Tooltip(
+        "Cửa ngang thu về bên trái của màn hình."
+    )]
+    [SerializeField]
+    private GameObject openWorldLeft;
+
+    [Tooltip(
+        "Cửa ngang thu về bên phải của màn hình."
+    )]
+    [SerializeField]
+    private GameObject openWorldRight;
+
+    [Header("Vertical Open States")]
+    [Tooltip(
+        "Cửa dọc thu lên phía trên màn hình."
+    )]
+    [SerializeField]
+    private GameObject openWorldUp;
+
+    [Tooltip(
+        "Cửa dọc thu xuống phía dưới màn hình."
+    )]
+    [SerializeField]
+    private GameObject openWorldDown;
+
+    // =====================================================
+    // UI
+    // =====================================================
+
     [Header("UI")]
     [SerializeField]
     private GameObject keyIcon;
+
+    // =====================================================
+    // INTERACTION
+    // =====================================================
 
     [Header("Interaction")]
     [SerializeField]
     private KeyCode interactKey =
         KeyCode.E;
+
+    // =====================================================
+    // AUDIO
+    // =====================================================
 
     [Header("Audio")]
     [SerializeField]
@@ -22,17 +81,29 @@ public class DungeonDoor : MonoBehaviour
     [SerializeField]
     private AudioClip lockedSound;
 
-    [Header("Door")]
-    [Tooltip(
-        "Thời gian chờ sau khi phát SFX " +
-        "rồi mới xóa Door."
-    )]
-    [Min(0f)]
+    [Range(0f, 2f)]
     [SerializeField]
-    private float destroyDelay = 0.3f;
+    private float openVolume = 1f;
+
+    [Range(0f, 2f)]
+    [SerializeField]
+    private float lockedVolume = 1f;
+
+    // =====================================================
+    // RUNTIME
+    // =====================================================
 
     private bool playerInside;
     private bool opened;
+
+    private Transform currentPlayer;
+
+    public bool IsOpened =>
+        opened;
+
+    // =====================================================
+    // UNITY
+    // =====================================================
 
     private void Awake()
     {
@@ -41,6 +112,8 @@ public class DungeonDoor : MonoBehaviour
             audioSource =
                 GetComponent<AudioSource>();
         }
+
+        SetClosedState();
     }
 
     private void Start()
@@ -53,11 +126,14 @@ public class DungeonDoor : MonoBehaviour
 
     private void Update()
     {
-        if (!playerInside ||
-            opened)
-        {
+        if (opened)
             return;
-        }
+
+        if (!playerInside)
+            return;
+
+        if (currentPlayer == null)
+            return;
 
         if (Input.GetKeyDown(
                 interactKey))
@@ -66,8 +142,15 @@ public class DungeonDoor : MonoBehaviour
         }
     }
 
+    // =====================================================
+    // TRY OPEN
+    // =====================================================
+
     private void TryOpen()
     {
+        if (opened)
+            return;
+
         if (DungeonKeyManager.Instance == null)
         {
             Debug.LogError(
@@ -79,11 +162,9 @@ public class DungeonDoor : MonoBehaviour
         }
 
         /*
-         * Không có key:
-         * cửa không mở.
+         * Chưa có key.
          */
-        if (!DungeonKeyManager.Instance
-                .UseKey())
+        if (!DungeonKeyManager.Instance.HasKey)
         {
             PlayLockedSound();
 
@@ -94,61 +175,223 @@ public class DungeonDoor : MonoBehaviour
             return;
         }
 
-        StartCoroutine(
-            OpenDoorRoutine()
-        );
+        /*
+         * Chỉ trừ key khi chắc chắn mở cửa.
+         */
+        if (!DungeonKeyManager.Instance.UseKey())
+        {
+            PlayLockedSound();
+            return;
+        }
+
+        OpenDoor();
     }
 
-    private IEnumerator OpenDoorRoutine()
+    // =====================================================
+    // OPEN
+    // =====================================================
+
+    private void OpenDoor()
     {
         if (opened)
-            yield break;
+            return;
 
         opened = true;
         playerInside = false;
 
-        /*
-         * Tắt icon ngay khi bắt đầu mở.
-         */
         if (keyIcon != null)
         {
             keyIcon.SetActive(false);
         }
 
         /*
-         * Tắt collider để Player có thể đi qua.
+         * Tắt cửa đóng.
          */
-        Collider2D[] colliders =
-            GetComponentsInChildren<
-                Collider2D
-            >();
-
-        foreach (Collider2D col
-                 in colliders)
+        if (closedState != null)
         {
-            if (col != null)
+            closedState.SetActive(false);
+        }
+
+        /*
+         * Chọn state mở dựa theo vị trí Player.
+         */
+        if (orientation ==
+            DoorOrientation.Horizontal)
+        {
+            OpenHorizontalDoor();
+        }
+        else
+        {
+            OpenVerticalDoor();
+        }
+
+        PlayOpenSound();
+
+        Debug.Log(
+            $"{name}: Door Opened."
+        );
+    }
+
+    // =====================================================
+    // HORIZONTAL
+    // =====================================================
+
+    private void OpenHorizontalDoor()
+    {
+        DisableAllOpenStates();
+
+        if (currentPlayer == null)
+        {
+            /*
+             * Fallback.
+             */
+            if (openWorldRight != null)
             {
-                col.enabled = false;
+                openWorldRight.SetActive(true);
+            }
+
+            return;
+        }
+
+        /*
+         * Player ở dưới cửa:
+         *
+         * Player nhìn UP.
+         * Bên phải của Player = world RIGHT.
+         */
+        bool playerBelowDoor =
+            currentPlayer.position.y <
+            transform.position.y;
+
+        if (playerBelowDoor)
+        {
+            if (openWorldRight != null)
+            {
+                openWorldRight.SetActive(true);
             }
         }
-
-        if (audioSource != null &&
-            openSound != null)
+        /*
+         * Player ở trên cửa:
+         *
+         * Player nhìn DOWN.
+         * Bên phải của Player = world LEFT.
+         */
+        else
         {
-            audioSource.PlayOneShot(
-                openSound
-            );
+            if (openWorldLeft != null)
+            {
+                openWorldLeft.SetActive(true);
+            }
+        }
+    }
+
+    // =====================================================
+    // VERTICAL
+    // =====================================================
+
+   private void OpenVerticalDoor()
+{
+    DisableAllOpenStates();
+
+    if (currentPlayer == null)
+    {
+        if (openWorldDown != null)
+        {
+            openWorldDown.SetActive(true);
         }
 
-        yield return
-            new WaitForSecondsRealtime(
-                Mathf.Max(
-                    0f,
-                    destroyDelay
-                )
-            );
+        return;
+    }
 
-        Destroy(gameObject);
+    bool playerLeftOfDoor =
+        currentPlayer.position.x <
+        transform.position.x;
+
+    /*
+     * Player đứng bên trái cửa,
+     * nhìn sang phải.
+     *
+     * Theo prefab hiện tại của bạn:
+     * dùng OpenWorldUp.
+     */
+    if (playerLeftOfDoor)
+    {
+        if (openWorldUp != null)
+        {
+            openWorldUp.SetActive(true);
+        }
+    }
+    /*
+     * Player đứng bên phải cửa,
+     * nhìn sang trái.
+     *
+     * Theo prefab hiện tại:
+     * dùng OpenWorldDown.
+     */
+    else
+    {
+        if (openWorldDown != null)
+        {
+            openWorldDown.SetActive(true);
+        }
+    }
+}
+
+    // =====================================================
+    // STATE
+    // =====================================================
+
+    private void SetClosedState()
+    {
+        opened = false;
+
+        if (closedState != null)
+        {
+            closedState.SetActive(true);
+        }
+
+        DisableAllOpenStates();
+    }
+
+    private void DisableAllOpenStates()
+    {
+        if (openWorldLeft != null)
+        {
+            openWorldLeft.SetActive(false);
+        }
+
+        if (openWorldRight != null)
+        {
+            openWorldRight.SetActive(false);
+        }
+
+        if (openWorldUp != null)
+        {
+            openWorldUp.SetActive(false);
+        }
+
+        if (openWorldDown != null)
+        {
+            openWorldDown.SetActive(false);
+        }
+    }
+
+    // =====================================================
+    // AUDIO
+    // =====================================================
+
+    private void PlayOpenSound()
+    {
+        if (audioSource == null ||
+            openSound == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(
+            openSound,
+            openVolume
+        );
     }
 
     private void PlayLockedSound()
@@ -160,20 +403,28 @@ public class DungeonDoor : MonoBehaviour
         }
 
         audioSource.PlayOneShot(
-            lockedSound
+            lockedSound,
+            lockedVolume
         );
     }
+
+    // =====================================================
+    // PLAYER TRIGGER
+    // =====================================================
 
     private void OnTriggerEnter2D(
         Collider2D other)
     {
-        if (opened ||
-            !other.CompareTag("Player"))
-        {
+        if (opened)
             return;
-        }
+
+        if (!other.CompareTag("Player"))
+            return;
 
         playerInside = true;
+
+        currentPlayer =
+            other.transform;
 
         if (keyIcon != null)
         {
@@ -181,20 +432,19 @@ public class DungeonDoor : MonoBehaviour
         }
     }
 
-    /*
-     * Phòng trường hợp Player đang đứng
-     * trong Trigger khi Door vừa được bật.
-     */
     private void OnTriggerStay2D(
         Collider2D other)
     {
-        if (opened ||
-            !other.CompareTag("Player"))
-        {
+        if (opened)
             return;
-        }
+
+        if (!other.CompareTag("Player"))
+            return;
 
         playerInside = true;
+
+        currentPlayer =
+            other.transform;
 
         if (keyIcon != null &&
             !keyIcon.activeSelf)
@@ -211,9 +461,44 @@ public class DungeonDoor : MonoBehaviour
 
         playerInside = false;
 
+        currentPlayer = null;
+
         if (keyIcon != null)
         {
             keyIcon.SetActive(false);
         }
+    }
+
+    // =====================================================
+    // EDITOR RESET
+    // =====================================================
+
+    [ContextMenu("Reset Door")]
+    private void ResetDoor()
+    {
+        playerInside = false;
+        currentPlayer = null;
+
+        SetClosedState();
+
+        if (keyIcon != null)
+        {
+            keyIcon.SetActive(false);
+        }
+    }
+
+    private void OnValidate()
+    {
+        openVolume =
+            Mathf.Max(
+                0f,
+                openVolume
+            );
+
+        lockedVolume =
+            Mathf.Max(
+                0f,
+                lockedVolume
+            );
     }
 }

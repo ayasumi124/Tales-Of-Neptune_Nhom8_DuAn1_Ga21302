@@ -454,7 +454,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1003730583071019702
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3089,12 +3089,12 @@ MonoBehaviour:
   chestOpenSound: {fileID: 8300000, guid: ec20785bbf700cc4ab5d9a1095305654, type: 3}
   inventoryOpenSound: {fileID: 8300000, guid: ddee08598b8d656469b09e22a57b2f4f, type: 3}
   inventoryCloseSound: {fileID: 8300000, guid: 6b87f810304355d48bb291ba6881d4d6, type: 3}
-  inventoryMoveSound: {fileID: 0}
+  inventoryMoveSound: {fileID: 8300000, guid: c4965899ad717544aa56e9bb095ab62f, type: 3}
   inventorySelectSound: {fileID: 8300000, guid: b8f992a7249869940beb407f38c1347d, type: 3}
   inventoryUseSound: {fileID: 8300000, guid: 6b2a63bbb9513434a9fbbd604dd4f765, type: 3}
   inventoryEquipSound: {fileID: 0}
   inventoryShortcutSound: {fileID: 8300000, guid: 0846a7539cd3d7b4b9f76673461a1c11, type: 3}
-  inventoryDropSound: {fileID: 0}
+  inventoryDropSound: {fileID: 8300000, guid: 466b05a159327474dab43099c59649c2, type: 3}
 --- !u!82 &7204271011993991898
 AudioSource:
   m_ObjectHideFlags: 0
@@ -16898,6 +16898,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3868170757693658694, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -227495293
+      objectReference: {fileID: 0}
     - target: {fileID: 6149653675228859229, guid: 5f965b5b284ac704da00072821f8a050, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -17042,6 +17046,9 @@ MonoBehaviour:
   health: {fileID: 4657377782898843643}
   mana: {fileID: 6444536442346702828}
   animator: {fileID: 3706539560569580081}
+  attack: {fileID: 0}
+  dash: {fileID: 0}
+  rb: {fileID: 0}
   useTrigger: UseItem
 --- !u!114 &4320786976071103004
 MonoBehaviour:

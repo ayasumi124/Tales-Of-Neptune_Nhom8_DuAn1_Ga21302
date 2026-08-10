@@ -34,7 +34,7 @@ public class EnermyItemDrop : MonoBehaviour
     private Transform dropPoint;
 
     [SerializeField]
-    private float scatterRadius = 0.4f;
+    private float scatterRadius = 0f;
 
     private bool hasDropped;
 

@@ -11,9 +11,15 @@ public class BossMovement : MonoBehaviour
         Return
     }
 
+    // =====================================================
+    // TARGET
+    // =====================================================
+
     [Header("Target")]
     [SerializeField]
     private Transform target;
+
+
 
     [SerializeField]
     private string[] targetTags =
@@ -31,6 +37,10 @@ public class BossMovement : MonoBehaviour
 
     public Transform Target => target;
 
+    // =====================================================
+    // MOVEMENT
+    // =====================================================
+
     [Header("Movement")]
     [Min(0f)]
     public float moveSpeed = 2f;
@@ -45,6 +55,10 @@ public class BossMovement : MonoBehaviour
     [SerializeField]
     private float arrivalDistance = 0.15f;
 
+    // =====================================================
+    // ACTIVATION
+    // =====================================================
+
     [Header("Boss Activation")]
     [SerializeField]
     private bool stayActivated = true;
@@ -52,22 +66,16 @@ public class BossMovement : MonoBehaviour
     [SerializeField]
     private bool cloneCanActivateBoss = false;
 
-    public bool IsActivated { get; private set; }
+    public bool IsActivated
+    {
+        get;
+        private set;
+    }
 
-    [Header("Respawn Detection")]
-    [SerializeField]
-    private float respawnDetectionDelay = 1f;
 
-    private float detectionLockTimer;
-
-    /*
-     * Chỉ bật khi ResetBoss() do Play Again.
-     *
-     * Khi true:
-     * Boss sẽ không activate cho đến khi Player
-     * đi RA NGOÀI Detect Range ít nhất một lần.
-     */
-    private bool requirePlayerExitBeforeReactivate;
+    // =====================================================
+    // WANDER
+    // =====================================================
 
     [Header("Wander After Activation")]
     [SerializeField]
@@ -79,11 +87,19 @@ public class BossMovement : MonoBehaviour
     [Min(0.1f)]
     public float idleTime = 1.5f;
 
+    // =====================================================
+    // KNOCKBACK
+    // =====================================================
+
     [Header("Knockback")]
     [Min(0f)]
     public float knockbackDecay = 12f;
 
     public Vector2 externalVelocity;
+
+    // =====================================================
+    // RUNTIME
+    // =====================================================
 
     [Header("Runtime")]
     public bool CanMove = true;
@@ -103,9 +119,19 @@ public class BossMovement : MonoBehaviour
         private set;
     } = Vector2.down;
 
+    // =====================================================
+    // COMPONENTS
+    // =====================================================
+
     private Rigidbody2D rb;
+    [Header("Visual")]
+    [SerializeField]
     private Animator animator;
     private EnermyAudio enemyAudio;
+
+    // =====================================================
+    // INTERNAL
+    // =====================================================
 
     private Vector2 spawnPosition;
     private Vector2 wanderTargetPosition;
@@ -119,6 +145,10 @@ public class BossMovement : MonoBehaviour
 
     private bool initialized;
     private bool stoppedImmediately;
+
+    // =====================================================
+    // UNITY
+    // =====================================================
 
     private void Awake()
     {
@@ -138,8 +168,36 @@ public class BossMovement : MonoBehaviour
         }
 
         UpdateExternalVelocity();
+
+        /*
+         * CỰC KỲ QUAN TRỌNG:
+         *
+         * Khi Player chết hoặc SceneLoader
+         * đang chuyển scene, Boss không được:
+         *
+         * - tìm Player
+         * - giữ target
+         * - activate
+         * - chase
+         * - phát footstep
+         *
+         * Điều này ngăn Boss detect Player
+         * tại vị trí chết trong lúc Play Again.
+         */
+        if (ShouldIgnoreDetection())
+        {
+            ClearTargetWithoutSearch();
+
+            StopMove();
+
+            return;
+        }
+
         UpdateTargetSearch();
 
+        /*
+         * Boss chưa được kích hoạt.
+         */
         if (!IsActivated)
         {
             UpdateDormant();
@@ -161,31 +219,41 @@ public class BossMovement : MonoBehaviour
         switch (CurrentState)
         {
             case BossState.Dormant:
+
                 EnterIdle();
+
                 break;
 
             case BossState.Idle:
+
                 UpdateIdle(
                     distanceToTarget
                 );
+
                 break;
 
             case BossState.Wander:
+
                 UpdateWander(
                     distanceToTarget
                 );
+
                 break;
 
             case BossState.Chase:
+
                 UpdateChase(
                     distanceToTarget
                 );
+
                 break;
 
             case BossState.Return:
+
                 UpdateReturn(
                     distanceToTarget
                 );
+
                 break;
         }
     }
@@ -195,14 +263,26 @@ public class BossMovement : MonoBehaviour
         desiredVelocity =
             Vector2.zero;
 
+        externalVelocity =
+            Vector2.zero;
+
         if (rb != null)
         {
             rb.linearVelocity =
                 Vector2.zero;
+
+            rb.angularVelocity =
+                0f;
         }
 
-        SetMovingVisual(false);
+        SetMovingVisual(
+            false
+        );
     }
+
+    // =====================================================
+    // INITIALIZE
+    // =====================================================
 
     private void CacheComponents()
     {
@@ -215,7 +295,7 @@ public class BossMovement : MonoBehaviour
         if (animator == null)
         {
             animator =
-                GetComponent<Animator>();
+                GetComponentInChildren<Animator>();
         }
 
         if (enemyAudio == null)
@@ -255,17 +335,8 @@ public class BossMovement : MonoBehaviour
         player = null;
 
         targetSearchTimer = 0f;
-        detectionLockTimer = 0f;
-
-        /*
-         * Load scene bình thường:
-         * KHÔNG yêu cầu Player phải đi ra ngoài.
-         *
-         * Vì vậy lần đầu bước vào Detect Range
-         * Boss vẫn hoạt động như bình thường.
-         */
-        requirePlayerExitBeforeReactivate =
-            false;
+        idleTimer = 0f;
+        stuckTimer = 0f;
 
         if (rb != null)
         {
@@ -282,6 +353,10 @@ public class BossMovement : MonoBehaviour
         StopMove();
     }
 
+    // =====================================================
+    // DORMANT
+    // =====================================================
+
     private void UpdateDormant()
     {
         CurrentState =
@@ -290,31 +365,29 @@ public class BossMovement : MonoBehaviour
         StopMove();
 
         /*
-         * Delay ngắn sau khi Play Again.
+         * Player đang chết hoặc scene đang load.
          */
-        if (detectionLockTimer > 0f)
+        if (ShouldIgnoreDetection())
         {
-            detectionLockTimer -=
-                Time.deltaTime;
-
+            ClearTargetWithoutSearch();
             return;
         }
 
         /*
-         * Tìm Player.
-         *
-         * Khi Boss chưa activate và
-         * cloneCanActivateBoss = false,
-         * FindNearestTarget() chỉ lấy Player.
+         * UpdateTargetSearch() đã scan,
+         * nhưng vẫn đảm bảo có target.
          */
-        FindNearestTarget();
+        if (!HasTarget())
+        {
+            FindNearestTarget();
+        }
 
         if (!HasTarget())
             return;
 
         /*
-         * Đảm bảo Clone không thể vô tình
-         * kích hoạt Boss nếu option đang tắt.
+         * Clone không được đánh thức Boss
+         * nếu option đang tắt.
          */
         if (!cloneCanActivateBoss &&
             !IsPlayerTarget(target))
@@ -324,7 +397,7 @@ public class BossMovement : MonoBehaviour
 
             if (realPlayer == null)
             {
-                SetTarget(null);
+                ClearTargetWithoutSearch();
                 return;
             }
 
@@ -333,62 +406,32 @@ public class BossMovement : MonoBehaviour
             );
         }
 
-        float distance =
-            DistanceToTarget();
-
         /*
-         * =====================================
-         * PLAY AGAIN PROTECTION
-         * =====================================
-         *
-         * Sau ResetBoss(), Boss KHÔNG được
-         * activate nếu Player đang nằm sẵn
-         * trong Detect Range.
-         *
-         * Player bắt buộc phải đi ra ngoài
-         * Detect Range trước.
+         * Chỉ activate khi target thực sự
+         * nằm trong Detect Range.
          */
-        if (requirePlayerExitBeforeReactivate)
-        {
-            if (distance > detectRange)
-            {
-                requirePlayerExitBeforeReactivate =
-                    false;
-
-                /*
-                 * Xóa target để lần tiếp theo
-                 * Boss scan Player lại từ đầu.
-                 */
-                SetTarget(null);
-
-                targetSearchTimer =
-                    targetSearchInterval;
-
-                Debug.Log(
-                    $"{name}: Player đã rời Detect Range. " +
-                    "Boss có thể detect lại."
-                );
-            }
-
-            return;
-        }
-
-        /*
-         * Player vẫn còn ở ngoài.
-         */
-        if (distance > detectRange)
+        if (!IsTargetInDetectRange())
             return;
 
-        /*
-         * Player bước vào Detect Range
-         * sau khi đã ra ngoài.
-         */
         ActivateBoss();
     }
 
     private void ActivateBoss()
     {
         if (IsActivated)
+            return;
+
+        /*
+         * Không bao giờ activate trong lúc
+         * Player chết / scene load.
+         */
+        if (ShouldIgnoreDetection())
+            return;
+
+        if (!HasTarget())
+            return;
+
+        if (!IsTargetInDetectRange())
             return;
 
         IsActivated = true;
@@ -406,10 +449,20 @@ public class BossMovement : MonoBehaviour
         );
     }
 
+    // =====================================================
+    // IDLE
+    // =====================================================
+
     private void UpdateIdle(
         float distanceToTarget)
     {
         StopMove();
+
+        if (ShouldIgnoreDetection())
+        {
+            ClearTargetWithoutSearch();
+            return;
+        }
 
         if (HasTarget() &&
             distanceToTarget <= detectRange)
@@ -457,9 +510,22 @@ public class BossMovement : MonoBehaviour
         StopMove();
     }
 
+    // =====================================================
+    // WANDER
+    // =====================================================
+
     private void UpdateWander(
         float distanceToTarget)
     {
+        if (ShouldIgnoreDetection())
+        {
+            ClearTargetWithoutSearch();
+
+            StopMove();
+
+            return;
+        }
+
         if (HasTarget() &&
             distanceToTarget <= detectRange)
         {
@@ -495,6 +561,7 @@ public class BossMovement : MonoBehaviour
                 BossState.Dormant;
 
             StopMove();
+
             return;
         }
 
@@ -543,9 +610,22 @@ public class BossMovement : MonoBehaviour
             randomDistance;
     }
 
+    // =====================================================
+    // CHASE
+    // =====================================================
+
     private void UpdateChase(
         float distanceToTarget)
     {
+        if (ShouldIgnoreDetection())
+        {
+            ClearTargetWithoutSearch();
+
+            StopMove();
+
+            return;
+        }
+
         if (!HasTarget())
         {
             TargetLost();
@@ -564,6 +644,7 @@ public class BossMovement : MonoBehaviour
         {
             StopMove();
             FaceTarget();
+
             return;
         }
 
@@ -588,6 +669,24 @@ public class BossMovement : MonoBehaviour
 
     private void TargetLost()
     {
+        /*
+         * Nếu Player chết / scene load,
+         * tuyệt đối không chuyển sang Wander.
+         */
+        if (ShouldIgnoreDetection())
+        {
+            IsActivated = false;
+
+            CurrentState =
+                BossState.Dormant;
+
+            ClearTargetWithoutSearch();
+
+            StopMove();
+
+            return;
+        }
+
         if (stayActivated)
         {
             if (wanderWhenTargetLost)
@@ -607,6 +706,10 @@ public class BossMovement : MonoBehaviour
         EnterReturn();
     }
 
+    // =====================================================
+    // RETURN
+    // =====================================================
+
     private void EnterReturn()
     {
         CurrentState =
@@ -616,6 +719,15 @@ public class BossMovement : MonoBehaviour
     private void UpdateReturn(
         float distanceToTarget)
     {
+        if (ShouldIgnoreDetection())
+        {
+            ClearTargetWithoutSearch();
+
+            StopMove();
+
+            return;
+        }
+
         if (HasTarget() &&
             distanceToTarget <= detectRange)
         {
@@ -654,15 +766,62 @@ public class BossMovement : MonoBehaviour
         );
     }
 
-    private void UpdateTargetSearch()
+    // =====================================================
+    // PLAY AGAIN / SCENE PROTECTION
+    // =====================================================
+
+    private bool ShouldIgnoreDetection()
     {
         /*
-         * Trong thời gian khóa detection
-         * sau Play Again thì không scan.
+         * SceneLoader đã bắt đầu reload.
          */
-        if (!IsActivated &&
-            detectionLockTimer > 0f)
+        if (SceneLoader.Instance != null &&
+            SceneLoader.Instance.IsLoading)
         {
+            return true;
+        }
+
+        /*
+         * Lấy đúng Player persistent từ GameManager.
+         */
+        GameObject playerObject =
+            GameManager.Instance != null
+                ? GameManager.Instance.Player
+                : null;
+
+        /*
+         * Chưa có Player thì không scan.
+         */
+        if (playerObject == null)
+            return true;
+
+        if (!playerObject.activeInHierarchy)
+            return true;
+
+        Health playerHealth =
+            playerObject.GetComponent<Health>();
+
+        /*
+         * Player đang chết.
+         */
+        if (playerHealth != null &&
+            playerHealth.IsDead)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // =====================================================
+    // TARGET SEARCH
+    // =====================================================
+
+    private void UpdateTargetSearch()
+    {
+        if (ShouldIgnoreDetection())
+        {
+            ClearTargetWithoutSearch();
             return;
         }
 
@@ -683,6 +842,15 @@ public class BossMovement : MonoBehaviour
 
     public void FindNearestTarget()
     {
+        /*
+         * Không scan trong lúc Play Again / Death.
+         */
+        if (ShouldIgnoreDetection())
+        {
+            ClearTargetWithoutSearch();
+            return;
+        }
+
         float nearestDistanceSquared =
             Mathf.Infinity;
 
@@ -691,7 +859,7 @@ public class BossMovement : MonoBehaviour
 
         if (targetTags == null)
         {
-            SetTarget(null);
+            ClearTargetWithoutSearch();
             return;
         }
 
@@ -738,6 +906,11 @@ public class BossMovement : MonoBehaviour
                     continue;
                 }
 
+                /*
+                 * Boss Dormant:
+                 * Clone không được activate Boss
+                 * nếu option đang tắt.
+                 */
                 if (!IsActivated &&
                     !cloneCanActivateBoss &&
                     !IsPlayerTarget(candidate))
@@ -770,8 +943,27 @@ public class BossMovement : MonoBehaviour
         );
     }
 
+    // =====================================================
+    // TARGET HELPERS
+    // =====================================================
+
     private Transform FindPlayer()
     {
+        /*
+         * Ưu tiên Player persistent.
+         */
+        if (GameManager.Instance != null &&
+            GameManager.Instance.Player != null)
+        {
+            GameObject persistentPlayer =
+                GameManager.Instance.Player;
+
+            if (persistentPlayer.activeInHierarchy)
+            {
+                return persistentPlayer.transform;
+            }
+        }
+
         GameObject playerObject;
 
         try
@@ -813,9 +1005,15 @@ public class BossMovement : MonoBehaviour
             newTarget;
     }
 
+    private void ClearTargetWithoutSearch()
+    {
+        target = null;
+        player = null;
+    }
+
     public void ClearTarget()
     {
-        SetTarget(null);
+        ClearTargetWithoutSearch();
 
         targetSearchTimer =
             0f;
@@ -916,6 +1114,10 @@ public class BossMovement : MonoBehaviour
         return direction.normalized;
     }
 
+    // =====================================================
+    // MOVEMENT
+    // =====================================================
+
     private Vector2 GetCurrentPosition()
     {
         return rb != null
@@ -928,6 +1130,13 @@ public class BossMovement : MonoBehaviour
     {
         if (rb == null)
             return;
+
+        if (!CanMove ||
+            stoppedImmediately)
+        {
+            StopMove();
+            return;
+        }
 
         Vector2 direction =
             destination -
@@ -956,12 +1165,18 @@ public class BossMovement : MonoBehaviour
             desiredVelocity +
             externalVelocity;
 
-        SetMovingVisual(true);
+        SetMovingVisual(
+            true
+        );
 
         FaceDirection(
             direction
         );
     }
+
+    // =====================================================
+    // FACING
+    // =====================================================
 
     private void FaceDirection(
         Vector2 direction)
@@ -999,6 +1214,10 @@ public class BossMovement : MonoBehaviour
         );
     }
 
+    // =====================================================
+    // STOP / PAUSE
+    // =====================================================
+
     public void StopMove()
     {
         desiredVelocity =
@@ -1006,11 +1225,25 @@ public class BossMovement : MonoBehaviour
 
         if (rb != null)
         {
-            rb.linearVelocity =
-                externalVelocity;
+            /*
+             * Khi AI bị khóa hoàn toàn,
+             * không giữ external velocity.
+             */
+            if (stoppedImmediately)
+            {
+                rb.linearVelocity =
+                    Vector2.zero;
+            }
+            else
+            {
+                rb.linearVelocity =
+                    externalVelocity;
+            }
         }
 
-        SetMovingVisual(false);
+        SetMovingVisual(
+            false
+        );
     }
 
     public void StopImmediately()
@@ -1033,16 +1266,32 @@ public class BossMovement : MonoBehaviour
                 0f;
         }
 
-        SetMovingVisual(false);
+        SetMovingVisual(
+            false
+        );
     }
 
     public void PauseAI()
     {
         CanMove = false;
 
-        StopMove();
+        desiredVelocity =
+            Vector2.zero;
+
+        if (rb != null)
+        {
+            rb.linearVelocity =
+                Vector2.zero;
+        }
+
+        SetMovingVisual(
+            false
+        );
     }
 
+    // =====================================================
+    // RESET BOSS
+    // =====================================================
 
     public void ResetBoss()
     {
@@ -1051,11 +1300,8 @@ public class BossMovement : MonoBehaviour
         CacheComponents();
 
         /*
-         * =========================
-         * RESET AI
-         * =========================
+         * Boss quay về trạng thái chưa phát hiện Player.
          */
-
         IsActivated = false;
 
         CanMove = true;
@@ -1065,10 +1311,9 @@ public class BossMovement : MonoBehaviour
             BossState.Dormant;
 
         /*
-         * Xóa target cũ.
+         * Xóa target cũ ngay lập tức.
          */
-        target = null;
-        player = null;
+        ClearTargetWithoutSearch();
 
         targetSearchTimer =
             targetSearchInterval;
@@ -1083,33 +1328,8 @@ public class BossMovement : MonoBehaviour
             Vector2.zero;
 
         /*
-         * =========================
-         * PLAY AGAIN DETECTION
-         * =========================
+         * Đưa Boss về vị trí ban đầu.
          */
-
-        detectionLockTimer =
-            Mathf.Max(
-                0f,
-                respawnDetectionDelay
-            );
-
-        /*
-         * Đây là dòng quan trọng nhất.
-         *
-         * Boss phải thấy Player RA NGOÀI
-         * Detect Range trước khi được phép
-         * activate lại.
-         */
-        requirePlayerExitBeforeReactivate =
-            true;
-
-        /*
-         * =========================
-         * RESET POSITION
-         * =========================
-         */
-
         if (rb != null)
         {
             rb.position =
@@ -1131,11 +1351,8 @@ public class BossMovement : MonoBehaviour
             spawnPosition;
 
         /*
-         * =========================
-         * RESET ANIMATOR
-         * =========================
+         * Reset Animator.
          */
-
         if (animator != null)
         {
             animator.speed = 1f;
@@ -1166,11 +1383,8 @@ public class BossMovement : MonoBehaviour
         }
 
         /*
-         * =========================
-         * RESET AUDIO
-         * =========================
+         * Dừng toàn bộ tiếng boss.
          */
-
         if (enemyAudio != null)
         {
             enemyAudio.StopAudio();
@@ -1179,15 +1393,34 @@ public class BossMovement : MonoBehaviour
         StopMove();
 
         Debug.Log(
-            $"{name}: Boss reset về Dormant. " +
-            "Đang chờ Player rời Detect Range."
+            $"{name}: Boss reset về Dormant."
         );
     }
 
-
+    // =====================================================
+    // RESUME
+    // =====================================================
 
     public void ResumeAI()
     {
+        /*
+         * Không resume trong lúc Player chết
+         * hoặc SceneLoader đang chạy.
+         */
+        if (ShouldIgnoreDetection())
+        {
+            IsActivated = false;
+
+            CurrentState =
+                BossState.Dormant;
+
+            ClearTargetWithoutSearch();
+
+            StopMove();
+
+            return;
+        }
+
         stoppedImmediately = false;
         CanMove = true;
 
@@ -1197,6 +1430,7 @@ public class BossMovement : MonoBehaviour
                 BossState.Dormant;
 
             StopMove();
+
             return;
         }
 
@@ -1220,6 +1454,10 @@ public class BossMovement : MonoBehaviour
         }
     }
 
+    // =====================================================
+    // KNOCKBACK
+    // =====================================================
+
     private void UpdateExternalVelocity()
     {
         externalVelocity =
@@ -1233,6 +1471,10 @@ public class BossMovement : MonoBehaviour
                 Time.deltaTime
             );
     }
+
+    // =====================================================
+    // STUCK
+    // =====================================================
 
     private void CheckIfStuck()
     {
@@ -1274,6 +1516,10 @@ public class BossMovement : MonoBehaviour
             transform.position;
     }
 
+    // =====================================================
+    // ANIMATION + AUDIO
+    // =====================================================
+
     private void SetMovingVisual(
         bool moving)
     {
@@ -1292,6 +1538,10 @@ public class BossMovement : MonoBehaviour
             );
         }
     }
+
+    // =====================================================
+    // GIZMOS
+    // =====================================================
 
     private void OnDrawGizmosSelected()
     {
@@ -1324,6 +1574,10 @@ public class BossMovement : MonoBehaviour
             roamRadius
         );
     }
+
+    // =====================================================
+    // VALIDATE
+    // =====================================================
 
     private void OnValidate()
     {
@@ -1375,10 +1629,5 @@ public class BossMovement : MonoBehaviour
                 0.05f,
                 targetSearchInterval
             );
-        respawnDetectionDelay =
-Mathf.Max(
-    0f,
-    respawnDetectionDelay
-);
     }
 }
