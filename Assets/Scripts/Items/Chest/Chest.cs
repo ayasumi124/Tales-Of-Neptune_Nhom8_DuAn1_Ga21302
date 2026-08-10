@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Chest : SaveObject
 {
@@ -22,10 +21,19 @@ public class Chest : SaveObject
     [SerializeField]
     private ElementData elementReward;
 
+    // =====================================================
+    // SAVE
+    // =====================================================
+
     [Header("Chest Save")]
     [Tooltip(
-        "Mỗi rương phải có một ID khác nhau."
+        "Bật = rương nhớ trạng thái đã mở.\n" +
+        "Tắt = rương reset mỗi lần load lại scene.\n" +
+        "Key Chest nên TẮT."
     )]
+    [SerializeField]
+    private bool saveOpenedState = true;
+
     [SerializeField]
     private bool opened;
 
@@ -44,11 +52,16 @@ public class Chest : SaveObject
     private Players player;
     private EnermyMovement[] enemies;
     private CloneFollow[] clones;
+
     private Animator animator;
     private ChestReward chestReward;
 
     public string FullChestID =>
-    BuildSceneSaveID();
+        BuildSceneSaveID();
+
+    // =====================================================
+    // UNITY
+    // =====================================================
 
     protected override void Awake()
     {
@@ -61,7 +74,6 @@ public class Chest : SaveObject
             GetComponent<ChestReward>();
     }
 
-
     private void Start()
     {
         FindObjects();
@@ -69,11 +81,27 @@ public class Chest : SaveObject
         SkillUnlockUI.OnSkillPanelClosed +=
             ResumeGame;
 
-        ValidateRuntimeChestID();
-        LoadChestState();
+        /*
+         * Rương bình thường:
+         * kiểm tra ID và load trạng thái.
+         *
+         * Key Chest:
+         * luôn reset khi scene được load.
+         */
+        if (saveOpenedState)
+        {
+            ValidateRuntimeChestID();
+            LoadChestState();
+        }
+        else
+        {
+            ResetRuntimeChest();
+        }
 
         if (keyIcon != null)
+        {
             keyIcon.SetActive(false);
+        }
     }
 
     private void Update()
@@ -90,6 +118,10 @@ public class Chest : SaveObject
         }
     }
 
+    // =====================================================
+    // PLAYER INTERACTION
+    // =====================================================
+
     private void OnTriggerEnter2D(
         Collider2D other)
     {
@@ -102,7 +134,34 @@ public class Chest : SaveObject
         playerInside = true;
 
         if (keyIcon != null)
+        {
             keyIcon.SetActive(true);
+        }
+    }
+
+    /*
+     * Quan trọng với Key Chest được spawn bằng SetActive.
+     *
+     * Nếu Player đang đứng sẵn trong collider lúc chest
+     * xuất hiện thì OnTriggerEnter2D có thể không chạy
+     * như mong muốn.
+     */
+    private void OnTriggerStay2D(
+        Collider2D other)
+    {
+        if (opened ||
+            !other.CompareTag("Player"))
+        {
+            return;
+        }
+
+        playerInside = true;
+
+        if (keyIcon != null &&
+            !keyIcon.activeSelf)
+        {
+            keyIcon.SetActive(true);
+        }
     }
 
     private void OnTriggerExit2D(
@@ -114,15 +173,28 @@ public class Chest : SaveObject
         playerInside = false;
 
         if (keyIcon != null)
+        {
             keyIcon.SetActive(false);
+        }
     }
+
+    // =====================================================
+    // OPEN CHEST
+    // =====================================================
 
     public void OpenChest()
     {
         if (opened)
             return;
 
-        if (!HasValidSaveID)
+        /*
+         * Chỉ rương persistent mới cần ID.
+         *
+         * Key Chest không lưu trạng thái nên
+         * không cần Persistent ID.
+         */
+        if (saveOpenedState &&
+            !HasValidSaveID)
         {
             Debug.LogError(
                 $"{name} chưa có Persistent ID hợp lệ.",
@@ -131,21 +203,17 @@ public class Chest : SaveObject
 
             return;
         }
-        /*
-         * Khóa tại scene hiện tại để người chơi
-         * không thể bấm mở nhiều lần trong animation.
-         *
-         * Chưa MarkChestOpened cho đến khi
-         * phần thưởng thực sự được nhận thành công.
-         */
+
         opened = true;
         playerInside = false;
 
         if (keyIcon != null)
+        {
             keyIcon.SetActive(false);
+        }
 
         Debug.Log(
-            $"Bắt đầu mở rương: {FullChestID}"
+            $"Bắt đầu mở rương: {name}"
         );
 
         if (AudioManager.Instance != null)
@@ -168,19 +236,20 @@ public class Chest : SaveObject
         else
         {
             /*
-             * Không có Animator thì trao thưởng ngay.
+             * Không có Animator:
+             * trao thưởng ngay.
              */
             OnRewardAnimationEvent();
         }
     }
 
+    // =====================================================
+    // ANIMATION EVENT
+    // =====================================================
+
     /*
-     * Animation Event chỉ gọi duy nhất hàm này.
-     *
-     * Không dùng tên GiveReward nữa để tránh
-     * trùng với component khác.
+     * Đặt Animation Event này ở animation mở rương.
      */
-    // Animation Event gọi duy nhất hàm này.
     public void OnRewardAnimationEvent()
     {
         if (rewardGiven)
@@ -188,10 +257,14 @@ public class Chest : SaveObject
 
         bool success;
 
-        // Rương Coin, Potion, Heart Container.
+        // ---------------------------------------------
+        // Coin / Item / Dungeon Key / Potion...
+        // ---------------------------------------------
+
         if (chestReward != null)
         {
-            success = chestReward.ClaimReward();
+            success =
+                chestReward.ClaimReward();
 
             if (success)
             {
@@ -206,8 +279,12 @@ public class Chest : SaveObject
             return;
         }
 
-        // Rương Ability hoặc Element.
-        success = ClaimSkillReward();
+        // ---------------------------------------------
+        // Ability / Element
+        // ---------------------------------------------
+
+        success =
+            ClaimSkillReward();
 
         if (success)
         {
@@ -215,8 +292,9 @@ public class Chest : SaveObject
 
             /*
              * Không ResumeGame ở đây.
-             * SkillUnlockUI sẽ gọi ResumeGame
-             * sau khi người chơi đóng panel.
+             *
+             * SkillUnlockUI sẽ ResumeGame
+             * sau khi panel đóng.
              */
         }
         else
@@ -225,17 +303,24 @@ public class Chest : SaveObject
         }
     }
 
+    // =====================================================
+    // SKILL REWARD
+    // =====================================================
+
     private bool ClaimSkillReward()
     {
         switch (skillRewardType)
         {
             case ChestSkillRewardType.Ability:
+
                 return ClaimAbilityReward();
 
             case ChestSkillRewardType.Element:
+
                 return ClaimElementReward();
 
             default:
+
                 Debug.LogError(
                     $"{name}: Skill Reward Type không hợp lệ."
                 );
@@ -257,9 +342,10 @@ public class Chest : SaveObject
 
         if (AbilityManager.Instance != null)
         {
-            AbilityManager.Instance.UnlockAbility(
-                abilityReward.type
-            );
+            AbilityManager.Instance
+                .UnlockAbility(
+                    abilityReward.type
+                );
         }
 
         if (SkillInventoryUI.Instance == null)
@@ -331,22 +417,43 @@ public class Chest : SaveObject
         return true;
     }
 
+    // =====================================================
+    // COMPLETE REWARD
+    // =====================================================
+
     private void CompleteReward()
     {
         rewardGiven = true;
 
-        if (GameSessionManager.Instance != null)
+        /*
+         * CHỈ rương persistent mới được lưu.
+         *
+         * Key Chest không chạy đoạn này.
+         */
+        if (saveOpenedState &&
+            GameSessionManager.Instance != null)
         {
             GameSessionManager.Instance
                 .MarkChestOpened(
                     FullChestID
                 );
-        }
 
-        Debug.Log(
-            $"Đã nhận thưởng rương: {FullChestID}"
-        );
+            Debug.Log(
+                $"Đã lưu rương: {FullChestID}"
+            );
+        }
+        else
+        {
+            Debug.Log(
+                $"{name}: nhận reward, " +
+                "không lưu trạng thái rương."
+            );
+        }
     }
+
+    // =====================================================
+    // FAILED REWARD
+    // =====================================================
 
     private void CancelFailedReward()
     {
@@ -364,13 +471,23 @@ public class Chest : SaveObject
         ResumeGame();
 
         Debug.LogWarning(
-            $"Nhận thưởng thất bại, " +
-            $"cho phép mở lại rương: {FullChestID}"
+            $"{name}: nhận thưởng thất bại, " +
+            "cho phép mở lại."
         );
     }
 
+    // =====================================================
+    // LOAD SAVED CHEST
+    // =====================================================
+
     private void LoadChestState()
     {
+        /*
+         * Key Chest tuyệt đối không load save.
+         */
+        if (!saveOpenedState)
+            return;
+
         if (GameSessionManager.Instance == null)
             return;
 
@@ -386,7 +503,8 @@ public class Chest : SaveObject
 
         if (chestReward != null)
         {
-            chestReward.RestoreClaimedState();
+            chestReward
+                .RestoreClaimedState();
         }
 
         if (animator != null)
@@ -413,6 +531,56 @@ public class Chest : SaveObject
             $"Rương đã mở trước đó: {FullChestID}"
         );
     }
+
+    // =====================================================
+    // RESET RUNTIME CHEST
+    // =====================================================
+
+    /*
+     * Dùng cho Key Chest.
+     *
+     * Mỗi lần scene được load lại:
+     *
+     * opened = false
+     * rewardGiven = false
+     * ChestReward reset
+     * Animator trở về trạng thái ban đầu
+     */
+    private void ResetRuntimeChest()
+    {
+        opened = false;
+        rewardGiven = false;
+        playerInside = false;
+
+        if (chestReward != null)
+        {
+            chestReward.ResetReward();
+        }
+
+        if (animator != null)
+        {
+            animator.Rebind();
+            animator.Update(0f);
+
+            animator.SetBool(
+                "IsOpened",
+                false
+            );
+        }
+
+        if (keyIcon != null)
+        {
+            keyIcon.SetActive(false);
+        }
+
+        Debug.Log(
+            $"{name}: reset runtime chest."
+        );
+    }
+
+    // =====================================================
+    // FIND OBJECTS
+    // =====================================================
 
     private void FindObjects()
     {
@@ -441,6 +609,10 @@ public class Chest : SaveObject
             );
     }
 
+    // =====================================================
+    // FREEZE GAME
+    // =====================================================
+
     private void FreezeGame()
     {
         FindObjects();
@@ -450,8 +622,9 @@ public class Chest : SaveObject
             player.LockControl();
         }
 
-        foreach (EnermyMovement enemy
-                 in enemies)
+        foreach (
+            EnermyMovement enemy
+            in enemies)
         {
             if (enemy == null)
                 continue;
@@ -468,8 +641,9 @@ public class Chest : SaveObject
             }
         }
 
-        foreach (CloneFollow clone
-                 in clones)
+        foreach (
+            CloneFollow clone
+            in clones)
         {
             if (clone == null)
                 continue;
@@ -486,6 +660,10 @@ public class Chest : SaveObject
             }
         }
     }
+
+    // =====================================================
+    // RESUME GAME
+    // =====================================================
 
     private void ResumeGame()
     {
@@ -508,23 +686,39 @@ public class Chest : SaveObject
             }
         }
 
-        foreach (EnermyMovement enemy
-                 in enemies)
+        foreach (
+            EnermyMovement enemy
+            in enemies)
         {
             if (enemy != null)
+            {
                 enemy.enabled = true;
+            }
         }
 
-        foreach (CloneFollow clone
-                 in clones)
+        foreach (
+            CloneFollow clone
+            in clones)
         {
             if (clone != null)
+            {
                 clone.enabled = true;
+            }
         }
     }
 
+    // =====================================================
+    // VALIDATE SAVE ID
+    // =====================================================
+
     private void ValidateRuntimeChestID()
     {
+        /*
+         * Key Chest không cần validate ID.
+         */
+        if (!saveOpenedState)
+            return;
+
         if (!HasValidSaveID)
         {
             Debug.LogError(
@@ -541,14 +735,22 @@ public class Chest : SaveObject
                 FindObjectsSortMode.None
             );
 
-        foreach (Chest other
-                 in chests)
+        foreach (
+            Chest other
+            in chests)
         {
             if (other == null ||
                 other == this)
             {
                 continue;
             }
+
+            /*
+             * Chỉ so ID với những chest
+             * cũng sử dụng save.
+             */
+            if (!other.saveOpenedState)
+                continue;
 
             if (other.FullChestID ==
                 FullChestID)
@@ -565,12 +767,17 @@ public class Chest : SaveObject
         }
     }
 
+    // =====================================================
+    // MANUAL RESET
+    // =====================================================
 
-
-    [ContextMenu("Reset This Chest In Session")]
+    [ContextMenu(
+        "Reset This Chest In Session"
+    )]
     private void ResetThisChestInSession()
     {
-        if (GameSessionManager.Instance != null)
+        if (saveOpenedState &&
+            GameSessionManager.Instance != null)
         {
             GameSessionManager.Instance
                 .ResetChest(
@@ -578,23 +785,13 @@ public class Chest : SaveObject
                 );
         }
 
-        opened = false;
-        rewardGiven = false;
-
-        if (chestReward != null)
-            chestReward.ResetReward();
-
-        if (animator != null)
-        {
-            animator.SetBool(
-                "IsOpened",
-                false
-            );
-
-            animator.Rebind();
-            animator.Update(0f);
-        }
+        ResetRuntimeChest();
     }
+
+    // =====================================================
+    // DESTROY
+    // =====================================================
+
     private void OnDestroy()
     {
         SkillUnlockUI.OnSkillPanelClosed -=

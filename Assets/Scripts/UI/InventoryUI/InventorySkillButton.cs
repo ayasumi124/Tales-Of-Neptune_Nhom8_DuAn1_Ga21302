@@ -11,39 +11,54 @@ public class InventorySkillButton : MonoBehaviour
         Element
     }
 
+    // =====================================================
+    // UI
+    // =====================================================
+
     [Header("Main UI")]
-    [SerializeField] private Button selectButton;
-    [SerializeField] private Image icon;
-    [SerializeField] private TextMeshProUGUI nameText;
+    [SerializeField]
+    private Button selectButton;
+
+    [SerializeField]
+    private Image icon;
+
+    [SerializeField]
+    private TextMeshProUGUI nameText;
 
     [Header("Selection")]
-    [SerializeField] private GameObject selectedFrame;
-    [SerializeField] private GameObject actionPanel;
-
-    [Header("Ability Actions")]
-    [SerializeField] private GameObject abilityActionGroup;
-    [SerializeField] private Button equipSlot3Button;
-    [SerializeField] private Button equipSlot4Button;
-
-    [Header("Element Actions")]
-    [SerializeField] private GameObject elementActionGroup;
-    [SerializeField] private Button equipElementButton;
-
-    [Header("Unequip")]
-    [SerializeField] private Button unequipButton;
+    [SerializeField]
+    private GameObject selectedFrame;
 
     [Header("Status")]
-    [SerializeField] private GameObject equippedBadge;
-    [SerializeField] private TextMeshProUGUI equippedText;
+    [SerializeField]
+    private GameObject equippedBadge;
+
+    [SerializeField]
+    private TextMeshProUGUI equippedText;
+
+    // =====================================================
+    // DATA
+    // =====================================================
 
     private InventorySkillType skillType =
         InventorySkillType.None;
 
     private AbilityData abilityData;
+
     private ElementData elementData;
 
     public InventorySkillType SkillType =>
         skillType;
+
+    public AbilityData AbilityData =>
+        abilityData;
+
+    public ElementData ElementData =>
+        elementData;
+
+    // =====================================================
+    // UNITY
+    // =====================================================
 
     private void Awake()
     {
@@ -53,73 +68,27 @@ public class InventorySkillButton : MonoBehaviour
                 GetComponent<Button>();
         }
 
-        AddListeners();
-        SetSelected(false);
-        RefreshStatus();
-    }
-
-    private void OnEnable()
-    {
-        RefreshStatus();
-    }
-
-    private void AddListeners()
-    {
         if (selectButton != null)
         {
-            selectButton.onClick.RemoveListener(
-                ToggleSelection
-            );
+            selectButton.onClick
+                .RemoveListener(
+                    Select
+                );
 
-            selectButton.onClick.AddListener(
-                ToggleSelection
-            );
+            selectButton.onClick
+                .AddListener(
+                    Select
+                );
         }
 
-        if (equipSlot3Button != null)
-        {
-            equipSlot3Button.onClick.RemoveListener(
-                EquipAbilityToSlot3
-            );
-
-            equipSlot3Button.onClick.AddListener(
-                EquipAbilityToSlot3
-            );
-        }
-
-        if (equipSlot4Button != null)
-        {
-            equipSlot4Button.onClick.RemoveListener(
-                EquipAbilityToSlot4
-            );
-
-            equipSlot4Button.onClick.AddListener(
-                EquipAbilityToSlot4
-            );
-        }
-
-        if (equipElementButton != null)
-        {
-            equipElementButton.onClick.RemoveListener(
-                EquipElement
-            );
-
-            equipElementButton.onClick.AddListener(
-                EquipElement
-            );
-        }
-
-        if (unequipButton != null)
-        {
-            unequipButton.onClick.RemoveListener(
-                Unequip
-            );
-
-            unequipButton.onClick.AddListener(
-                Unequip
-            );
-        }
+        SetSelected(
+            false
+        );
     }
+
+    // =====================================================
+    // SETUP ABILITY
+    // =====================================================
 
     public void SetupAbility(
         AbilityData data)
@@ -135,30 +104,24 @@ public class InventorySkillButton : MonoBehaviour
         skillType =
             InventorySkillType.Ability;
 
-        abilityData = data;
+        abilityData =
+            data;
 
         SetVisual(
             data.icon,
             data.skillName
         );
 
-        if (abilityActionGroup != null)
-        {
-            abilityActionGroup.SetActive(
-                true
-            );
-        }
+        SetSelected(
+            false
+        );
 
-        if (elementActionGroup != null)
-        {
-            elementActionGroup.SetActive(
-                false
-            );
-        }
-
-        SetSelected(false);
         RefreshStatus();
     }
+
+    // =====================================================
+    // SETUP ELEMENT
+    // =====================================================
 
     public void SetupElement(
         ElementData data)
@@ -174,30 +137,24 @@ public class InventorySkillButton : MonoBehaviour
         skillType =
             InventorySkillType.Element;
 
-        elementData = data;
+        elementData =
+            data;
 
         SetVisual(
             data.elementIcon,
             data.elementName
         );
 
-        if (abilityActionGroup != null)
-        {
-            abilityActionGroup.SetActive(
-                false
-            );
-        }
+        SetSelected(
+            false
+        );
 
-        if (elementActionGroup != null)
-        {
-            elementActionGroup.SetActive(
-                true
-            );
-        }
-
-        SetSelected(false);
         RefreshStatus();
     }
+
+    // =====================================================
+    // VISUAL
+    // =====================================================
 
     private void SetVisual(
         Sprite newIcon,
@@ -205,15 +162,22 @@ public class InventorySkillButton : MonoBehaviour
     {
         if (icon != null)
         {
-            icon.sprite = newIcon;
-            icon.enabled = newIcon != null;
-            icon.preserveAspect = true;
+            icon.sprite =
+                newIcon;
+
+            icon.enabled =
+                newIcon != null;
+
+            icon.preserveAspect =
+                true;
 
             Color color =
                 icon.color;
 
             color.a = 1f;
-            icon.color = color;
+
+            icon.color =
+                color;
         }
 
         if (nameText != null)
@@ -223,7 +187,11 @@ public class InventorySkillButton : MonoBehaviour
         }
     }
 
-    private void ToggleSelection()
+    // =====================================================
+    // SELECT
+    // =====================================================
+
+    private void Select()
     {
         if (skillType ==
             InventorySkillType.None)
@@ -234,7 +202,9 @@ public class InventorySkillButton : MonoBehaviour
         if (SkillInventoryUI.Instance != null)
         {
             SkillInventoryUI.Instance
-                .SelectButton(this);
+                .SelectButton(
+                    this
+                );
         }
 
         if (AudioManager.Instance != null)
@@ -243,7 +213,6 @@ public class InventorySkillButton : MonoBehaviour
                 .PlayInventorySelect();
         }
     }
-
 
     public void SetSelected(
         bool selected)
@@ -254,282 +223,84 @@ public class InventorySkillButton : MonoBehaviour
                 selected
             );
         }
-
-        if (actionPanel != null)
-        {
-            actionPanel.SetActive(
-                selected
-            );
-        }
     }
 
-    private void EquipAbilityToSlot3()
-    {
-        EquipAbility(3);
-    }
-
-    private void EquipAbilityToSlot4()
-    {
-        EquipAbility(4);
-    }
-
-    private void EquipAbility(
-        int slotNumber)
-    {
-        if (skillType !=
-                InventorySkillType.Ability ||
-            abilityData == null)
-        {
-            return;
-        }
-
-        if (EquipmentManager.Instance == null)
-        {
-            Debug.LogError(
-                "Không tìm thấy EquipmentManager."
-            );
-
-            return;
-        }
-
-        bool equipped =
-            EquipmentManager.Instance
-                .EquipSkill(
-                    abilityData,
-                    slotNumber
-                );
-
-        if (!equipped)
-            return;
-
-        PlayEquipSound();
-
-        SetSelected(false);
-
-        RefreshAllInventoryButtons();
-    }
-
-    private void EquipElement()
-    {
-        if (skillType !=
-                InventorySkillType.Element ||
-            elementData == null)
-        {
-            return;
-        }
-
-        if (ElementEquipmentManager.Instance ==
-            null)
-        {
-            Debug.LogError(
-                "Không tìm thấy ElementEquipmentManager."
-            );
-
-            return;
-        }
-
-        bool equipped =
-            ElementEquipmentManager.Instance
-                .EquipElementToSlot(
-                    elementData,
-                    5
-                );
-
-        if (!equipped)
-            return;
-
-        PlayEquipSound();
-
-        SetSelected(false);
-
-        RefreshAllInventoryButtons();
-    }
-
-    private void Unequip()
-    {
-        switch (skillType)
-        {
-            case InventorySkillType.Ability:
-                UnequipAbility();
-                break;
-
-            case InventorySkillType.Element:
-                UnequipElement();
-                break;
-        }
-
-        SetSelected(false);
-
-        RefreshAllInventoryButtons();
-    }
-
-    private void UnequipAbility()
-    {
-        if (abilityData == null ||
-            EquipmentManager.Instance == null)
-        {
-            return;
-        }
-
-        int equippedSlot =
-            EquipmentManager.Instance
-                .GetEquippedSlot(
-                    abilityData
-                );
-
-        if (equippedSlot < 0)
-            return;
-
-        EquipmentManager.Instance
-            .UnequipSkill(
-                equippedSlot
-            );
-
-        PlayEquipSound();
-    }
-
-    private void UnequipElement()
-    {
-        if (elementData == null ||
-            ElementEquipmentManager.Instance ==
-            null)
-        {
-            return;
-        }
-
-        if (!ElementEquipmentManager.Instance
-                .IsElementEquipped(
-                    elementData))
-        {
-            return;
-        }
-
-        ElementEquipmentManager.Instance
-            .UnequipElement();
-
-        PlayEquipSound();
-    }
+    // =====================================================
+    // STATUS
+    // =====================================================
 
     public void RefreshStatus()
     {
-        bool isEquipped = false;
-        string status = "";
+        bool equipped = false;
 
-        switch (skillType)
+        string text = "";
+
+        // =============================================
+        // ABILITY
+        // =============================================
+
+        if (skillType ==
+                InventorySkillType.Ability &&
+            abilityData != null &&
+            EquipmentManager.Instance != null)
         {
-            case InventorySkillType.Ability:
-                RefreshAbilityStatus(
-                    ref isEquipped,
-                    ref status
-                );
-                break;
+            int slot =
+                EquipmentManager.Instance
+                    .GetEquippedSlot(
+                        abilityData
+                    );
 
-            case InventorySkillType.Element:
-                RefreshElementStatus(
-                    ref isEquipped,
-                    ref status
-                );
-                break;
+            if (slot >= 0)
+            {
+                equipped = true;
+
+                text =
+                    $"Slot {slot}";
+            }
+        }
+
+        // =============================================
+        // ELEMENT
+        // =============================================
+
+        else if (
+            skillType ==
+                InventorySkillType.Element &&
+            elementData != null &&
+            ElementEquipmentManager.Instance != null)
+        {
+            equipped =
+                ElementEquipmentManager.Instance
+                    .IsElementEquipped(
+                        elementData
+                    );
+
+            if (equipped)
+            {
+                text =
+                    "Slot 5";
+            }
         }
 
         if (equippedBadge != null)
         {
             equippedBadge.SetActive(
-                isEquipped
+                equipped
             );
         }
 
         if (equippedText != null)
         {
             equippedText.text =
-                isEquipped
-                    ? status
+                equipped
+                    ? text
                     : "";
         }
-
-        if (unequipButton != null)
-        {
-            unequipButton.gameObject.SetActive(
-                isEquipped
-            );
-        }
     }
 
-    private void RefreshAbilityStatus(
-        ref bool isEquipped,
-        ref string status)
-    {
-        if (abilityData == null ||
-            EquipmentManager.Instance == null)
-        {
-            return;
-        }
-
-        int equippedSlot =
-            EquipmentManager.Instance
-                .GetEquippedSlot(
-                    abilityData
-                );
-
-        if (equippedSlot < 0)
-            return;
-
-        isEquipped = true;
-        status =
-            $"Equipped - Slot {equippedSlot}";
-    }
-
-    private void RefreshElementStatus(
-        ref bool isEquipped,
-        ref string status)
-    {
-        if (elementData == null ||
-            ElementEquipmentManager.Instance ==
-            null)
-        {
-            return;
-        }
-
-        isEquipped =
-            ElementEquipmentManager.Instance
-                .IsElementEquipped(
-                    elementData
-                );
-
-        if (isEquipped)
-        {
-            status =
-                "Equipped - Slot 5";
-        }
-    }
-
-    private void RefreshAllInventoryButtons()
-    {
-        InventorySkillButton[] buttons =
-            FindObjectsByType<
-                InventorySkillButton
-            >(
-                FindObjectsSortMode.None
-            );
-
-        foreach (InventorySkillButton button
-                 in buttons)
-        {
-            if (button != null)
-            {
-                button.RefreshStatus();
-            }
-        }
-    }
-
-    private void PlayEquipSound()
-    {
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance
-                .PlayInventoryEquip();
-        }
-    }
+    // =====================================================
+    // CLEAR
+    // =====================================================
 
     private void ClearData()
     {
@@ -537,6 +308,7 @@ public class InventorySkillButton : MonoBehaviour
             InventorySkillType.None;
 
         abilityData = null;
+
         elementData = null;
     }
 
@@ -545,26 +317,13 @@ public class InventorySkillButton : MonoBehaviour
         if (icon != null)
         {
             icon.sprite = null;
+
             icon.enabled = false;
         }
 
         if (nameText != null)
         {
             nameText.text = "";
-        }
-
-        if (abilityActionGroup != null)
-        {
-            abilityActionGroup.SetActive(
-                false
-            );
-        }
-
-        if (elementActionGroup != null)
-        {
-            elementActionGroup.SetActive(
-                false
-            );
         }
 
         if (equippedBadge != null)
@@ -579,51 +338,23 @@ public class InventorySkillButton : MonoBehaviour
             equippedText.text = "";
         }
 
-        if (unequipButton != null)
-        {
-            unequipButton.gameObject.SetActive(
-                false
-            );
-        }
-
-        SetSelected(false);
+        SetSelected(
+            false
+        );
     }
+
+    // =====================================================
+    // DESTROY
+    // =====================================================
 
     private void OnDestroy()
     {
         if (selectButton != null)
         {
-            selectButton.onClick.RemoveListener(
-                ToggleSelection
-            );
-        }
-
-        if (equipSlot3Button != null)
-        {
-            equipSlot3Button.onClick.RemoveListener(
-                EquipAbilityToSlot3
-            );
-        }
-
-        if (equipSlot4Button != null)
-        {
-            equipSlot4Button.onClick.RemoveListener(
-                EquipAbilityToSlot4
-            );
-        }
-
-        if (equipElementButton != null)
-        {
-            equipElementButton.onClick.RemoveListener(
-                EquipElement
-            );
-        }
-
-        if (unequipButton != null)
-        {
-            unequipButton.onClick.RemoveListener(
-                Unequip
-            );
+            selectButton.onClick
+                .RemoveListener(
+                    Select
+                );
         }
     }
 }

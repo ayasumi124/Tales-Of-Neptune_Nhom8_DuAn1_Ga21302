@@ -66,6 +66,9 @@ TagManager:
   - name: In front of FG
     uniqueID: 3403159241
     locked: 0
+  - name: DoorBehind
+    uniqueID: 1341317625
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
@@ -80,6 +83,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 2025507539
+    locked: 0
+  - name: Boss
+    uniqueID: 3336884989
     locked: 0
   - name: Door
     uniqueID: 2450303671
@@ -98,6 +104,9 @@ TagManager:
     locked: 0
   - name: Tree5
     uniqueID: 1215820729
+    locked: 0
+  - name: UI
+    uniqueID: 4067472003
     locked: 0
   - name: Fairy
     uniqueID: 1370001017
