@@ -12,7 +12,7 @@ public class MinotaurosBossAttack : MonoBehaviour
 
     [Header("References")]
     [SerializeField]
-    private EnermyMovement movement;
+    private BossMovement movement;
 
     [SerializeField]
     private EnermyHealth health;
@@ -48,9 +48,6 @@ public class MinotaurosBossAttack : MonoBehaviour
     [SerializeField]
     private int slamDamage = 3;
 
-    [Tooltip(
-        "Khoảng cách tối đa boss có thể dùng Slam."
-    )]
     [Min(0f)]
     [SerializeField]
     private float slamUseRange = 7f;
@@ -94,10 +91,6 @@ public class MinotaurosBossAttack : MonoBehaviour
     private float slamVolume = 0.9f;
 
     [Header("Safety")]
-    [Tooltip(
-        "Tự kết thúc action nếu animation " +
-        "không có Event EndAction."
-    )]
     [Min(0.1f)]
     [SerializeField]
     private float actionTimeout = 1.5f;
@@ -144,9 +137,22 @@ public class MinotaurosBossAttack : MonoBehaviour
         }
 
         /*
-         * Enemy thường bị Hurt sẽ hủy action.
-         * Boss đã bật Is Boss nên IsHurting
-         * sẽ không được kích hoạt khi nhận damage.
+         * Boss chưa được Player đánh thức
+         * thì tuyệt đối không Attack.
+         */
+        if (!movement.IsActivated)
+        {
+            if (isActing)
+            {
+                CancelAction();
+            }
+
+            return;
+        }
+
+        /*
+         * Boss hiện không Hurt Lock,
+         * nhưng vẫn giữ check an toàn.
          */
         if (health.IsHurting)
         {
@@ -190,10 +196,6 @@ public class MinotaurosBossAttack : MonoBehaviour
                 slamUseRange
             );
 
-        /*
-         * Ở ngoài tầm đánh thường:
-         * boss có thể dùng Ground Slam từ xa.
-         */
         if (!inNormalAttackRange)
         {
             TryDistantSlam(
@@ -214,7 +216,7 @@ public class MinotaurosBossAttack : MonoBehaviour
         if (movement == null)
         {
             movement =
-                GetComponent<EnermyMovement>();
+                GetComponent<BossMovement>();
         }
 
         if (health == null)
@@ -269,11 +271,9 @@ public class MinotaurosBossAttack : MonoBehaviour
         if (roll >
             distantSlamChance)
         {
-            /*
-             * Tránh random lại mỗi frame,
-             * nếu lần này boss không chọn Slam.
-             */
-            slamCooldownTimer = 0.5f;
+            slamCooldownTimer =
+                0.5f;
+
             return;
         }
 
@@ -314,12 +314,6 @@ public class MinotaurosBossAttack : MonoBehaviour
             AttackType.Normal
         );
 
-        /*
-         * Không gọi bossAudio.PlayAttack() ở đây.
-         *
-         * Attack Voice và Attack Swing
-         * được gọi bằng Animation Event.
-         */
         if (animator != null)
         {
             animator.ResetTrigger(
@@ -353,10 +347,6 @@ public class MinotaurosBossAttack : MonoBehaviour
                 slamCooldown
             );
 
-        /*
-         * Không gọi bossAudio.PlayAttack() ở đây.
-         * Audio Attack dùng Animation Event.
-         */
         if (animator != null)
         {
             animator.ResetTrigger(
@@ -378,6 +368,35 @@ public class MinotaurosBossAttack : MonoBehaviour
         }
     }
 
+    public void ResetBossAttack()
+    {
+        isActing = false;
+
+        currentAttack =
+            AttackType.None;
+
+        normalCooldownTimer = 0f;
+        slamCooldownTimer = 0f;
+        actionTimeoutTimer = 0f;
+
+        damagedTargets.Clear();
+
+        if (animator != null)
+        {
+            animator.ResetTrigger(
+                normalAttackTrigger
+            );
+
+            animator.ResetTrigger(
+                slamTrigger
+            );
+        }
+
+        if (movement != null)
+        {
+            movement.CanMove = true;
+        }
+    }
     private void BeginAction(
         AttackType attackType)
     {
@@ -396,20 +415,14 @@ public class MinotaurosBossAttack : MonoBehaviour
 
         if (movement != null)
         {
-            movement.CanMove = false;
+            movement.CanMove =
+                false;
+
             movement.StopMove();
             movement.FaceTarget();
         }
     }
 
-    // =====================================================
-    // NORMAL ATTACK
-    // =====================================================
-
-    /*
-     * Animation Event:
-     * đặt tại frame lưỡi rìu chạm mục tiêu.
-     */
     public void DealNormalDamage()
     {
         if (!isActing ||
@@ -420,22 +433,12 @@ public class MinotaurosBossAttack : MonoBehaviour
         }
 
         if (normalAttackPoint == null)
-        {
-            Debug.LogError(
-                $"{name}: chưa gán Normal Attack Point.",
-                this
-            );
-
             return;
-        }
 
         Collider2D[] hits =
             Physics2D.OverlapCircleAll(
                 normalAttackPoint.position,
-                Mathf.Max(
-                    0f,
-                    normalAttackRadius
-                ),
+                normalAttackRadius,
                 targetLayer
             );
 
@@ -445,14 +448,6 @@ public class MinotaurosBossAttack : MonoBehaviour
         );
     }
 
-    // =====================================================
-    // GROUND SLAM
-    // =====================================================
-
-    /*
-     * Animation Event:
-     * đặt tại frame rìu chạm đất.
-     */
     public void GroundSlamImpact()
     {
         if (!isActing ||
@@ -465,10 +460,7 @@ public class MinotaurosBossAttack : MonoBehaviour
         Collider2D[] hits =
             Physics2D.OverlapCircleAll(
                 transform.position,
-                Mathf.Max(
-                    0f,
-                    slamRadius
-                ),
+                slamRadius,
                 targetLayer
             );
 
@@ -484,14 +476,7 @@ public class MinotaurosBossAttack : MonoBehaviour
     private void SpawnSlamWaves()
     {
         if (slamEffectPrefab == null)
-        {
-            Debug.LogWarning(
-                $"{name}: chưa gán Slam Effect Prefab.",
-                this
-            );
-
             return;
-        }
 
         Vector3 spawnPosition =
             slamSpawnPoint != null
@@ -529,18 +514,13 @@ public class MinotaurosBossAttack : MonoBehaviour
             );
 
         GroundSlamWave wave =
-            waveObject.GetComponent<
-                GroundSlamWave
-            >();
+            waveObject
+                .GetComponent<
+                    GroundSlamWave
+                >();
 
         if (wave == null)
         {
-            Debug.LogError(
-                $"{waveObject.name} thiếu " +
-                "GroundSlamWave.",
-                waveObject
-            );
-
             Destroy(
                 waveObject
             );
@@ -578,10 +558,6 @@ public class MinotaurosBossAttack : MonoBehaviour
             slamVolume
         );
     }
-
-    // =====================================================
-    // DAMAGE
-    // =====================================================
 
     private void DamageTargets(
         Collider2D[] hits,
@@ -633,19 +609,16 @@ public class MinotaurosBossAttack : MonoBehaviour
             if (playerHealth != null &&
                 !playerHealth.IsDead)
             {
-                float healthBefore =
-                    playerHealth.currentHealth;
+                float before =
+                    playerHealth
+                        .currentHealth;
 
                 playerHealth.TakeDamage(
                     damageAmount
                 );
 
-                /*
-                 * Dash hoặc invincibility có thể
-                 * khiến TakeDamage không trừ máu.
-                 */
                 if (playerHealth.currentHealth <
-                    healthBefore)
+                    before)
                 {
                     damagedAtLeastOneTarget =
                         true;
@@ -653,24 +626,14 @@ public class MinotaurosBossAttack : MonoBehaviour
             }
         }
 
-        /*
-         * Chỉ phát một tiếng Impact cho mỗi đòn,
-         * dù Player có nhiều Collider.
-         */
         if (damagedAtLeastOneTarget &&
             bossAudio != null)
         {
-            bossAudio.PlayAttackImpact();
+            bossAudio
+                .PlayAttackImpact();
         }
     }
 
-    // =====================================================
-    // END / CANCEL
-    // =====================================================
-
-    /*
-     * Animation Event ở cuối cả Attack và Slam.
-     */
     public void EndAction()
     {
         if (!isActing)
@@ -679,7 +642,8 @@ public class MinotaurosBossAttack : MonoBehaviour
         AttackType finishedAttack =
             currentAttack;
 
-        isActing = false;
+        isActing =
+            false;
 
         currentAttack =
             AttackType.None;
@@ -704,14 +668,17 @@ public class MinotaurosBossAttack : MonoBehaviour
             health != null &&
             !health.IsDead)
         {
-            movement.CanMove = true;
+            movement.CanMove =
+                true;
+
             movement.ResumeAI();
         }
     }
 
     public void CancelAction()
     {
-        isActing = false;
+        isActing =
+            false;
 
         currentAttack =
             AttackType.None;
@@ -734,24 +701,23 @@ public class MinotaurosBossAttack : MonoBehaviour
             health != null &&
             !health.IsDead)
         {
-            movement.CanMove = true;
+            movement.CanMove =
+                true;
+
             movement.ResumeAI();
         }
     }
 
     private void OnDisable()
     {
-        isActing = false;
+        isActing =
+            false;
 
         currentAttack =
             AttackType.None;
 
         damagedTargets.Clear();
     }
-
-    // =====================================================
-    // GIZMOS
-    // =====================================================
 
     private void OnDrawGizmosSelected()
     {
@@ -773,17 +739,6 @@ public class MinotaurosBossAttack : MonoBehaviour
             transform.position,
             slamRadius
         );
-
-        if (slamSpawnPoint != null)
-        {
-            Gizmos.color =
-                Color.cyan;
-
-            Gizmos.DrawWireSphere(
-                slamSpawnPoint.position,
-                0.12f
-            );
-        }
     }
 
     private void OnValidate()

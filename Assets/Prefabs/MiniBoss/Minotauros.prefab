@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 1119731212610727648}
   - component: {fileID: 1833734004677283715}
   - component: {fileID: 5053601695734590141}
-  - component: {fileID: 1924879170677750698}
+  - component: {fileID: 7870712455405949039}
   - component: {fileID: 110121381701899407}
   - component: {fileID: 782547042346892807}
   - component: {fileID: 2404158346439798829}
@@ -350,7 +350,7 @@ MonoBehaviour:
   attackVoiceMinimumInterval: 0.15
   attackSwingMinimumInterval: 0.1
   hurtMinimumInterval: 0.05
---- !u!114 &1924879170677750698
+--- !u!114 &7870712455405949039
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -359,23 +359,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 3801741717163481563}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48ef9af40f4dbff45b8442b646460357, type: 3}
+  m_Script: {fileID: 11500000, guid: b035f92b474ab0b40ac61d76f3984c84, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnermyMovement
+  m_EditorClassIdentifier: Assembly-CSharp::BossMovement
   target: {fileID: 0}
   targetTags:
   - Player
   - Clone
   targetSearchInterval: 0.25
   player: {fileID: 0}
-  moveSpeed: 1.2
+  moveSpeed: 1.25
   detectRange: 4
-  attackRange: 1.3
+  attackRange: 1.75
   arrivalDistance: 0.15
-  roamRadius: 2
-  idleTime: 2
-  wanderImmediatelyOnStart: 1
-  knockbackDecay: 4
+  stayActivated: 1
+  cloneCanActivateBoss: 0
+  wanderWhenTargetLost: 1
+  roamRadius: 3.4
+  idleTime: 1.5
+  knockbackDecay: 12
   externalVelocity: {x: 0, y: 0}
   CanMove: 1
 --- !u!114 &110121381701899407
@@ -390,7 +392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd9be568552c264f8873b3603ec6049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinotaurosBossAttack
-  movement: {fileID: 1924879170677750698}
+  movement: {fileID: 0}
   health: {fileID: 1119731212610727648}
   animator: {fileID: 1082453944064282372}
   bossAudio: {fileID: 5053601695734590141}
@@ -399,13 +401,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4104
   normalDamage: 2
-  normalAttackRadius: 0.6
+  normalAttackRadius: 1
   normalAttackCooldown: 1.4
   slamDamage: 2
   slamUseRange: 7
-  slamRadius: 1.25
+  slamRadius: 1.4
   slamChance: 50
-  distantSlamChance: 60
+  distantSlamChance: 50
   slamCooldown: 6
   slamSpawnPoint: {fileID: 4367433013456410396}
   slamEffectPrefab: {fileID: 7766524700818477353, guid: 706d2a8103329a943b75c538f8e95e49, type: 3}
@@ -764,7 +766,7 @@ Transform:
   m_GameObject: {fileID: 5242840436015695687}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.15, y: -0.2, z: 0}
+  m_LocalPosition: {x: 0.65, y: -0.161, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

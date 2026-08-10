@@ -3673,7 +3673,7 @@ SortingGroup:
   m_GameObject: {fileID: 39743499}
   m_Enabled: 1
   m_SortingLayerID: 799678501
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: -1
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -3723,7 +3723,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 799678501
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -21017,7 +21017,7 @@ SortingGroup:
   m_GameObject: {fileID: 62737604}
   m_Enabled: 1
   m_SortingLayerID: -1376614893
-  m_SortingLayer: 6
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -21067,7 +21067,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1376614893
-  m_SortingLayer: 6
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -22441,7 +22441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b43ef852fc3f8da4fa218b021142d4cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
-  sceneMusic: {fileID: 8300000, guid: d2c45094fdd6f2f408f10f95e72f4e36, type: 3}
+  sceneMusic: {fileID: 8300000, guid: cb7ade8abfd8184429475a759cdeaa51, type: 3}
   stopMusic: 0
 --- !u!4 &199428717
 Transform:
@@ -25540,7 +25540,7 @@ SortingGroup:
   m_GameObject: {fileID: 824131926}
   m_Enabled: 1
   m_SortingLayerID: -95485913
-  m_SortingLayer: 5
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -25590,7 +25590,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -95485913
-  m_SortingLayer: 5
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -54237,7 +54237,7 @@ SortingGroup:
   m_GameObject: {fileID: 1335856555}
   m_Enabled: 1
   m_SortingLayerID: 1215820729
-  m_SortingLayer: 8
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -54287,7 +54287,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -95485913
-  m_SortingLayer: 5
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -58079,7 +58079,7 @@ SortingGroup:
   m_GameObject: {fileID: 1992073046}
   m_Enabled: 1
   m_SortingLayerID: -1088343419
-  m_SortingLayer: 7
+  m_SortingLayer: 9
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -58129,7 +58129,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1088343419
-  m_SortingLayer: 7
+  m_SortingLayer: 9
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}

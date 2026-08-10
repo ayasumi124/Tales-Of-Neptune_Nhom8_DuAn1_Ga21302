@@ -45,30 +45,42 @@ public class EnermyHealth : MonoBehaviour
     private float coinScatterRadius = 0.25f;
 
     [Header("Knockback")]
-    [Tooltip("Tốc độ đẩy ban đầu.")]
     [Min(0f)]
     [SerializeField]
     private float knockbackForce = 2.5f;
-    public float KnockbackForce => knockbackForce;
 
-    [Tooltip("Khoảng thời gian giữ lực đẩy.")]
+    public float KnockbackForce =>
+        knockbackForce;
+
     [Min(0f)]
     [SerializeField]
     private float knockbackTime = 0.08f;
 
+    [Header("Boss")]
+    [SerializeField]
+    private bool isBoss;
+
+    public bool IsBoss =>
+        isBoss;
+
     private Rigidbody2D rb;
     private Animator animator;
     private EnermyAudio enermyAudio;
+
     private EnermyMovement movement;
+    private BossMovement bossMovement;
+
     private EnermyItemDrop itemDrop;
 
     private EnermyAttack normalAttack;
     private EnermyAttackBase specialAttack;
     private MinotaurosBossAttack bossAttack;
-    public bool IsHurting { get; private set; }
-    [Header("Boss")]
-    [SerializeField]
-    private bool isBoss;
+
+    public bool IsHurting
+    {
+        get;
+        private set;
+    }
 
     private Coroutine hurtCoroutine;
     private Coroutine knockbackCoroutine;
@@ -79,19 +91,37 @@ public class EnermyHealth : MonoBehaviour
     private bool isDead;
     private bool rewardsGiven;
 
-    public bool IsDead => isDead;
+    public bool IsDead =>
+        isDead;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        enermyAudio = GetComponent<EnermyAudio>();
-        movement = GetComponent<EnermyMovement>();
-        itemDrop = GetComponent<EnermyItemDrop>();
+        rb =
+            GetComponent<Rigidbody2D>();
 
-        normalAttack = GetComponent<EnermyAttack>();
-        specialAttack = GetComponent<EnermyAttackBase>();
-        bossAttack = GetComponent<MinotaurosBossAttack>();
+        animator =
+            GetComponent<Animator>();
+
+        enermyAudio =
+            GetComponent<EnermyAudio>();
+
+        movement =
+            GetComponent<EnermyMovement>();
+
+        bossMovement =
+            GetComponent<BossMovement>();
+
+        itemDrop =
+            GetComponent<EnermyItemDrop>();
+
+        normalAttack =
+            GetComponent<EnermyAttack>();
+
+        specialAttack =
+            GetComponent<EnermyAttackBase>();
+
+        bossAttack =
+            GetComponent<MinotaurosBossAttack>();
     }
 
     private void Start()
@@ -116,143 +146,155 @@ public class EnermyHealth : MonoBehaviour
             return;
         }
 
-        hpTimer -= Time.deltaTime;
+        hpTimer -=
+            Time.deltaTime;
 
         if (hpTimer <= 0f)
         {
-            hpCanvas.enabled = false;
+            hpCanvas.enabled =
+                false;
         }
     }
 
     public void TakeDamage(
-    int damage,
-    Vector2 knockbackDirection,
-    float knockbackStrength,
-    bool physicalHit)
-{
-    if (isDead || damage <= 0)
-        return;
-
-    currentHealth -= damage;
-    currentHealth =
-        Mathf.Max(0, currentHealth);
-
-    Debug.Log(
-        $"{gameObject.name} HP: " +
-        $"{currentHealth}/{maxHealth}"
-    );
-
-    StartCoroutine(
-        ShowDamagePopup(damage)
-    );
-
-    ShowHP();
-
-    if (enermyAudio != null)
+        int damage,
+        Vector2 knockbackDirection,
+        float knockbackStrength,
+        bool physicalHit)
     {
-        if (physicalHit)
+        if (isDead ||
+            damage <= 0)
         {
-            enermyAudio.PlayPhysicalHurt();
+            return;
         }
-        else
+
+        currentHealth -= damage;
+
+        currentHealth =
+            Mathf.Max(
+                0,
+                currentHealth
+            );
+
+        Debug.Log(
+            $"{gameObject.name} HP: " +
+            $"{currentHealth}/{maxHealth}"
+        );
+
+        StartCoroutine(
+            ShowDamagePopup(
+                damage
+            )
+        );
+
+        ShowHP();
+
+        if (enermyAudio != null)
         {
-            enermyAudio.PlayHurt();
+            if (physicalHit)
+            {
+                enermyAudio
+                    .PlayPhysicalHurt();
+            }
+            else
+            {
+                enermyAudio
+                    .PlayHurt();
+            }
+        }
+
+        if (currentHealth <= 0)
+        {
+            Die();
+            return;
+        }
+
+        /*
+         * Boss không Hurt Lock
+         * và không Knockback.
+         */
+        if (isBoss)
+            return;
+
+        if (animator != null)
+        {
+            animator.ResetTrigger(
+                "Hurt"
+            );
+
+            animator.SetTrigger(
+                "Hurt"
+            );
+        }
+
+        StartHurt();
+
+        if (knockbackStrength > 0f)
+        {
+            ApplyKnockback(
+                knockbackDirection,
+                knockbackStrength
+            );
         }
     }
 
-    if (currentHealth <= 0)
+    public void TakeDamage(
+        int damage,
+        Vector2 knockbackDirection)
     {
-        Die();
-        return;
-    }
-
-    /*
-     * Boss chỉ mất máu và phát âm thanh,
-     * không bị Hurt Lock hay knockback.
-     */
-    if (isBoss)
-        return;
-
-    if (animator != null)
-    {
-        animator.ResetTrigger("Hurt");
-        animator.SetTrigger("Hurt");
-    }
-
-    StartHurt();
-
-    if (knockbackStrength > 0f)
-    {
-        ApplyKnockback(
+        TakeDamage(
+            damage,
             knockbackDirection,
-            knockbackStrength
+            0f,
+            false
         );
     }
-}
 
-    /*
-     * Dành cho FireBreath, Tornado và các skill
-     * truyền hướng nhưng dùng lực mặc định của enemy.
-     */
-    // Có hướng knockback
-public void TakeDamage(
-    int damage,
-    Vector2 knockbackDirection)
-{
-    TakeDamage(
-        damage,
-        knockbackDirection,
-        0f,
-        false
-    );
-}
+    public void TakeDamage(
+        int damage,
+        Vector2 knockbackDirection,
+        float knockbackStrength)
+    {
+        TakeDamage(
+            damage,
+            knockbackDirection,
+            knockbackStrength,
+            false
+        );
+    }
 
-// Có hướng + lực knockback
-public void TakeDamage(
-    int damage,
-    Vector2 knockbackDirection,
-    float knockbackStrength)
-{
-    TakeDamage(
-        damage,
-        knockbackDirection,
-        knockbackStrength,
-        false
-    );
-}
+    public void TakeDamageNoKnockback(
+        int damage)
+    {
+        TakeDamage(
+            damage,
+            Vector2.zero,
+            0f,
+            false
+        );
+    }
 
-// Không knockback
-public void TakeDamageNoKnockback(
-    int damage)
-{
-    TakeDamage(
-        damage,
-        Vector2.zero,
-        0f,
-        false
-    );
-}
+    public void TakeDamage(
+        int damage)
+    {
+        TakeDamage(
+            damage,
+            Vector2.zero,
+            0f,
+            false
+        );
+    }
 
-// Damage thường
-public void TakeDamage(
-    int damage)
-{
-    TakeDamage(
-        damage,
-        Vector2.zero,
-        0f,
-        false
-    );
-}
     private void ApplyKnockback(
-    Vector2 direction,
-    float strength)
+        Vector2 direction,
+        float strength)
     {
         if (isBoss)
             return;
 
         if (movement == null ||
-            direction.sqrMagnitude <= 0.001f ||
+            direction.sqrMagnitude <=
+            0.001f ||
             strength <= 0f)
         {
             return;
@@ -275,8 +317,8 @@ public void TakeDamage(
     }
 
     private IEnumerator KnockbackRoutine(
-    Vector2 direction,
-    float strength)
+        Vector2 direction,
+        float strength)
     {
         if (movement == null)
             yield break;
@@ -288,12 +330,13 @@ public void TakeDamage(
                 strength
             );
 
-        yield return new WaitForSeconds(
-            Mathf.Max(
-                0.01f,
-                knockbackTime
-            )
-        );
+        yield return
+            new WaitForSeconds(
+                Mathf.Max(
+                    0.01f,
+                    knockbackTime
+                )
+            );
 
         if (movement != null)
         {
@@ -301,7 +344,8 @@ public void TakeDamage(
                 Vector2.zero;
         }
 
-        knockbackCoroutine = null;
+        knockbackCoroutine =
+            null;
     }
 
     private void StartHurt()
@@ -322,48 +366,63 @@ public void TakeDamage(
     private IEnumerator HurtRoutine()
     {
         IsHurting = true;
+
         if (normalAttack != null)
         {
-            normalAttack.CancelAttack();
+            normalAttack
+                .CancelAttack();
         }
 
         if (specialAttack != null)
         {
-            specialAttack.CancelAttack();
+            specialAttack
+                .CancelAttack();
         }
 
         if (movement != null)
         {
-            movement.CanMove = false;
+            movement.CanMove =
+                false;
+
             movement.StopMove();
         }
 
-        yield return new WaitForSeconds(
-            Mathf.Max(
-                0.01f,
-                hurtLockTime
-            )
-        );
+        yield return
+            new WaitForSeconds(
+                Mathf.Max(
+                    0.01f,
+                    hurtLockTime
+                )
+            );
 
         if (isDead)
         {
-            hurtCoroutine = null;
+            hurtCoroutine =
+                null;
+
             yield break;
         }
 
         if (movement != null)
         {
-            movement.CanMove = true;
+            movement.CanMove =
+                true;
+
             movement.ResumeAI();
         }
 
-        hurtCoroutine = null;
-        IsHurting = false;
+        hurtCoroutine =
+            null;
+
+        IsHurting =
+            false;
     }
 
     public void EndHurt()
     {
-        IsHurting = false;
+        IsHurting =
+            false;
+
         if (isDead)
             return;
 
@@ -373,12 +432,15 @@ public void TakeDamage(
                 hurtCoroutine
             );
 
-            hurtCoroutine = null;
+            hurtCoroutine =
+                null;
         }
 
         if (movement != null)
         {
-            movement.CanMove = true;
+            movement.CanMove =
+                true;
+
             movement.ResumeAI();
         }
     }
@@ -390,11 +452,12 @@ public void TakeDamage(
 
         if (DamagePopupManager.Instance != null)
         {
-            DamagePopupManager.Instance.ShowDamage(
-                damage,
-                transform.position +
-                Vector3.up * 0.8f
-            );
+            DamagePopupManager.Instance
+                .ShowDamage(
+                    damage,
+                    transform.position +
+                    Vector3.up * 0.8f
+                );
         }
     }
 
@@ -403,7 +466,8 @@ public void TakeDamage(
         if (hpCanvas == null)
             return;
 
-        hpCanvas.enabled = true;
+        hpCanvas.enabled =
+            true;
 
         hpTimer =
             Mathf.Max(
@@ -414,22 +478,44 @@ public void TakeDamage(
 
     private void Die()
     {
-        IsHurting = false;
+        IsHurting =
+            false;
+
         if (isDead)
             return;
 
-        isDead = true;
-        currentHealth = 0;
+        isDead =
+            true;
+
+        currentHealth =
+            0;
 
         StopRunningCoroutines();
 
-        if (movement != null)
+        /*
+         * BossMovement ưu tiên trước.
+         */
+        if (bossMovement != null)
+        {
+            bossMovement.externalVelocity =
+                Vector2.zero;
+
+            bossMovement
+                .StopImmediately();
+
+            bossMovement.enabled =
+                false;
+        }
+        else if (movement != null)
         {
             movement.externalVelocity =
                 Vector2.zero;
 
-            movement.StopImmediately();
-            movement.enabled = false;
+            movement
+                .StopImmediately();
+
+            movement.enabled =
+                false;
         }
         else if (rb != null)
         {
@@ -442,41 +528,60 @@ public void TakeDamage(
 
         if (normalAttack != null)
         {
-            normalAttack.enabled = false;
+            normalAttack.enabled =
+                false;
         }
 
         if (specialAttack != null)
         {
-            specialAttack.enabled = false;
+            specialAttack.enabled =
+                false;
         }
+
         if (bossAttack != null)
         {
-            bossAttack.CancelAction();
-            bossAttack.enabled = false;
+            bossAttack
+                .CancelAction();
+
+            bossAttack.enabled =
+                false;
         }
 
         foreach (
             Collider2D col
-            in GetComponentsInChildren<Collider2D>())
+            in GetComponentsInChildren<
+                Collider2D
+            >())
         {
-            col.enabled = false;
+            col.enabled =
+                false;
         }
 
         if (hpCanvas != null)
         {
-            hpCanvas.enabled = false;
+            hpCanvas.enabled =
+                false;
         }
 
         if (enermyAudio != null)
         {
-            enermyAudio.PlayDeath();
+            enermyAudio
+                .PlayDeath();
         }
 
         if (animator != null)
         {
-            animator.ResetTrigger("Hurt");
-            animator.ResetTrigger("Death");
-            animator.SetTrigger("Death");
+            animator.ResetTrigger(
+                "Hurt"
+            );
+
+            animator.ResetTrigger(
+                "Death"
+            );
+
+            animator.SetTrigger(
+                "Death"
+            );
         }
 
         Debug.Log(
@@ -493,31 +598,44 @@ public void TakeDamage(
     {
         if (hurtCoroutine != null)
         {
-            StopCoroutine(hurtCoroutine);
-            hurtCoroutine = null;
+            StopCoroutine(
+                hurtCoroutine
+            );
+
+            hurtCoroutine =
+                null;
         }
 
         if (knockbackCoroutine != null)
         {
-            StopCoroutine(knockbackCoroutine);
-            knockbackCoroutine = null;
+            StopCoroutine(
+                knockbackCoroutine
+            );
+
+            knockbackCoroutine =
+                null;
         }
 
         if (destroyCoroutine != null)
         {
-            StopCoroutine(destroyCoroutine);
-            destroyCoroutine = null;
+            StopCoroutine(
+                destroyCoroutine
+            );
+
+            destroyCoroutine =
+                null;
         }
     }
 
     private IEnumerator DeathRoutine()
     {
-        yield return new WaitForSeconds(
-            Mathf.Max(
-                0f,
-                deathDelay
-            )
-        );
+        yield return
+            new WaitForSeconds(
+                Mathf.Max(
+                    0f,
+                    deathDelay
+                )
+            );
 
         CompleteDeath();
     }
@@ -535,10 +653,13 @@ public void TakeDamage(
                 destroyCoroutine
             );
 
-            destroyCoroutine = null;
+            destroyCoroutine =
+                null;
         }
 
-        Destroy(gameObject);
+        Destroy(
+            gameObject
+        );
     }
 
     private void GiveDeathRewards()
@@ -546,12 +667,9 @@ public void TakeDamage(
         if (rewardsGiven)
             return;
 
-        rewardsGiven = true;
+        rewardsGiven =
+            true;
 
-        /*
-         * EnermyItemDrop tự xử lý ItemData
-         * và phần thưởng riêng của nó.
-         */
         if (itemDrop != null)
         {
             itemDrop.DropItems();
@@ -572,8 +690,11 @@ public void TakeDamage(
             return;
         }
 
-        if (Random.value > dropRate)
+        if (Random.value >
+            dropRate)
+        {
             return;
+        }
 
         int minimum =
             Mathf.Max(
@@ -593,9 +714,10 @@ public void TakeDamage(
                 maximum + 1
             );
 
-        for (int i = 0;
-             i < amount;
-             i++)
+        for (
+            int i = 0;
+            i < amount;
+            i++)
         {
             Vector2 offset =
                 Random.insideUnitCircle *
@@ -611,13 +733,8 @@ public void TakeDamage(
                 Quaternion.identity
             );
         }
-
-        Debug.Log(
-            $"{name} rơi {amount} coin."
-        );
     }
 
-    // Animation Event ở cuối animation Death
     public void OnDeathFinished()
     {
         CompleteDeath();

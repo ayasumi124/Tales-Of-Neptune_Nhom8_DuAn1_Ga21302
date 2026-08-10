@@ -5,7 +5,8 @@ public class ChestReward : MonoBehaviour
     public enum RewardType
     {
         Coin,
-        Item
+        Item,
+        DungeonKey
     }
 
     [Header("Reward Type")]
@@ -13,12 +14,21 @@ public class ChestReward : MonoBehaviour
     private RewardType rewardType;
 
     [Header("Coin Reward")]
+    [SerializeField]
+    private Sprite coinIcon;
+
     [Min(1)]
     [SerializeField]
     private int coinAmount = 100;
 
+    [Header("Dungeon Key Reward")]
     [SerializeField]
-    private Sprite coinIcon;
+    private Sprite dungeonKeyIcon;
+
+    [Min(1)]
+    [SerializeField]
+    private int dungeonKeyAmount = 1;
+
 
     [Header("Item Reward")]
     [SerializeField]
@@ -33,10 +43,6 @@ public class ChestReward : MonoBehaviour
     public bool RewardClaimed =>
         rewardClaimed;
 
-    /*
-     * Không đặt tên GiveReward,
-     * tránh trùng với Animation Event của Chest.
-     */
     public bool ClaimReward()
     {
         if (rewardClaimed)
@@ -61,10 +67,17 @@ public class ChestReward : MonoBehaviour
                 success =
                     ClaimItemReward();
                 break;
+
+            case RewardType.DungeonKey:
+                success =
+                    ClaimDungeonKey();
+                break;
         }
 
         if (success)
+        {
             rewardClaimed = true;
+        }
 
         return success;
     }
@@ -95,12 +108,6 @@ public class ChestReward : MonoBehaviour
             RewardPopupUI.Instance.ShowCoin(
                 coinIcon,
                 amount
-            );
-        }
-        else
-        {
-            Debug.LogWarning(
-                "Không tìm thấy RewardPopupUI."
             );
         }
 
@@ -165,6 +172,43 @@ public class ChestReward : MonoBehaviour
                 quantity
             );
         }
+
+        Debug.Log(
+            $"Nhận {itemData.ItemName} x{quantity}."
+        );
+
+        return true;
+    }
+
+    private bool ClaimDungeonKey()
+    {
+        if (DungeonKeyManager.Instance == null)
+        {
+            Debug.LogError(
+                $"{name}: không tìm thấy DungeonKeyManager."
+            );
+
+            return false;
+        }
+
+        int amount =
+            Mathf.Max(
+                1,
+                dungeonKeyAmount
+            );
+
+        DungeonKeyManager.Instance.GiveKey(
+            amount
+        );
+
+        if (RewardPopupUI.Instance != null)
+        {
+            RewardPopupUI.Instance
+                .ShowDungeonKey(
+                    dungeonKeyIcon,
+                    amount
+                );
+        }
         else
         {
             Debug.LogWarning(
@@ -173,7 +217,7 @@ public class ChestReward : MonoBehaviour
         }
 
         Debug.Log(
-            $"Nhận {itemData.ItemName} x{quantity}."
+            $"Nhận Dungeon Key x{amount}."
         );
 
         return true;
@@ -201,6 +245,12 @@ public class ChestReward : MonoBehaviour
             Mathf.Max(
                 1,
                 itemQuantity
+            );
+
+        dungeonKeyAmount =
+            Mathf.Max(
+                1,
+                dungeonKeyAmount
             );
     }
 }
