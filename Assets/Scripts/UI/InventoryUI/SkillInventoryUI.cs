@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillInventoryUI : MonoBehaviour
 {
@@ -9,15 +11,75 @@ public class SkillInventoryUI : MonoBehaviour
         private set;
     }
 
+    // =====================================================
+    // PANEL
+    // =====================================================
+
     [Header("Panel")]
-    [SerializeField] private GameObject panel;
+    [SerializeField]
+    private GameObject panel;
+
+    // =====================================================
+    // CONTENT
+    // =====================================================
 
     [Header("Content")]
-    [SerializeField] private Transform content;
+    [SerializeField]
+    private Transform content;
 
-    [Header("Unified Button Prefab")]
     [SerializeField]
     private InventorySkillButton skillButtonPrefab;
+
+    // =====================================================
+    // LEFT PANEL
+    // =====================================================
+
+    [Header("Selected Skill Detail")]
+    [SerializeField]
+    private GameObject leftInventorySkill;
+
+    [SerializeField]
+    private Image selectedIcon;
+
+    [SerializeField]
+    private TextMeshProUGUI selectedNameText;
+
+    // =====================================================
+    // ABILITY ACTION
+    // =====================================================
+
+    [Header("Ability Actions")]
+    [SerializeField]
+    private GameObject abilityActions;
+
+    [SerializeField]
+    private Button slot3Button;
+
+    [SerializeField]
+    private Button slot4Button;
+
+    // =====================================================
+    // ELEMENT ACTION
+    // =====================================================
+
+    [Header("Element Actions")]
+    [SerializeField]
+    private GameObject elementActions;
+
+    [SerializeField]
+    private Button equipElementButton;
+
+    // =====================================================
+    // UNEQUIP
+    // =====================================================
+
+    [Header("Unequip")]
+    [SerializeField]
+    private Button unequipButton;
+
+    // =====================================================
+    // INPUT
+    // =====================================================
 
     [Header("Input")]
     [SerializeField]
@@ -27,6 +89,10 @@ public class SkillInventoryUI : MonoBehaviour
     [SerializeField]
     private bool pauseGameWhenOpen = true;
 
+    // =====================================================
+    // OWNED SKILLS
+    // =====================================================
+
     private readonly List<AbilityData>
         ownedAbilities =
             new List<AbilityData>();
@@ -35,53 +101,35 @@ public class SkillInventoryUI : MonoBehaviour
         ownedElements =
             new List<ElementData>();
 
-    private bool isOpen;
-    private float previousTimeScale = 1f;
+    // =====================================================
+    // RUNTIME
+    // =====================================================
 
-    public bool IsOpen => isOpen;
+    private bool isOpen;
+
+    private float previousTimeScale = 1f;
 
     private InventorySkillButton currentSelected;
 
-    public void SelectButton(
-        InventorySkillButton button)
-    {
-        if (button == null)
-            return;
+    public bool IsOpen =>
+        isOpen;
 
-        if (currentSelected != null &&
-            currentSelected != button)
-        {
-            currentSelected.SetSelected(false);
-        }
-
-        currentSelected = button;
-        currentSelected.SetSelected(true);
-    }
-    public void ClearSelection()
-    {
-        if (currentSelected == null)
-            return;
-
-        currentSelected.SetSelected(false);
-        currentSelected = null;
-    }
-
+    // =====================================================
+    // UNITY
+    // =====================================================
 
     private void Awake()
     {
         if (Instance != null &&
             Instance != this)
         {
-            Debug.LogWarning(
-                $"Xóa SkillInventoryUI trùng: " +
-                $"{gameObject.name}"
-            );
-
             Destroy(gameObject);
             return;
         }
 
         Instance = this;
+
+        SetupButtons();
     }
 
     private void Start()
@@ -99,25 +147,83 @@ public class SkillInventoryUI : MonoBehaviour
         if (panel == gameObject)
         {
             Debug.LogError(
-                "Panel không được là object chứa " +
-                "SkillInventoryUI.",
+                "Panel không được là object chứa SkillInventoryUI.",
                 this
             );
 
             return;
         }
 
+        ClearSelectedSkillPanel();
+
         isOpen = false;
+
         panel.SetActive(false);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(openKey))
+        if (Input.GetKeyDown(
+                openKey))
         {
             TogglePanel();
         }
     }
+
+    // =====================================================
+    // BUTTON LISTENERS
+    // =====================================================
+
+    private void SetupButtons()
+    {
+        if (slot3Button != null)
+        {
+            slot3Button.onClick.RemoveListener(
+                EquipSelectedSlot3
+            );
+
+            slot3Button.onClick.AddListener(
+                EquipSelectedSlot3
+            );
+        }
+
+        if (slot4Button != null)
+        {
+            slot4Button.onClick.RemoveListener(
+                EquipSelectedSlot4
+            );
+
+            slot4Button.onClick.AddListener(
+                EquipSelectedSlot4
+            );
+        }
+
+        if (equipElementButton != null)
+        {
+            equipElementButton.onClick.RemoveListener(
+                EquipSelectedElement
+            );
+
+            equipElementButton.onClick.AddListener(
+                EquipSelectedElement
+            );
+        }
+
+        if (unequipButton != null)
+        {
+            unequipButton.onClick.RemoveListener(
+                UnequipSelected
+            );
+
+            unequipButton.onClick.AddListener(
+                UnequipSelected
+            );
+        }
+    }
+
+    // =====================================================
+    // OPEN / CLOSE
+    // =====================================================
 
     public void TogglePanel()
     {
@@ -140,7 +246,10 @@ public class SkillInventoryUI : MonoBehaviour
             return;
 
         isOpen = true;
+
         panel.SetActive(true);
+
+        ClearSelection();
 
         RefreshButtons();
 
@@ -173,7 +282,9 @@ public class SkillInventoryUI : MonoBehaviour
             return;
 
         isOpen = false;
+
         ClearSelection();
+
         if (panel != null)
         {
             panel.SetActive(false);
@@ -194,8 +305,426 @@ public class SkillInventoryUI : MonoBehaviour
             AudioManager.Instance
                 .PlayInventoryClose();
         }
-
     }
+
+    // =====================================================
+    // SELECT
+    // =====================================================
+
+    public void SelectButton(
+        InventorySkillButton button)
+    {
+        if (button == null)
+            return;
+
+        if (currentSelected != null &&
+            currentSelected != button)
+        {
+            currentSelected.SetSelected(
+                false
+            );
+        }
+
+        currentSelected =
+            button;
+
+        currentSelected.SetSelected(
+            true
+        );
+
+        RefreshSelectedSkillPanel();
+    }
+
+    public void ClearSelection()
+    {
+        if (currentSelected != null)
+        {
+            currentSelected.SetSelected(
+                false
+            );
+        }
+
+        currentSelected = null;
+
+        ClearSelectedSkillPanel();
+    }
+
+    // =====================================================
+    // LEFT PANEL
+    // =====================================================
+
+    private void RefreshSelectedSkillPanel()
+    {
+        if (currentSelected == null)
+        {
+            ClearSelectedSkillPanel();
+            return;
+        }
+
+        AbilityData ability =
+            currentSelected.AbilityData;
+
+        ElementData element =
+            currentSelected.ElementData;
+
+        // =============================================
+        // ABILITY
+        // =============================================
+
+        if (ability != null)
+        {
+            if (leftInventorySkill != null)
+            {
+                leftInventorySkill.SetActive(
+                    true
+                );
+            }
+
+            if (selectedIcon != null)
+            {
+                selectedIcon.sprite =
+                    ability.icon;
+
+                selectedIcon.enabled =
+                    ability.icon != null;
+
+                selectedIcon.preserveAspect =
+                    true;
+            }
+
+            if (selectedNameText != null)
+            {
+                selectedNameText.text =
+                    ability.skillName;
+            }
+
+            if (abilityActions != null)
+            {
+                abilityActions.SetActive(
+                    true
+                );
+            }
+
+            if (elementActions != null)
+            {
+                elementActions.SetActive(
+                    false
+                );
+            }
+
+            RefreshUnequipButton();
+
+            return;
+        }
+
+        // =============================================
+        // ELEMENT
+        // =============================================
+
+        if (element != null)
+        {
+            if (leftInventorySkill != null)
+            {
+                leftInventorySkill.SetActive(
+                    true
+                );
+            }
+
+            if (selectedIcon != null)
+            {
+                selectedIcon.sprite =
+                    element.elementIcon;
+
+                selectedIcon.enabled =
+                    element.elementIcon != null;
+
+                selectedIcon.preserveAspect =
+                    true;
+            }
+
+            if (selectedNameText != null)
+            {
+                selectedNameText.text =
+                    element.elementName;
+            }
+
+            if (abilityActions != null)
+            {
+                abilityActions.SetActive(
+                    false
+                );
+            }
+
+            if (elementActions != null)
+            {
+                elementActions.SetActive(
+                    true
+                );
+            }
+
+            RefreshUnequipButton();
+
+            return;
+        }
+
+        ClearSelectedSkillPanel();
+    }
+
+    private void ClearSelectedSkillPanel()
+    {
+        if (selectedIcon != null)
+        {
+            selectedIcon.sprite = null;
+
+            selectedIcon.enabled = false;
+        }
+
+        if (selectedNameText != null)
+        {
+            selectedNameText.text = "";
+        }
+
+        if (abilityActions != null)
+        {
+            abilityActions.SetActive(
+                false
+            );
+        }
+
+        if (elementActions != null)
+        {
+            elementActions.SetActive(
+                false
+            );
+        }
+
+        if (unequipButton != null)
+        {
+            unequipButton.gameObject
+                .SetActive(
+                    false
+                );
+        }
+    }
+
+    // =====================================================
+    // EQUIP ABILITY
+    // =====================================================
+
+    public void EquipSelectedSlot3()
+    {
+        EquipSelectedAbility(
+            3
+        );
+    }
+
+    public void EquipSelectedSlot4()
+    {
+        EquipSelectedAbility(
+            4
+        );
+    }
+
+    private void EquipSelectedAbility(
+        int slot)
+    {
+        if (currentSelected == null)
+            return;
+
+        AbilityData ability =
+            currentSelected.AbilityData;
+
+        if (ability == null)
+            return;
+
+        if (EquipmentManager.Instance == null)
+        {
+            Debug.LogError(
+                "Không tìm thấy EquipmentManager."
+            );
+
+            return;
+        }
+
+        bool success =
+            EquipmentManager.Instance
+                .EquipSkill(
+                    ability,
+                    slot
+                );
+
+        if (!success)
+            return;
+
+        PlayEquipSound();
+
+        RefreshAllButtonStatus();
+
+        RefreshSelectedSkillPanel();
+    }
+
+    // =====================================================
+    // EQUIP ELEMENT
+    // =====================================================
+
+    public void EquipSelectedElement()
+    {
+        if (currentSelected == null)
+            return;
+
+        ElementData element =
+            currentSelected.ElementData;
+
+        if (element == null)
+            return;
+
+        if (ElementEquipmentManager.Instance ==
+            null)
+        {
+            Debug.LogError(
+                "Không tìm thấy ElementEquipmentManager."
+            );
+
+            return;
+        }
+
+        bool success =
+            ElementEquipmentManager.Instance
+                .EquipElementToSlot(
+                    element,
+                    5
+                );
+
+        if (!success)
+            return;
+
+        PlayEquipSound();
+
+        RefreshAllButtonStatus();
+
+        RefreshSelectedSkillPanel();
+    }
+
+    // =====================================================
+    // UNEQUIP
+    // =====================================================
+
+    public void UnequipSelected()
+    {
+        if (currentSelected == null)
+            return;
+
+        bool changed = false;
+
+        AbilityData ability =
+            currentSelected.AbilityData;
+
+        ElementData element =
+            currentSelected.ElementData;
+
+        // =============================================
+        // ABILITY
+        // =============================================
+
+        if (ability != null &&
+            EquipmentManager.Instance != null)
+        {
+            int slot =
+                EquipmentManager.Instance
+                    .GetEquippedSlot(
+                        ability
+                    );
+
+            if (slot >= 0)
+            {
+                EquipmentManager.Instance
+                    .UnequipSkill(
+                        slot
+                    );
+
+                changed = true;
+            }
+        }
+
+        // =============================================
+        // ELEMENT
+        // =============================================
+
+        else if (
+            element != null &&
+            ElementEquipmentManager.Instance != null)
+        {
+            if (ElementEquipmentManager.Instance
+                .IsElementEquipped(
+                    element))
+            {
+                ElementEquipmentManager.Instance
+                    .UnequipElement();
+
+                changed = true;
+            }
+        }
+
+        if (!changed)
+            return;
+
+        PlayEquipSound();
+
+        RefreshAllButtonStatus();
+
+        RefreshSelectedSkillPanel();
+    }
+
+    // =====================================================
+    // UNEQUIP BUTTON STATE
+    // =====================================================
+
+    private void RefreshUnequipButton()
+    {
+        if (unequipButton == null)
+            return;
+
+        bool equipped = false;
+
+        if (currentSelected != null)
+        {
+            AbilityData ability =
+                currentSelected.AbilityData;
+
+            ElementData element =
+                currentSelected.ElementData;
+
+            if (ability != null &&
+                EquipmentManager.Instance != null)
+            {
+                equipped =
+                    EquipmentManager.Instance
+                        .GetEquippedSlot(
+                            ability
+                        ) >= 0;
+            }
+            else if (
+                element != null &&
+                ElementEquipmentManager.Instance !=
+                null)
+            {
+                equipped =
+                    ElementEquipmentManager.Instance
+                        .IsElementEquipped(
+                            element
+                        );
+            }
+        }
+
+        unequipButton.gameObject
+            .SetActive(
+                equipped
+            );
+    }
+
+    // =====================================================
+    // OWNED ABILITY
+    // =====================================================
 
     public bool AddAbility(
         AbilityData data)
@@ -209,13 +738,15 @@ public class SkillInventoryUI : MonoBehaviour
             return false;
         }
 
-        if (!ownedAbilities.Contains(data))
+        if (!ownedAbilities.Contains(
+                data))
         {
-            ownedAbilities.Add(data);
+            ownedAbilities.Add(
+                data
+            );
 
             Debug.Log(
-                $"Đã thêm Ability: " +
-                $"{data.skillName}"
+                $"Đã thêm Ability: {data.skillName}"
             );
         }
 
@@ -230,8 +761,23 @@ public class SkillInventoryUI : MonoBehaviour
     public void AddSkill(
         AbilityData data)
     {
-        AddAbility(data);
+        AddAbility(
+            data
+        );
     }
+
+    public bool HasAbility(
+        AbilityData data)
+    {
+        return data != null &&
+               ownedAbilities.Contains(
+                   data
+               );
+    }
+
+    // =====================================================
+    // OWNED ELEMENT
+    // =====================================================
 
     public bool AddElement(
         ElementData data)
@@ -245,13 +791,15 @@ public class SkillInventoryUI : MonoBehaviour
             return false;
         }
 
-        if (!ownedElements.Contains(data))
+        if (!ownedElements.Contains(
+                data))
         {
-            ownedElements.Add(data);
+            ownedElements.Add(
+                data
+            );
 
             Debug.Log(
-                $"Đã thêm Element: " +
-                $"{data.elementName}"
+                $"Đã thêm Element: {data.elementName}"
             );
         }
 
@@ -263,19 +811,18 @@ public class SkillInventoryUI : MonoBehaviour
         return true;
     }
 
-    public bool HasAbility(
-        AbilityData data)
-    {
-        return data != null &&
-               ownedAbilities.Contains(data);
-    }
-
     public bool HasElement(
         ElementData data)
     {
         return data != null &&
-               ownedElements.Contains(data);
+               ownedElements.Contains(
+                   data
+               );
     }
+
+    // =====================================================
+    // REFRESH BUTTONS
+    // =====================================================
 
     public void RefreshButtons()
     {
@@ -291,19 +838,23 @@ public class SkillInventoryUI : MonoBehaviour
         if (skillButtonPrefab == null)
         {
             Debug.LogError(
-                "SkillInventoryUI chưa gán " +
-                "Skill Button Prefab."
+                "SkillInventoryUI chưa gán Skill Button Prefab."
             );
 
             return;
         }
 
         ClearSelection();
+
         ClearButtons();
 
-        foreach (AbilityData ability
-                 in ownedAbilities)
+        foreach (
+            AbilityData ability
+            in ownedAbilities)
         {
+            if (ability == null)
+                continue;
+
             InventorySkillButton button =
                 Instantiate(
                     skillButtonPrefab,
@@ -315,9 +866,13 @@ public class SkillInventoryUI : MonoBehaviour
             );
         }
 
-        foreach (ElementData element
-                 in ownedElements)
+        foreach (
+            ElementData element
+            in ownedElements)
         {
+            if (element == null)
+                continue;
+
             InventorySkillButton button =
                 Instantiate(
                     skillButtonPrefab,
@@ -346,6 +901,46 @@ public class SkillInventoryUI : MonoBehaviour
             );
         }
     }
+
+    private void RefreshAllButtonStatus()
+    {
+        if (content == null)
+            return;
+
+        InventorySkillButton[] buttons =
+            content.GetComponentsInChildren<
+                InventorySkillButton
+            >(
+                true
+            );
+
+        foreach (
+            InventorySkillButton button
+            in buttons)
+        {
+            if (button != null)
+            {
+                button.RefreshStatus();
+            }
+        }
+    }
+
+    // =====================================================
+    // AUDIO
+    // =====================================================
+
+    private void PlayEquipSound()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance
+                .PlayInventoryEquip();
+        }
+    }
+
+    // =====================================================
+    // PLAYER
+    // =====================================================
 
     private Players FindPlayer()
     {
@@ -388,6 +983,10 @@ public class SkillInventoryUI : MonoBehaviour
         player.UnlockControl();
     }
 
+    // =====================================================
+    // DISABLE / DESTROY
+    // =====================================================
+
     private void OnDisable()
     {
         if (isOpen &&
@@ -404,6 +1003,34 @@ public class SkillInventoryUI : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (slot3Button != null)
+        {
+            slot3Button.onClick.RemoveListener(
+                EquipSelectedSlot3
+            );
+        }
+
+        if (slot4Button != null)
+        {
+            slot4Button.onClick.RemoveListener(
+                EquipSelectedSlot4
+            );
+        }
+
+        if (equipElementButton != null)
+        {
+            equipElementButton.onClick.RemoveListener(
+                EquipSelectedElement
+            );
+        }
+
+        if (unequipButton != null)
+        {
+            unequipButton.onClick.RemoveListener(
+                UnequipSelected
+            );
+        }
+
         if (isOpen &&
             pauseGameWhenOpen)
         {
