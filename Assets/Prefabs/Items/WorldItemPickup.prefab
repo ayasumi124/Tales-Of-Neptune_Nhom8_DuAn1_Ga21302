@@ -185,7 +185,18 @@ MonoBehaviour:
   requireKey: 1
   pickupKey: 101
   keyIcon: {fileID: 6261665270628818563}
-  pickupSound: {fileID: 8300000, guid: 396d30257fa8f3a4c8ee7d35dc141cfb, type: 3}
+  scatterDistance: 0.8
+  jumpHeight: 0.8
+  jumpDuration: 0.45
+  rotateSpeed: 360
+  dropSound: {fileID: 8300000, guid: d591f3bd08a82514eaeb0174afa95d47, type: 3}
+  dropVolume: 1.5
+  pickupDelay: 0.35
+  lifeTime: 8
+  blinkTime: 2
+  blinkInterval: 0.15
+  spriteRenderer: {fileID: 0}
+  pickupCollider: {fileID: 0}
 --- !u!1 &6261665270628818563
 GameObject:
   m_ObjectHideFlags: 0
