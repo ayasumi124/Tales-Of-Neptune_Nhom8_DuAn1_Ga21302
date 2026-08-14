@@ -14,38 +14,65 @@ public class RewardPopupUI : MonoBehaviour
     private enum RewardPopupType
     {
         Coin,
-        Item
+        Item,
+        DungeonKey
     }
 
     [Header("Panel")]
-    [SerializeField] private GameObject rewardPanel;
-    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField]
+    private GameObject rewardPanel;
+
+    [SerializeField]
+    private CanvasGroup canvasGroup;
 
     [Header("Content")]
-    [SerializeField] private Image rewardIcon;
-    [SerializeField] private TextMeshProUGUI rewardNameText;
-    [SerializeField] private TextMeshProUGUI rewardQuantityText;
+    [SerializeField]
+    private Image rewardIcon;
+
+    [SerializeField]
+    private TextMeshProUGUI rewardNameText;
+
+    [SerializeField]
+    private TextMeshProUGUI rewardQuantityText;
 
     [Header("Animation")]
-    [SerializeField] private float displayDuration = 1.5f;
-    [SerializeField] private float fadeDuration = 0.25f;
+    [SerializeField]
+    private float displayDuration = 1.5f;
+
+    [SerializeField]
+    private float fadeDuration = 0.25f;
 
     [Header("Audio")]
     [Tooltip("Âm thanh phát khi popup vừa hiện.")]
-    [SerializeField] private AudioClip rewardAppearSound;
+    [SerializeField]
+    private AudioClip rewardAppearSound;
 
     [Range(0f, 3f)]
-    [SerializeField] private float rewardAppearVolume = 1f;
+    [SerializeField]
+    private float rewardAppearVolume = 1f;
 
     [Tooltip("Âm thanh phát khi popup Coin đóng.")]
-    [SerializeField] private AudioClip coinRewardCloseSound;
+    [SerializeField]
+    private AudioClip coinRewardCloseSound;
 
     [Range(0f, 3f)]
-    [SerializeField] private float coinRewardCloseVolume = 1f;
+    [SerializeField]
+    private float coinRewardCloseVolume = 1f;
+
+    [Tooltip(
+        "Âm thanh phát khi popup Dungeon Key đóng."
+    )]
+    [SerializeField]
+    private AudioClip dungeonKeyCloseSound;
+
+    [Range(0f, 3f)]
+    [SerializeField]
+    private float dungeonKeyCloseVolume = 1f;
 
     private Coroutine popupCoroutine;
 
     private RewardPopupType currentRewardType;
+
     private ItemData currentItemData;
 
     private void Awake()
@@ -98,6 +125,23 @@ public class RewardPopupUI : MonoBehaviour
         ShowReward(
             coinIcon,
             "Coin",
+            amount
+        );
+    }
+
+    public void ShowDungeonKey(
+        Sprite keyIcon,
+        int amount = 1)
+    {
+        currentRewardType =
+            RewardPopupType.DungeonKey;
+
+        currentItemData =
+            null;
+
+        ShowReward(
+            keyIcon,
+            "Dungeon Key",
             amount
         );
     }
@@ -243,6 +287,7 @@ public class RewardPopupUI : MonoBehaviour
         switch (currentRewardType)
         {
             case RewardPopupType.Coin:
+
                 if (coinRewardCloseSound != null)
                 {
                     AudioManager.Instance.PlaySFX(
@@ -250,9 +295,11 @@ public class RewardPopupUI : MonoBehaviour
                         coinRewardCloseVolume
                     );
                 }
+
                 break;
 
             case RewardPopupType.Item:
+
                 if (currentItemData != null &&
                     currentItemData.pickupSound != null)
                 {
@@ -261,6 +308,19 @@ public class RewardPopupUI : MonoBehaviour
                         currentItemData.pickupVolume
                     );
                 }
+
+                break;
+
+            case RewardPopupType.DungeonKey:
+
+                if (dungeonKeyCloseSound != null)
+                {
+                    AudioManager.Instance.PlaySFX(
+                        dungeonKeyCloseSound,
+                        dungeonKeyCloseVolume
+                    );
+                }
+
                 break;
         }
     }
@@ -291,6 +351,8 @@ public class RewardPopupUI : MonoBehaviour
     private void OnDestroy()
     {
         if (Instance == this)
+        {
             Instance = null;
+        }
     }
 }
