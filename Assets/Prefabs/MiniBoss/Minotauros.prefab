@@ -252,8 +252,8 @@ MonoBehaviour:
   hurtLockTime: 0.2
   coinPrefab: {fileID: 3873854246568973965, guid: d5ede196deea47948aa91e8ed9014ce4, type: 3}
   dropRate: 0.8
-  minCoinCount: 1
-  maxCoinCount: 1
+  minCoinCount: 10
+  maxCoinCount: 15
   coinScatterRadius: 0.25
   knockbackForce: 8
   knockbackTime: 0.1
