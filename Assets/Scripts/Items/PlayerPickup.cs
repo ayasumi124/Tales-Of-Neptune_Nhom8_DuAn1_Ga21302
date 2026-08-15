@@ -2,18 +2,28 @@ using UnityEngine;
 
 public class PlayerPickup : MonoBehaviour
 {
-    public CoinUI coinUI;
-
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(
+        Collider2D other)
     {
-        Coin coin = other.GetComponent<Coin>();
+        Coin coin =
+            other.GetComponent<Coin>();
 
         if (coin == null)
             return;
 
-        AudioManager.Instance.PlaySFX(AudioManager.Instance.coinPickupSound);
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.coinPickupSound
+            );
+        }
 
-        coinUI.AddCoin(coin.value);
+        if (CoinUI.Instance != null)
+        {
+            CoinUI.Instance.AddCoin(
+                coin.value
+            );
+        }
 
         Destroy(other.gameObject);
     }

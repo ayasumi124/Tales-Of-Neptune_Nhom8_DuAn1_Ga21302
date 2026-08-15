@@ -63,6 +63,13 @@ public class AudioManager : MonoBehaviour
     public AudioClip inventoryShortcutSound;  // Equip Shortcut
     public AudioClip inventoryDropSound;      // Drop item (sau này)
 
+    [Header("Shop")]
+    public AudioClip shopOpenSound;
+    public AudioClip shopCloseSound;
+    public AudioClip shopBuySound;
+    public AudioClip shopErrorSound;
+
+
     private void Awake()
     {
         if (Instance != null &&
@@ -128,6 +135,7 @@ public class AudioManager : MonoBehaviour
             elementSkillSource,
             false
         );
+
 
         if (musicSource != null)
             musicSource.volume = musicVolume;
@@ -245,15 +253,15 @@ public class AudioManager : MonoBehaviour
     }
 
     public void PlayItemSFX(AudioClip clip, float volume)
-{
-    if (clip == null)
-        return;
+    {
+        if (clip == null)
+            return;
 
-    sfxSource.PlayOneShot(
-        clip,
-        Mathf.Clamp01(volume * itemVolumeMultiplier)
-    );
-}
+        sfxSource.PlayOneShot(
+            clip,
+            Mathf.Clamp01(volume * itemVolumeMultiplier)
+        );
+    }
 
     public void PlayElementSkillLoop(
         AudioClip clip,
@@ -434,6 +442,31 @@ public class AudioManager : MonoBehaviour
         PlaySFX(inventoryDropSound);
     }
 
+    // =====================================================
+    // SHOP
+    // =====================================================
+
+    public void PlayShopOpen()
+    {
+        PlaySFX(shopOpenSound);
+    }
+
+    public void PlayShopClose()
+    {
+        PlaySFX(shopCloseSound);
+    }
+
+    public void PlayShopBuy()
+    {
+        PlaySFX(shopBuySound);
+    }
+
+    public void PlayShopError()
+    {
+        PlaySFX(shopErrorSound);
+    }
+
+    
     private IEnumerator ChangeMusicRoutine(
         AudioClip newClip)
     {

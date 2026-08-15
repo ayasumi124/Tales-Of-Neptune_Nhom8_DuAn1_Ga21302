@@ -384,7 +384,7 @@ MonoBehaviour:
   attackTrigger: Attack
   health: {fileID: 5040474951416642082}
   windupTime: 0.35
-  riseHeight: 0.7
+  riseHeight: 1
   riseSpeed: 4
   slamSpeed: 7
   landingDistance: 0.12
