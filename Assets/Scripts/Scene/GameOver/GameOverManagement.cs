@@ -192,6 +192,7 @@ public class GameOverManagement : MonoBehaviour
          *
          * Boss không thể detect Player ở vị trí chết.
          */
+        LoseQuarterCoin();
         SceneLoader.Instance
             .ReloadSavedScene();
 
@@ -205,6 +206,44 @@ public class GameOverManagement : MonoBehaviour
 
         Debug.Log(
             "Play Again: Player đang được respawn."
+        );
+    }
+
+    private void LoseQuarterCoin()
+    {
+        if (CoinUI.Instance == null)
+        {
+            Debug.LogWarning(
+                "Không tìm thấy CoinUI để trừ coin."
+            );
+
+            return;
+        }
+
+        int currentCoin =
+            CoinUI.Instance.Coin;
+
+        if (currentCoin <= 0)
+            return;
+
+        int lostCoin =
+            Mathf.CeilToInt(
+                currentCoin * 0.25f
+            );
+
+        int remainingCoin =
+            Mathf.Max(
+                0,
+                currentCoin - lostCoin
+            );
+
+        CoinUI.Instance.SetCoin(
+            remainingCoin
+        );
+
+        Debug.Log(
+            $"Play Again: mất {lostCoin} coin. " +
+            $"Còn lại {remainingCoin} coin."
         );
     }
 

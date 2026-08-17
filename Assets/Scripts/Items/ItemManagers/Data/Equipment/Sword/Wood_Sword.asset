@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf501a2375cd26a4882f627d760d76b8, type: 3}
+  m_Name: Wood_Sword
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: wood_sword
+  itemName: Wooden Sword
+  description: A very crisp sword. +10 atk
+  icon: {fileID: 29947836873805165, guid: f7cd6635894f0054e8035ef2a84a4d2a, type: 3}
+  itemType: 0
+  effectType: 0
+  equippable: 1
+  equipmentType: 0
+  attackBonus: 10
+  defenseBonus: 0
+  maxHealthBonus: 0
+  maxManaBonus: 0
+  stackable: 0
+  maxStack: 1
+  effectValue: 10
+  usable: 0
+  useDuration: 0.8
+  effectDelay: 0.4
+  useSound: {fileID: 0}
+  pickupSound: {fileID: 8300000, guid: 396d30257fa8f3a4c8ee7d35dc141cfb, type: 3}
+  pickupVolume: 3

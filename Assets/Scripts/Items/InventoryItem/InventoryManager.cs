@@ -55,6 +55,15 @@ public class InventoryManager : MonoBehaviour
 
     [SerializeField]
     private ItemData testHeartContainer;
+
+    [SerializeField]
+    private ItemData testWeapon;
+
+    [SerializeField]
+    private ItemData testHelmet;
+
+    [SerializeField]
+    private ItemData testArmor;
     [Header("Test Input")]
     [SerializeField] private bool enableTestInput = true;
 
@@ -101,55 +110,59 @@ public class InventoryManager : MonoBehaviour
             AddItem(testHealthPotion, 5);
             AddItem(testManaPotion, 5);
             AddItem(testHeartContainer, 1);
+
+            AddItem(testWeapon, 1);
+            AddItem(testHelmet, 1);
+            AddItem(testArmor, 1);
         }
     }
     private void Update()
-{
-    if (!enableTestInput)
-        return;
-
-    if (!Input.GetKeyDown(addTestItemKey))
-        return;
-
-    AddTestItems();
-}
-
-private void AddTestItems()
-{
-    int amount =
-        Mathf.Max(
-            1,
-            testAddAmount
-        );
-
-    if (testHealthPotion != null)
     {
-        AddItem(
-            testHealthPotion,
-            amount
-        );
+        if (!enableTestInput)
+            return;
+
+        if (!Input.GetKeyDown(addTestItemKey))
+            return;
+
+        AddTestItems();
     }
 
-    if (testManaPotion != null)
+    private void AddTestItems()
     {
-        AddItem(
-            testManaPotion,
-            amount
+        int amount =
+            Mathf.Max(
+                1,
+                testAddAmount
+            );
+
+        if (testHealthPotion != null)
+        {
+            AddItem(
+                testHealthPotion,
+                amount
+            );
+        }
+
+        if (testManaPotion != null)
+        {
+            AddItem(
+                testManaPotion,
+                amount
+            );
+        }
+
+        if (testHeartContainer != null)
+        {
+            AddItem(
+                testHeartContainer,
+                amount
+            );
+        }
+
+        Debug.Log(
+            $"Đã thêm item test x{amount}."
         );
     }
-
-    if (testHeartContainer != null)
-    {
-        AddItem(
-            testHeartContainer,
-            amount
-        );
-    }
-
-    Debug.Log(
-        $"Đã thêm item test x{amount}."
-    );
-}
 
     private void InitializeInventory()
     {

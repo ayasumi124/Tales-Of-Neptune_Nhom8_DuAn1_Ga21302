@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    // =====================================================
+    // HEALTH
+    // =====================================================
+
     [Header("Health")]
     [Min(1)]
     public int maxHealth = 8;
@@ -14,6 +18,10 @@ public class Health : MonoBehaviour
     public static event System.Action onMaxHealthChanged;
     public static event System.Action onPlayerDeath;
 
+    // =====================================================
+    // HURT
+    // =====================================================
+
     [Header("Hurt")]
     [Tooltip(
         "Thời gian Player đứng yên khi bị đánh. " +
@@ -23,12 +31,28 @@ public class Health : MonoBehaviour
     [SerializeField]
     private float hurtLockTime = 0.25f;
 
+    // =====================================================
+    // INVINCIBLE
+    // =====================================================
+
     [Header("Invincible")]
     [Tooltip(
         "Thời gian bất tử thêm sau khi kết thúc trạng thái Hurt."
     )]
     [Min(0f)]
     public float invincibleTime = 0.2f;
+
+    [Header("Fairy Revive")]
+    [Tooltip(
+        "Thời gian bất tử sau khi Fairy hồi sinh Player."
+    )]
+    [Min(0f)]
+    [SerializeField]
+    private float fairyReviveInvincibleTime = 1.5f;
+
+    // =====================================================
+    // COMPONENTS
+    // =====================================================
 
     private PlayerAudio audioPlayer;
     private Animator animator;
@@ -37,19 +61,37 @@ public class Health : MonoBehaviour
     private Attack attack;
     private PlayerDash dash;
 
+    private FairySkill fairySkill;
+
+    // =====================================================
+    // COROUTINES
+    // =====================================================
+
     private Coroutine hurtCoroutine;
+    private Coroutine reviveInvincibleCoroutine;
+
+    // =====================================================
+    // STATE
+    // =====================================================
 
     private bool isHurting;
     private bool isInvincible;
 
-    public bool IsHurting => isHurting;
-    public bool IsInvincible => isInvincible;
+    public bool IsHurting =>
+        isHurting;
+
+    public bool IsInvincible =>
+        isInvincible;
 
     public bool IsDead
     {
         get;
         private set;
     }
+
+    // =====================================================
+    // UNITY
+    // =====================================================
 
     private void Awake()
     {
@@ -66,16 +108,23 @@ public class Health : MonoBehaviour
             );
 
         /*
-         * Mỗi lần bắt đầu game, Player đầy máu.
+         * Bắt đầu game với full HP.
          */
-        currentHealth = maxHealth;
+        currentHealth =
+            maxHealth;
 
         IsDead = false;
         isHurting = false;
         isInvincible = false;
 
+        FindFairySkill();
+
         NotifyHealthChanged();
     }
+
+    // =====================================================
+    // CACHE
+    // =====================================================
 
     private void CacheComponents()
     {
@@ -116,16 +165,38 @@ public class Health : MonoBehaviour
         }
     }
 
-    public void SetInvincible(bool value)
+    private void FindFairySkill()
     {
-        isInvincible = value;
+        if (fairySkill != null)
+            return;
+
+        fairySkill =
+            FindFirstObjectByType<
+                FairySkill
+            >();
+    }
+
+    // =====================================================
+    // INVINCIBLE
+    // =====================================================
+
+    public void SetInvincible(
+        bool value)
+    {
+        isInvincible =
+            value;
 
         Debug.Log(
             $"Player Invincible = {value}"
         );
     }
 
-    public void TakeDamage(float amount)
+    // =====================================================
+    // TAKE DAMAGE
+    // =====================================================
+
+    public void TakeDamage(
+        float amount)
     {
         if (IsDead)
             return;
@@ -140,7 +211,7 @@ public class Health : MonoBehaviour
         }
 
         /*
-         * Không nhận damage trong lúc Dash.
+         * Không nhận damage khi Dash.
          */
         if (dash != null &&
             dash.IsDashing)
@@ -159,9 +230,15 @@ public class Health : MonoBehaviour
 
         hurtCoroutine =
             StartCoroutine(
-                HurtRoutine(amount)
+                HurtRoutine(
+                    amount
+                )
             );
     }
+
+    // =====================================================
+    // HURT
+    // =====================================================
 
     private IEnumerator HurtRoutine(
         float damage)
@@ -170,16 +247,22 @@ public class Health : MonoBehaviour
         isInvincible = true;
 
         CancelCurrentActions();
+
         LockPlayerForHurt();
 
         currentHealth =
             Mathf.Clamp(
-                currentHealth - damage,
+                currentHealth -
+                damage,
                 0f,
                 maxHealth
             );
 
         onPlayerDamaged?.Invoke();
+
+        // =================================================
+        // HURT ANIMATION
+        // =================================================
 
         if (animator != null)
         {
@@ -212,6 +295,10 @@ public class Health : MonoBehaviour
             );
         }
 
+        // =================================================
+        // AUDIO
+        // =================================================
+
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance
@@ -223,9 +310,10 @@ public class Health : MonoBehaviour
             audioPlayer.PlayHurt();
         }
 
-        /*
-         * Player đứng yên trong toàn bộ thời gian Hurt.
-         */
+        // =================================================
+        // HURT LOCK
+        // =================================================
+
         float hurtTimer =
             Mathf.Max(
                 0.01f,
@@ -242,22 +330,54 @@ public class Health : MonoBehaviour
             yield return null;
         }
 
+        // =================================================
+        // LETHAL DAMAGE
+        // =================================================
+
         if (currentHealth <= 0f)
         {
-            isHurting = false;
+            /*
+             * Coroutine này chuẩn bị kết thúc.
+             * Clear reference trước để ReviveFull()
+             * không cố Stop chính coroutine hiện tại.
+             */
             hurtCoroutine = null;
 
+            isHurting = false;
+
+            /*
+             * FAIRY REVIVE
+             *
+             * Nếu Player đang giữ Fairy Revive:
+             *
+             * - Consume buff.
+             * - Full HP.
+             * - Không Die().
+             * - Không Game Over.
+             */
+            if (TryFairyRevive())
+            {
+                yield break;
+            }
+
+            /*
+             * Không còn Fairy Revive.
+             */
             Die();
+
             yield break;
         }
+
+        // =================================================
+        // NORMAL HURT END
+        // =================================================
 
         isHurting = false;
 
         UnlockPlayerAfterHurt();
 
         /*
-         * Tiếp tục bất tử một khoảng ngắn
-         * sau khi Player được phép di chuyển lại.
+         * Tiếp tục bất tử một khoảng ngắn.
          */
         float invincibleTimer =
             Mathf.Max(
@@ -270,6 +390,7 @@ public class Health : MonoBehaviour
             if (IsDead)
             {
                 hurtCoroutine = null;
+
                 yield break;
             }
 
@@ -281,11 +402,301 @@ public class Health : MonoBehaviour
 
         if (!IsDead)
         {
-            isInvincible = false;
+            isInvincible =
+                false;
         }
 
         hurtCoroutine = null;
     }
+
+    // =====================================================
+    // FAIRY REVIVE
+    // =====================================================
+
+    private bool TryFairyRevive()
+    {
+        /*
+         * Health này là của Player,
+         * nhưng vẫn check Tag cho an toàn.
+         */
+        if (!CompareTag("Player"))
+            return false;
+
+        FindFairySkill();
+
+        if (fairySkill == null)
+        {
+            return false;
+        }
+
+        /*
+         * FairySkill sẽ:
+         *
+         * 1. Check hasReviveEffect.
+         * 2. Consume revive.
+         * 3. Gọi Health.ReviveFull().
+         */
+        bool revived =
+            fairySkill
+                .TryConsumeRevive();
+
+        if (!revived)
+        {
+            return false;
+        }
+
+        Debug.Log(
+            "Health: Fairy đã chặn Death."
+        );
+
+        return true;
+    }
+
+    // =====================================================
+    // REVIVE FULL
+    // =====================================================
+
+    public void ReviveFull()
+    {
+        CacheComponents();
+
+        /*
+         * Nếu đang có Hurt coroutine khác
+         * thì dừng lại.
+         */
+        if (hurtCoroutine != null)
+        {
+            StopCoroutine(
+                hurtCoroutine
+            );
+
+            hurtCoroutine = null;
+        }
+
+        if (reviveInvincibleCoroutine != null)
+        {
+            StopCoroutine(
+                reviveInvincibleCoroutine
+            );
+
+            reviveInvincibleCoroutine = null;
+        }
+
+        // =================================================
+        // HEALTH STATE
+        // =================================================
+
+        IsDead = false;
+
+        currentHealth =
+            maxHealth;
+
+        isHurting = false;
+
+        /*
+         * Bất tử ngay khi vừa revive.
+         */
+        isInvincible = true;
+
+        // =================================================
+        // PHYSICS
+        // =================================================
+
+        if (rb != null)
+        {
+            rb.constraints =
+                RigidbodyConstraints2D
+                    .FreezeRotation;
+
+            rb.linearVelocity =
+                Vector2.zero;
+
+            rb.angularVelocity =
+                0f;
+        }
+
+        // =================================================
+        // PLAYER MOVEMENT
+        // =================================================
+
+        if (players != null)
+        {
+            players.enabled = true;
+
+            players.StopAutoWalk();
+
+            /*
+             * Chỉ Unlock nếu không đang
+             * chuyển scene/UI khóa Player.
+             */
+            UnlockPlayerAfterRevive();
+        }
+
+        // =================================================
+        // ATTACK
+        // =================================================
+
+        if (attack != null)
+        {
+            attack.enabled = true;
+
+            attack.CancelAttack();
+        }
+
+        // =================================================
+        // DASH
+        // =================================================
+
+        if (dash != null)
+        {
+            dash.enabled = true;
+
+            dash.CancelDash();
+        }
+
+        // =================================================
+        // ANIMATOR
+        // =================================================
+
+        if (animator != null)
+        {
+            animator.speed = 1f;
+
+            animator.ResetTrigger(
+                "Death"
+            );
+
+            animator.ResetTrigger(
+                "Hurt"
+            );
+
+            animator.ResetTrigger(
+                "Attack"
+            );
+
+            animator.ResetTrigger(
+                "Dash"
+            );
+
+            animator.SetBool(
+                "IsMoving",
+                false
+            );
+
+            animator.SetBool(
+                "IsRunning",
+                false
+            );
+
+            /*
+             * Không Rebind ở đây.
+             *
+             * Fairy bắt Death trước khi
+             * animation Death thực sự chạy,
+             * nên không cần reset toàn Animator.
+             */
+        }
+
+        // =================================================
+        // UI
+        // =================================================
+
+        onPlayerHealed?.Invoke();
+
+        /*
+         * Một số Heart UI cũ có thể
+         * đang subscribe event Damage,
+         * nên gọi Notify để chắc chắn sync.
+         */
+        NotifyHealthChanged();
+
+        // =================================================
+        // INVINCIBILITY
+        // =================================================
+
+        reviveInvincibleCoroutine =
+            StartCoroutine(
+                FairyReviveInvincibilityRoutine()
+            );
+
+        Debug.Log(
+            $"FAIRY REVIVE! HP: " +
+            $"{currentHealth}/{maxHealth}"
+        );
+    }
+
+    private IEnumerator
+        FairyReviveInvincibilityRoutine()
+    {
+        isInvincible = true;
+
+        float timer =
+            Mathf.Max(
+                0f,
+                fairyReviveInvincibleTime
+            );
+
+        while (timer > 0f)
+        {
+            if (IsDead)
+            {
+                reviveInvincibleCoroutine =
+                    null;
+
+                yield break;
+            }
+
+            timer -=
+                Time.deltaTime;
+
+            yield return null;
+        }
+
+        if (!IsDead)
+        {
+            isInvincible =
+                false;
+        }
+
+        reviveInvincibleCoroutine =
+            null;
+    }
+
+    private void UnlockPlayerAfterRevive()
+    {
+        if (IsDead ||
+            players == null)
+        {
+            return;
+        }
+
+        /*
+         * Không Unlock trong lúc load scene.
+         */
+        bool sceneLoading =
+            SceneLoader.Instance != null &&
+            SceneLoader.Instance.IsLoading;
+
+        if (sceneLoading)
+            return;
+
+        /*
+         * Không Unlock nếu Skill Inventory
+         * đang mở.
+         */
+        bool skillInventoryOpen =
+            SkillInventoryUI.Instance != null &&
+            SkillInventoryUI.Instance.IsOpen;
+
+        if (skillInventoryOpen)
+            return;
+
+        players.UnlockControl();
+    }
+
+    // =====================================================
+    // CANCEL ACTION
+    // =====================================================
 
     private void CancelCurrentActions()
     {
@@ -306,11 +717,16 @@ public class Health : MonoBehaviour
         }
     }
 
+    // =====================================================
+    // HURT MOVEMENT
+    // =====================================================
+
     private void LockPlayerForHurt()
     {
         if (players != null)
         {
             players.StopAutoWalk();
+
             players.LockControl();
         }
 
@@ -338,7 +754,8 @@ public class Health : MonoBehaviour
         }
 
         /*
-         * Không mở điều khiển khi đang load scene.
+         * Không mở điều khiển
+         * khi đang load scene.
          */
         bool sceneLoading =
             SceneLoader.Instance != null &&
@@ -348,7 +765,8 @@ public class Health : MonoBehaviour
             return;
 
         /*
-         * Không mở điều khiển nếu Inventory đang mở.
+         * Không mở control nếu
+         * Skill Inventory đang mở.
          */
         bool inventoryOpen =
             SkillInventoryUI.Instance != null &&
@@ -360,10 +778,10 @@ public class Health : MonoBehaviour
         players.UnlockControl();
     }
 
-    /*
-     * Có thể đặt Animation Event này ở frame cuối clip Hurt.
-     * Không bắt buộc vì coroutine đã tự xử lý theo hurtLockTime.
-     */
+    // =====================================================
+    // ANIMATION EVENT - HURT
+    // =====================================================
+
     public void EndHurt()
     {
         if (IsDead ||
@@ -404,11 +822,17 @@ public class Health : MonoBehaviour
 
         if (!IsDead)
         {
-            isInvincible = false;
+            isInvincible =
+                false;
         }
     }
 
-    public bool Heal(float amount)
+    // =====================================================
+    // HEAL
+    // =====================================================
+
+    public bool Heal(
+        float amount)
     {
         if (IsDead)
             return false;
@@ -430,7 +854,8 @@ public class Health : MonoBehaviour
 
         currentHealth =
             Mathf.Clamp(
-                currentHealth + amount,
+                currentHealth +
+                amount,
                 0f,
                 maxHealth
             );
@@ -452,6 +877,10 @@ public class Health : MonoBehaviour
         return true;
     }
 
+    // =====================================================
+    // MAX HEALTH
+    // =====================================================
+
     public bool IncreaseMaxHealth(
         int amount,
         bool healToFull = true)
@@ -462,7 +891,8 @@ public class Health : MonoBehaviour
         int oldMaxHealth =
             maxHealth;
 
-        maxHealth += amount;
+        maxHealth +=
+            amount;
 
         if (maxHealth < 1)
         {
@@ -491,10 +921,12 @@ public class Health : MonoBehaviour
         Debug.Log(
             $"Max Health tăng từ " +
             $"{oldMaxHealth} lên {maxHealth}. " +
-            $"HP hiện tại: {currentHealth}/{maxHealth}"
+            $"HP hiện tại: " +
+            $"{currentHealth}/{maxHealth}"
         );
 
         onMaxHealthChanged?.Invoke();
+
         onPlayerHealed?.Invoke();
 
         return true;
@@ -511,13 +943,19 @@ public class Health : MonoBehaviour
         onPlayerDamaged?.Invoke();
     }
 
+    // =====================================================
+    // DEATH
+    // =====================================================
+
     private void Die()
     {
         if (IsDead)
             return;
 
         IsDead = true;
+
         isHurting = false;
+
         isInvincible = true;
 
         if (hurtCoroutine != null)
@@ -529,26 +967,59 @@ public class Health : MonoBehaviour
             hurtCoroutine = null;
         }
 
+        if (reviveInvincibleCoroutine != null)
+        {
+            StopCoroutine(
+                reviveInvincibleCoroutine
+            );
+
+            reviveInvincibleCoroutine =
+                null;
+        }
+
         CancelCurrentActions();
+
+        // =================================================
+        // DASH
+        // =================================================
 
         if (dash != null)
         {
             dash.CancelDash();
-            dash.enabled = false;
+
+            dash.enabled =
+                false;
         }
+
+        // =================================================
+        // ATTACK
+        // =================================================
 
         if (attack != null)
         {
             attack.CancelAttack();
-            attack.enabled = false;
+
+            attack.enabled =
+                false;
         }
+
+        // =================================================
+        // PLAYER
+        // =================================================
 
         if (players != null)
         {
             players.StopAutoWalk();
+
             players.LockControl();
-            players.enabled = false;
+
+            players.enabled =
+                false;
         }
+
+        // =================================================
+        // PHYSICS
+        // =================================================
 
         if (rb != null)
         {
@@ -562,6 +1033,10 @@ public class Health : MonoBehaviour
                 RigidbodyConstraints2D
                     .FreezeAll;
         }
+
+        // =================================================
+        // ANIMATOR
+        // =================================================
 
         if (animator != null)
         {
@@ -598,6 +1073,10 @@ public class Health : MonoBehaviour
             );
         }
 
+        // =================================================
+        // AUDIO
+        // =================================================
+
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance
@@ -609,6 +1088,10 @@ public class Health : MonoBehaviour
             audioPlayer.PlayDeath();
         }
     }
+
+    // =====================================================
+    // DEATH ANIMATION FINISHED
+    // =====================================================
 
     public void OnDeathAnimationFinished()
     {
@@ -638,6 +1121,10 @@ public class Health : MonoBehaviour
         );
     }
 
+    // =====================================================
+    // RESET HEALTH
+    // =====================================================
+
     public void ResetHealth()
     {
         StopAllCoroutines();
@@ -648,9 +1135,19 @@ public class Health : MonoBehaviour
             maxHealth;
 
         IsDead = false;
+
         isHurting = false;
+
         isInvincible = true;
+
         hurtCoroutine = null;
+
+        reviveInvincibleCoroutine =
+            null;
+
+        // =================================================
+        // PHYSICS
+        // =================================================
 
         if (rb != null)
         {
@@ -665,31 +1162,57 @@ public class Health : MonoBehaviour
                 0f;
         }
 
+        // =================================================
+        // PLAYER
+        // =================================================
+
         if (players != null)
         {
-            players.enabled = true;
+            players.enabled =
+                true;
+
             players.StopAutoWalk();
+
             players.UnlockControl();
         }
 
+        // =================================================
+        // ATTACK
+        // =================================================
+
         if (attack != null)
         {
-            attack.enabled = true;
+            attack.enabled =
+                true;
+
             attack.CancelAttack();
         }
 
+        // =================================================
+        // DASH
+        // =================================================
+
         if (dash != null)
         {
-            dash.enabled = true;
+            dash.enabled =
+                true;
+
             dash.CancelDash();
         }
+
+        // =================================================
+        // ANIMATOR
+        // =================================================
 
         if (animator != null)
         {
             animator.speed = 1f;
 
             animator.Rebind();
-            animator.Update(0f);
+
+            animator.Update(
+                0f
+            );
 
             animator.ResetTrigger(
                 "Death"
@@ -737,9 +1260,14 @@ public class Health : MonoBehaviour
 
         if (!IsDead)
         {
-            isInvincible = false;
+            isInvincible =
+                false;
         }
     }
+
+    // =====================================================
+    // DISABLE
+    // =====================================================
 
     private void OnDisable()
     {
@@ -752,8 +1280,22 @@ public class Health : MonoBehaviour
             hurtCoroutine = null;
         }
 
+        if (reviveInvincibleCoroutine != null)
+        {
+            StopCoroutine(
+                reviveInvincibleCoroutine
+            );
+
+            reviveInvincibleCoroutine =
+                null;
+        }
+
         KeepPlayerStopped();
     }
+
+    // =====================================================
+    // VALIDATE
+    // =====================================================
 
     private void OnValidate()
     {
@@ -780,6 +1322,12 @@ public class Health : MonoBehaviour
             Mathf.Max(
                 0f,
                 invincibleTime
+            );
+
+        fairyReviveInvincibleTime =
+            Mathf.Max(
+                0f,
+                fairyReviveInvincibleTime
             );
     }
 }
