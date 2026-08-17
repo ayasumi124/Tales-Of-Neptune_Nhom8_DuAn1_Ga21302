@@ -10,17 +10,35 @@ public class Attack : MonoBehaviour
     private Health health;
 
     private bool isAttacking;
-    public bool IsAttacking => isAttacking;
+
+    public bool IsAttacking =>
+        isAttacking;
+
+    // =====================================================
+    // HITBOX
+    // =====================================================
 
     [Header("Hitbox")]
     public Transform[] attackPoint;
     public LayerMask enermyLayer;
 
+    // =====================================================
+    // ATTACK
+    // =====================================================
+
     [Header("Attack")]
     public float attackRadius = 0.6f;
     public float attackDistance = 0.6f;
     public float attackCooldown = 0.35f;
+
+    [Tooltip(
+        "Damage mặc định nếu Combo Damage không hợp lệ."
+    )]
     public int damage = 20;
+
+    // =====================================================
+    // COMBO
+    // =====================================================
 
     [Header("Combo")]
     [SerializeField]
@@ -30,6 +48,10 @@ public class Attack : MonoBehaviour
 
     private bool queueNextAttack;
     private bool comboWindowOpen;
+
+    // =====================================================
+    // LUNGE
+    // =====================================================
 
     [Header("Lunge")]
     public float lungeForce = 2f;
@@ -41,6 +63,10 @@ public class Attack : MonoBehaviour
         5f,
         8f
     };
+
+    // =====================================================
+    // COMBO SPEED
+    // =====================================================
 
     [Header("Combo Speed")]
     public float[] comboCooldown =
@@ -57,6 +83,10 @@ public class Attack : MonoBehaviour
         2f
     };
 
+    // =====================================================
+    // COMBO DAMAGE
+    // =====================================================
+
     [Header("Combo Damage")]
     public int[] comboDamage =
     {
@@ -64,6 +94,10 @@ public class Attack : MonoBehaviour
         25,
         35
     };
+
+    // =====================================================
+    // COMBO KNOCKBACK
+    // =====================================================
 
     [Header("Combo Knockback")]
     public float[] comboKnockback =
@@ -75,19 +109,36 @@ public class Attack : MonoBehaviour
 
     public float comboFinishDelay = 0.45f;
 
+    // =====================================================
+    // ABILITY
+    // =====================================================
+
     [Header("Ability")]
     public AbilityData skillData;
     public SkillSlotUI slotUI;
 
     private Coroutine lungeCoroutine;
 
+    // =====================================================
+    // UNITY
+    // =====================================================
+
     private void Awake()
     {
-        animator = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody2D>();
-        player = GetComponent<Players>();
-        dash = GetComponent<PlayerDash>();
-        health = GetComponent<Health>();
+        animator =
+            GetComponent<Animator>();
+
+        rb =
+            GetComponent<Rigidbody2D>();
+
+        player =
+            GetComponent<Players>();
+
+        dash =
+            GetComponent<PlayerDash>();
+
+        health =
+            GetComponent<Health>();
     }
 
     private void Start()
@@ -95,7 +146,9 @@ public class Attack : MonoBehaviour
         if (slotUI != null &&
             skillData != null)
         {
-            slotUI.Setup(skillData);
+            slotUI.Setup(
+                skillData
+            );
         }
 
         isAttacking = false;
@@ -113,16 +166,19 @@ public class Attack : MonoBehaviour
             return;
         }
 
-        /*
-         * Không còn chặn Attack khi đang Dash.
-         */
-        if (!Input.GetKeyDown(KeyCode.J))
+        if (!Input.GetKeyDown(
+                KeyCode.J))
+        {
             return;
+        }
 
         if (!isAttacking)
         {
-            if (AbilityManager.Instance == null)
+            if (AbilityManager.Instance ==
+                null)
+            {
                 return;
+            }
 
             if (AbilityManager.Instance
                     .attack.cooldown > 0f)
@@ -138,6 +194,10 @@ public class Attack : MonoBehaviour
         }
     }
 
+    // =====================================================
+    // START ATTACK
+    // =====================================================
+
     private void StartAttack()
     {
         if (health != null &&
@@ -149,7 +209,6 @@ public class Attack : MonoBehaviour
 
         queueNextAttack = false;
         comboWindowOpen = false;
-
         isAttacking = true;
 
         int index =
@@ -176,12 +235,13 @@ public class Attack : MonoBehaviour
                 combo
             );
 
-            /*
-             * Attack animation được ưu tiên.
-             * Dash movement vẫn tiếp tục chạy.
-             */
-            animator.ResetTrigger("Attack");
-            animator.SetTrigger("Attack");
+            animator.ResetTrigger(
+                "Attack"
+            );
+
+            animator.SetTrigger(
+                "Attack"
+            );
         }
 
         float cooldown =
@@ -204,13 +264,18 @@ public class Attack : MonoBehaviour
 
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.attackSound
-            );
+            AudioManager.Instance
+                .PlaySFX(
+                    AudioManager.Instance
+                        .attackSound
+                );
         }
     }
 
-    // Animation Event
+    // =====================================================
+    // DAMAGE
+    // =====================================================
+
     public void DealDamage()
     {
         if (!isAttacking)
@@ -223,14 +288,10 @@ public class Attack : MonoBehaviour
                 maxCombo - 1
             );
 
-        /*
-         * Chỉ Lunge khi không Dash.
-         *
-         * Trong lúc Dash:
-         * - Attack vẫn gây damage.
-         * - Không chạy coroutine Lunge.
-         * - Dash tiếp tục giữ velocity.
-         */
+        // =============================================
+        // LUNGE
+        // =============================================
+
         if (dash == null ||
             !dash.IsDashing)
         {
@@ -262,6 +323,42 @@ public class Attack : MonoBehaviour
                 );
         }
 
+        // =============================================
+        // DAMAGE CƠ BẢN CỦA COMBO
+        // =============================================
+
+        float baseComboDamage =
+            GetArrayValue(
+                comboDamage,
+                currentCombo,
+                damage
+            );
+
+        // =============================================
+        // EQUIPMENT ATTACK BONUS
+        // =============================================
+
+        float equipmentAttackBonus =
+            0f;
+
+        if (PlayerEquipmentManager.Instance !=
+            null)
+        {
+            equipmentAttackBonus =
+                PlayerEquipmentManager.Instance
+                    .GetAttackBonus();
+        }
+
+        int finalDamage =
+    Mathf.RoundToInt(
+        baseComboDamage +
+        equipmentAttackBonus
+    );
+
+        // =============================================
+        // HITBOX
+        // =============================================
+
         foreach (Transform point
                  in attackPoint)
         {
@@ -275,7 +372,8 @@ public class Attack : MonoBehaviour
                     enermyLayer
                 );
 
-            foreach (Collider2D hit in hits)
+            foreach (Collider2D hit
+                     in hits)
             {
                 EnermyHealth enemyHealth =
                     hit.GetComponentInParent<
@@ -286,10 +384,11 @@ public class Attack : MonoBehaviour
                     continue;
 
                 Vector2 knockbackDirection =
-    (
-        enemyHealth.transform.position -
-        transform.position
-    ).normalized;
+                    (
+                        enemyHealth
+                            .transform.position -
+                        transform.position
+                    ).normalized;
 
                 float knockbackStrength =
                     GetArrayValue(
@@ -299,18 +398,18 @@ public class Attack : MonoBehaviour
                     );
 
                 enemyHealth.TakeDamage(
-    GetArrayValue(
-        comboDamage,
-        currentCombo,
-        damage
-    ),
-    knockbackDirection,
-    knockbackStrength,
-    true
-);
+                    finalDamage,
+                    knockbackDirection,
+                    knockbackStrength,
+                    true
+                );
             }
         }
     }
+
+    // =====================================================
+    // LUNGE
+    // =====================================================
 
     private IEnumerator Lunge(
         Vector2 direction,
@@ -329,10 +428,6 @@ public class Attack : MonoBehaviour
 
         while (timer > 0f)
         {
-            /*
-             * Nếu Dash bắt đầu giữa Lunge,
-             * dừng Lunge ngay và để Dash xử lý velocity.
-             */
             if (dash != null &&
                 dash.IsDashing)
             {
@@ -346,7 +441,8 @@ public class Attack : MonoBehaviour
                     direction * speed;
             }
 
-            timer -= Time.deltaTime;
+            timer -=
+                Time.deltaTime;
 
             yield return null;
         }
@@ -362,7 +458,10 @@ public class Attack : MonoBehaviour
         lungeCoroutine = null;
     }
 
-    // Animation Event cuối animation
+    // =====================================================
+    // END ATTACK
+    // =====================================================
+
     public void EndAttack()
     {
         if (!isAttacking)
@@ -371,13 +470,16 @@ public class Attack : MonoBehaviour
         isAttacking = false;
 
         if (animator != null)
+        {
             animator.speed = 1f;
+        }
 
         comboWindowOpen = false;
 
         if (queueNextAttack)
         {
             queueNextAttack = false;
+
             combo++;
 
             if (combo >= maxCombo)
@@ -401,9 +503,10 @@ public class Attack : MonoBehaviour
             StartAttack();
             return;
         }
+
         if (rb != null &&
-    (dash == null ||
-     !dash.IsDashing))
+            (dash == null ||
+             !dash.IsDashing))
         {
             rb.linearVelocity =
                 Vector2.zero;
@@ -412,11 +515,18 @@ public class Attack : MonoBehaviour
         combo = 0;
     }
 
+    // =====================================================
+    // CANCEL
+    // =====================================================
+
     public void CancelAttack()
     {
         isAttacking = false;
+
         combo = 0;
+
         queueNextAttack = false;
+
         comboWindowOpen = false;
 
         if (lungeCoroutine != null)
@@ -428,10 +538,6 @@ public class Attack : MonoBehaviour
             lungeCoroutine = null;
         }
 
-        /*
-         * Không được đặt velocity về 0
-         * nếu Player đang Dash.
-         */
         if (rb != null &&
             (dash == null ||
              !dash.IsDashing))
@@ -443,21 +549,71 @@ public class Attack : MonoBehaviour
         if (animator != null)
         {
             animator.speed = 1f;
-            animator.ResetTrigger("Attack");
-            animator.SetInteger("Combo", 0);
+
+            animator.ResetTrigger(
+                "Attack"
+            );
+
+            animator.SetInteger(
+                "Combo",
+                0
+            );
         }
     }
+
+    // =====================================================
+    // COMBO WINDOW
+    // =====================================================
 
     public void OpenComboWindow()
     {
         if (isAttacking)
+        {
             comboWindowOpen = true;
+        }
     }
 
     public void CloseComboWindow()
     {
         comboWindowOpen = false;
     }
+
+    // =====================================================
+    // GET FINAL DAMAGE
+    // =====================================================
+
+    public float GetCurrentAttackDamage()
+    {
+        int currentCombo =
+            Mathf.Clamp(
+                combo,
+                0,
+                maxCombo - 1
+            );
+
+        float baseComboDamage =
+            GetArrayValue(
+                comboDamage,
+                currentCombo,
+                damage
+            );
+
+        float bonus = 0f;
+
+        if (PlayerEquipmentManager.Instance !=
+            null)
+        {
+            bonus =
+                PlayerEquipmentManager.Instance
+                    .GetAttackBonus();
+        }
+
+        return baseComboDamage + bonus;
+    }
+
+    // =====================================================
+    // ARRAY HELPERS
+    // =====================================================
 
     private float GetArrayValue(
         float[] values,

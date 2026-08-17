@@ -9,9 +9,15 @@ public class Health : MonoBehaviour
 
     [Header("Health")]
     [Min(1)]
+    [SerializeField]
+    private int baseMaxHealth = 8;
+
     public int maxHealth = 8;
 
     public float currentHealth = 7f;
+
+    public int BaseMaxHealth =>
+        baseMaxHealth;
 
     public static event System.Action onPlayerDamaged;
     public static event System.Action onPlayerHealed;
@@ -110,6 +116,10 @@ public class Health : MonoBehaviour
         /*
          * Bắt đầu game với full HP.
          */
+        RefreshEquipmentStats(
+    false
+);
+
         currentHealth =
             maxHealth;
 
@@ -120,6 +130,53 @@ public class Health : MonoBehaviour
         FindFairySkill();
 
         NotifyHealthChanged();
+    }
+
+    public void RefreshEquipmentStats(
+    bool preserveHealth = true)
+    {
+        int oldMaxHealth =
+            maxHealth;
+
+        int equipmentBonus =
+            0;
+
+        if (PlayerEquipmentManager.Instance !=
+            null)
+        {
+            equipmentBonus =
+                PlayerEquipmentManager.Instance
+                    .GetMaxHealthBonus();
+        }
+
+        maxHealth =
+            Mathf.Max(
+                1,
+                baseMaxHealth +
+                equipmentBonus
+            );
+
+        if (preserveHealth)
+        {
+            currentHealth =
+                Mathf.Clamp(
+                    currentHealth,
+                    0f,
+                    maxHealth
+                );
+        }
+
+        if (oldMaxHealth != maxHealth)
+        {
+            Debug.Log(
+                $"Max HP: {oldMaxHealth} -> " +
+                $"{maxHealth} " +
+                $"(Base {baseMaxHealth} + " +
+                $"Equipment {equipmentBonus})"
+            );
+
+            onMaxHealthChanged?.Invoke();
+        }
     }
 
     // =====================================================
@@ -250,10 +307,15 @@ public class Health : MonoBehaviour
 
         LockPlayerForHurt();
 
+        float finalDamage =
+    CalculateFinalDamage(
+        damage
+    );
+
         currentHealth =
             Mathf.Clamp(
                 currentHealth -
-                damage,
+                finalDamage,
                 0f,
                 maxHealth
             );
@@ -407,6 +469,46 @@ public class Health : MonoBehaviour
         }
 
         hurtCoroutine = null;
+    }
+
+    private float CalculateFinalDamage(
+    float incomingDamage)
+    {
+        if (incomingDamage <= 0f)
+            return 0f;
+
+        float defense =
+            0f;
+
+        if (PlayerEquipmentManager.Instance !=
+            null)
+        {
+            defense =
+                PlayerEquipmentManager.Instance
+                    .GetDefenseBonus();
+        }
+
+        float finalDamage =
+            incomingDamage -
+            defense;
+
+        /*
+         * Đòn đánh trúng vẫn gây tối thiểu
+         * 0.5 HP.
+         */
+        finalDamage =
+            Mathf.Max(
+                0.5f,
+                finalDamage
+            );
+
+        Debug.Log(
+            $"Damage nhận: {incomingDamage} | " +
+            $"Defense: {defense} | " +
+            $"Damage thật: {finalDamage}"
+        );
+
+        return finalDamage;
     }
 
     // =====================================================
@@ -882,8 +984,8 @@ public class Health : MonoBehaviour
     // =====================================================
 
     public bool IncreaseMaxHealth(
-        int amount,
-        bool healToFull = true)
+    int amount,
+    bool healToFull = true)
     {
         if (amount <= 0)
             return false;
@@ -891,13 +993,12 @@ public class Health : MonoBehaviour
         int oldMaxHealth =
             maxHealth;
 
-        maxHealth +=
+        baseMaxHealth +=
             amount;
 
-        if (maxHealth < 1)
-        {
-            maxHealth = 1;
-        }
+        RefreshEquipmentStats(
+            false
+        );
 
         if (healToFull)
         {
@@ -906,27 +1007,26 @@ public class Health : MonoBehaviour
         }
         else
         {
-            currentHealth +=
+            int increasedAmount =
                 maxHealth -
                 oldMaxHealth;
 
             currentHealth =
                 Mathf.Clamp(
-                    currentHealth,
+                    currentHealth +
+                    increasedAmount,
                     0f,
                     maxHealth
                 );
         }
 
         Debug.Log(
-            $"Max Health tăng từ " +
-            $"{oldMaxHealth} lên {maxHealth}. " +
-            $"HP hiện tại: " +
-            $"{currentHealth}/{maxHealth}"
+            $"Base Max HP tăng {amount}. " +
+            $"Max HP hiện tại: " +
+            $"{maxHealth}"
         );
 
         onMaxHealthChanged?.Invoke();
-
         onPlayerHealed?.Invoke();
 
         return true;
@@ -1299,6 +1399,12 @@ public class Health : MonoBehaviour
 
     private void OnValidate()
     {
+        baseMaxHealth =
+            Mathf.Max(
+                1,
+                baseMaxHealth
+            );
+
         maxHealth =
             Mathf.Max(
                 1,
@@ -1329,5 +1435,22 @@ public class Health : MonoBehaviour
                 0f,
                 fairyReviveInvincibleTime
             );
+    }
+
+    private void OnEnable()
+    {
+        PlayerEquipmentManager.OnEquipmentChanged +=
+            OnEquipmentChanged;
+    }
+
+    private void OnDestroy()
+    {
+        PlayerEquipmentManager.OnEquipmentChanged -=
+            OnEquipmentChanged;
+    }
+
+    private void OnEquipmentChanged()
+    {
+        RefreshEquipmentStats(true);
     }
 }

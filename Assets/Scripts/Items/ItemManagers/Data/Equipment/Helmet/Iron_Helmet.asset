@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf501a2375cd26a4882f627d760d76b8, type: 3}
+  m_Name: Iron_Helmet
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Iron_helmet
+  itemName: Iron Helmet
+  description: A tough helmet. +5 def, +3 hp
+  icon: {fileID: -1128947775675819744, guid: a1d6155219c63044c8ca3d87efc9acb9, type: 3}
+  itemType: 0
+  effectType: 0
+  equippable: 1
+  equipmentType: 1
+  attackBonus: 0
+  defenseBonus: 5
+  maxHealthBonus: 3
+  maxManaBonus: 0
+  stackable: 0
+  maxStack: 1
+  effectValue: 10
+  usable: 0
+  useDuration: 0.8
+  effectDelay: 0.4
+  useSound: {fileID: 0}
+  pickupSound: {fileID: 8300000, guid: 396d30257fa8f3a4c8ee7d35dc141cfb, type: 3}
+  pickupVolume: 3

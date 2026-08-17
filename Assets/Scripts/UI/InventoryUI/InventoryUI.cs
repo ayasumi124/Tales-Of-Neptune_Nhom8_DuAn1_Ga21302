@@ -722,16 +722,14 @@ public class InventoryUI : MonoBehaviour
 
     private void HandleEquipmentChanged()
     {
-        RefreshEquipmentUI();
-
         /*
-         * Nếu Inventory đang mở và đang chọn
-         * item thì cập nhật luôn EQUIP / UNEQUIP.
+         * Refresh toàn Inventory để:
+         *
+         * - chữ E trong InventorySlotUI cập nhật
+         * - EquipmentIcon bên trái cập nhật
+         * - nút Equip/Unequip cập nhật
          */
-        if (isOpen)
-        {
-            RefreshSelectedItem();
-        }
+        Refresh();
     }
 
     // =====================================================
@@ -1183,111 +1181,111 @@ public class InventoryUI : MonoBehaviour
     // =====================================================
 
     private void RefreshEquipmentUI()
-{
-    if (PlayerEquipmentManager.Instance == null)
     {
+        if (PlayerEquipmentManager.Instance == null)
+        {
+            SetEquipmentSlot(
+                weaponEquipmentIcon,
+                weaponTypeIcon,
+                null
+            );
+
+            SetEquipmentSlot(
+                helmetEquipmentIcon,
+                helmetTypeIcon,
+                null
+            );
+
+            SetEquipmentSlot(
+                armorEquipmentIcon,
+                armorTypeIcon,
+                null
+            );
+
+            return;
+        }
+
         SetEquipmentSlot(
             weaponEquipmentIcon,
             weaponTypeIcon,
-            null
+            PlayerEquipmentManager.Instance
+                .EquippedWeapon
         );
 
         SetEquipmentSlot(
             helmetEquipmentIcon,
             helmetTypeIcon,
-            null
+            PlayerEquipmentManager.Instance
+                .EquippedHelmet
         );
 
         SetEquipmentSlot(
             armorEquipmentIcon,
             armorTypeIcon,
-            null
-        );
-
-        return;
-    }
-
-    SetEquipmentSlot(
-        weaponEquipmentIcon,
-        weaponTypeIcon,
-        PlayerEquipmentManager.Instance
-            .EquippedWeapon
-    );
-
-    SetEquipmentSlot(
-        helmetEquipmentIcon,
-        helmetTypeIcon,
-        PlayerEquipmentManager.Instance
-            .EquippedHelmet
-    );
-
-    SetEquipmentSlot(
-        armorEquipmentIcon,
-        armorTypeIcon,
-        PlayerEquipmentManager.Instance
-            .EquippedArmor
-    );
-}
-
-private void SetEquipmentSlot(
-    Image equipmentIcon,
-    GameObject typeIcon,
-    ItemData item)
-{
-    bool equipped =
-        item != null &&
-        item.Icon != null;
-
-    // =========================
-    // TYPE ICON
-    // =========================
-
-    if (typeIcon != null)
-    {
-        typeIcon.SetActive(
-            !equipped
+            PlayerEquipmentManager.Instance
+                .EquippedArmor
         );
     }
 
-    // =========================
-    // EQUIPMENT ICON
-    // =========================
-
-    if (equipmentIcon == null)
-        return;
-
-    if (!equipped)
+    private void SetEquipmentSlot(
+        Image equipmentIcon,
+        GameObject typeIcon,
+        ItemData item)
     {
-        equipmentIcon.sprite = null;
+        bool equipped =
+            item != null &&
+            item.Icon != null;
 
-        equipmentIcon.enabled = false;
+        // =========================
+        // TYPE ICON
+        // =========================
+
+        if (typeIcon != null)
+        {
+            typeIcon.SetActive(
+                !equipped
+            );
+        }
+
+        // =========================
+        // EQUIPMENT ICON
+        // =========================
+
+        if (equipmentIcon == null)
+            return;
+
+        if (!equipped)
+        {
+            equipmentIcon.sprite = null;
+
+            equipmentIcon.enabled = false;
+
+            equipmentIcon.gameObject
+                .SetActive(false);
+
+            return;
+        }
 
         equipmentIcon.gameObject
-            .SetActive(false);
+            .SetActive(true);
 
-        return;
+        equipmentIcon.sprite =
+            item.Icon;
+
+        equipmentIcon.enabled =
+            true;
+
+        equipmentIcon.preserveAspect =
+            true;
+
+        Color color =
+            equipmentIcon.color;
+
+        color.a = 1f;
+
+        equipmentIcon.color =
+            color;
     }
-
-    equipmentIcon.gameObject
-        .SetActive(true);
-
-    equipmentIcon.sprite =
-        item.Icon;
-
-    equipmentIcon.enabled =
-        true;
-
-    equipmentIcon.preserveAspect =
-        true;
-
-    Color color =
-        equipmentIcon.color;
-
-    color.a = 1f;
-
-    equipmentIcon.color =
-        color;
-}
 
     private void SetEquipmentIcon(
         Image image,
