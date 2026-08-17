@@ -129,11 +129,20 @@ public class ChestReward : MonoBehaviour
             return false;
         }
 
-        int quantity =
-            Mathf.Max(
-                1,
-                itemQuantity
-            );
+        int quantity;
+
+        if (itemData.Equippable)
+        {
+            quantity = 1;
+        }
+        else
+        {
+            quantity =
+                Mathf.Max(
+                    1,
+                    itemQuantity
+                );
+        }
 
         if (InventoryManager.Instance == null)
         {

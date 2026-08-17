@@ -16,6 +16,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioSource elementSkillSource;
 
+    [SerializeField] private AudioSource weatherSource;
+
     public AudioSource SFXSource => sfxSource;
 
     [Header("Volume")]
@@ -136,6 +138,10 @@ public class AudioManager : MonoBehaviour
             false
         );
 
+        SetupSource(
+            weatherSource,
+             true
+);  
 
         if (musicSource != null)
             musicSource.volume = musicVolume;
@@ -347,6 +353,49 @@ public class AudioManager : MonoBehaviour
     }
 
     // =====================================================
+    // WEATHER
+    // =====================================================
+
+    public void PlayWeather(
+        AudioClip clip,
+        float volume = 0.5f)
+    {
+        if (weatherSource == null)
+            return;
+
+        if (clip == null)
+        {
+            StopWeather();
+            return;
+        }
+
+        // Đang phát đúng weather này rồi
+        if (weatherSource.clip == clip &&
+            weatherSource.isPlaying)
+        {
+            return;
+        }
+
+        weatherSource.Stop();
+
+        weatherSource.clip = clip;
+        weatherSource.loop = true;
+        weatherSource.volume =
+            Mathf.Clamp01(volume);
+
+        weatherSource.Play();
+    }
+
+    public void StopWeather()
+    {
+        if (weatherSource == null)
+            return;
+
+        weatherSource.Stop();
+        weatherSource.clip = null;
+    }
+
+    // =====================================================
     // MUSIC
     // =====================================================
 
@@ -466,7 +515,7 @@ public class AudioManager : MonoBehaviour
         PlaySFX(shopErrorSound);
     }
 
-    
+
     private IEnumerator ChangeMusicRoutine(
         AudioClip newClip)
     {
