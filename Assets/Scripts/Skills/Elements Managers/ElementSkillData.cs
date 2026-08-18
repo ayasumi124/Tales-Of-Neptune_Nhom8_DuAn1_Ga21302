@@ -25,13 +25,54 @@ public class ElementSkillData : ScriptableObject
     [Min(0)]
     public int requiredMastery;
 
-    [Header("Skill Settings")]
-    public float manaCost;
-    [Tooltip("Thời gian hiệu ứng chính tồn tại.")]
-    public float duration;
+    [Header("Cost")]
+    [Min(0f)]
+    public float manaCost = 10f;
 
-    public float cooldown;
+    [Header("Time")]
+    [Tooltip(
+        "Thời gian hiệu ứng chính tồn tại."
+    )]
+    [Min(0f)]
+    public float duration = 1f;
+
+    [Min(0f)]
+    public float cooldown = 5f;
 
     [HideInInspector]
     public bool unlocked;
+
+    private void OnValidate()
+    {
+        skillIndex =
+            Mathf.Clamp(
+                skillIndex,
+                1,
+                4
+            );
+
+        manaCost =
+            Mathf.Max(
+                0f,
+                manaCost
+            );
+
+        duration =
+            Mathf.Max(
+                0f,
+                duration
+            );
+
+        cooldown =
+            Mathf.Max(
+                0f,
+                cooldown
+            );
+
+        requiredMastery =
+            Mathf.Max(
+                0,
+                requiredMastery
+            );
+    }
 }

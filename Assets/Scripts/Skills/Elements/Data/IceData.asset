@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ElementData
   elementType: 2
   elementName: Ice
-  description: 
+  description: 'Master the power of ice to slow
+
+    and freeze enemies.'
   elementIcon: {fileID: 5973373908962925164, guid: 6478f7e110f32784b9e5ee476fa1c8b8, type: 3}
   maxMastery: 100
   skills:

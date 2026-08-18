@@ -210,23 +210,27 @@ public class ElementSkillBarUI : MonoBehaviour
         );
 
         switch (currentElement.elementType)
-        {
-            case ElementType.Fire:
-                CastFireSkill(skill);
-                break;
+{
+    case ElementType.Fire:
 
-            case ElementType.Ice:
-                Debug.Log(
-                    "Ice Skill Controller chưa được tạo."
-                );
-                break;
+        CastFireSkill(skill);
 
-            case ElementType.Thunder:
-                Debug.Log(
-                    "Thunder Skill Controller chưa được tạo."
-                );
-                break;
-        }
+        break;
+
+    case ElementType.Ice:
+
+        CastIceSkill(skill);
+
+        break;
+
+    case ElementType.Thunder:
+
+        Debug.Log(
+            "Thunder Skill Controller chưa được tạo."
+        );
+
+        break;
+}
     }
 
     private void CastFireSkill(
@@ -252,6 +256,46 @@ public class ElementSkillBarUI : MonoBehaviour
          */
         controller.TryCast(skill);
     }
+
+    private void CastIceSkill(
+    ElementSkillData skill)
+{
+    IceSkillController controller =
+        FindIceController();
+
+    if (controller == null)
+    {
+        Debug.LogError(
+            "Không tìm thấy IceSkillController trên Player."
+        );
+
+        return;
+    }
+
+    controller.TryCast(skill);
+}
+
+private IceSkillController FindIceController()
+{
+    if (GameManager.Instance != null &&
+        GameManager.Instance.Player != null)
+    {
+        IceSkillController controller =
+            GameManager.Instance.Player
+                .GetComponent<
+                    IceSkillController
+                >();
+
+        if (controller != null)
+        {
+            return controller;
+        }
+    }
+
+    return FindFirstObjectByType<
+        IceSkillController
+    >();
+}
 
     private FireSkillController FindFireController()
     {
