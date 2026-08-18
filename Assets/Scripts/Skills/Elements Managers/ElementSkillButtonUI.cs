@@ -19,6 +19,7 @@ public class ElementSkillButtonUI : MonoBehaviour
     private int skillIndex;
 
     private FireSkillController fireController;
+    private IceSkillController iceController;
 
     private void Update()
     {
@@ -56,17 +57,27 @@ public class ElementSkillButtonUI : MonoBehaviour
 
     private void FindController()
     {
-        if (fireController != null)
-            return;
-
         if (GameManager.Instance != null &&
             GameManager.Instance.Player != null)
         {
-            fireController =
-                GameManager.Instance.Player
-                    .GetComponent<
+            GameObject player =
+                GameManager.Instance.Player;
+
+            if (fireController == null)
+            {
+                fireController =
+                    player.GetComponent<
                         FireSkillController
                     >();
+            }
+
+            if (iceController == null)
+            {
+                iceController =
+                    player.GetComponent<
+                        IceSkillController
+                    >();
+            }
         }
 
         if (fireController == null)
@@ -76,95 +87,134 @@ public class ElementSkillButtonUI : MonoBehaviour
                     FireSkillController
                 >();
         }
+
+        if (iceController == null)
+        {
+            iceController =
+                FindFirstObjectByType<
+                    IceSkillController
+                >();
+        }
     }
 
     private void UpdateMasks()
+{
+    if (skillData == null)
     {
-        if (skillData == null)
-        {
-            HideMasks();
-            return;
-        }
-
-        if (skillData.elementType !=
-            ElementType.Fire)
-        {
-            HideMasks();
-            return;
-        }
-
-        if (fireController == null)
-            FindController();
-
-        if (fireController == null)
-        {
-            HideMasks();
-            return;
-        }
-
-        float duration =
-            fireController.GetDurationNormalized(
-                skillData
-            );
-
-        float cooldown =
-            fireController.GetCooldownNormalized(
-                skillData
-            );
-
-        // DurationMask hoạt động độc lập.
-        if (durationMask != null)
-        {
-            bool showDuration =
-                duration > 0f;
-
-            durationMask.gameObject.SetActive(
-                showDuration
-            );
-
-            durationMask.fillAmount =
-                showDuration
-                    ? duration
-                    : 0f;
-        }
-
-        // CooldownMask cũng hoạt động độc lập.
-        if (cooldownMask != null)
-        {
-            bool showCooldown =
-                cooldown > 0f;
-
-            cooldownMask.gameObject.SetActive(
-                showCooldown
-            );
-
-            cooldownMask.fillAmount =
-                showCooldown
-                    ? cooldown
-                    : 0f;
-        }
-
-        if (cooldownText != null)
-        {
-            if (cooldown > 0f)
-            {
-                float remaining =
-                    fireController
-                        .GetRemainingCooldown(
-                            skillData
-                        );
-
-                cooldownText.text =
-                    Mathf.CeilToInt(
-                        remaining
-                    ).ToString();
-            }
-            else
-            {
-                cooldownText.text = "";
-            }
-        }
+        HideMasks();
+        return;
     }
+
+    FindController();
+
+    float duration = 0f;
+    float cooldown = 0f;
+    float remainingCooldown = 0f;
+
+    switch (skillData.elementType)
+    {
+        case ElementType.Fire:
+
+            if (fireController == null)
+            {
+                HideMasks();
+                return;
+            }
+
+            duration =
+                fireController
+                    .GetDurationNormalized(
+                        skillData
+                    );
+
+            cooldown =
+                fireController
+                    .GetCooldownNormalized(
+                        skillData
+                    );
+
+            remainingCooldown =
+                fireController
+                    .GetRemainingCooldown(
+                        skillData
+                    );
+
+            break;
+
+        case ElementType.Ice:
+
+            if (iceController == null)
+            {
+                HideMasks();
+                return;
+            }
+
+            duration =
+                iceController
+                    .GetDurationNormalized(
+                        skillData
+                    );
+
+            cooldown =
+                iceController
+                    .GetCooldownNormalized(
+                        skillData
+                    );
+
+            remainingCooldown =
+                iceController
+                    .GetRemainingCooldown(
+                        skillData
+                    );
+
+            break;
+
+        default:
+
+            HideMasks();
+            return;
+    }
+
+    if (durationMask != null)
+    {
+        bool showDuration =
+            duration > 0f;
+
+        durationMask.gameObject.SetActive(
+            showDuration
+        );
+
+        durationMask.fillAmount =
+            showDuration
+                ? duration
+                : 0f;
+    }
+
+    if (cooldownMask != null)
+    {
+        bool showCooldown =
+            cooldown > 0f;
+
+        cooldownMask.gameObject.SetActive(
+            showCooldown
+        );
+
+        cooldownMask.fillAmount =
+            showCooldown
+                ? cooldown
+                : 0f;
+    }
+
+    if (cooldownText != null)
+    {
+        cooldownText.text =
+            cooldown > 0f
+                ? Mathf.CeilToInt(
+                    remainingCooldown
+                ).ToString()
+                : "";
+    }
+}
     private void HideMasks()
     {
         if (durationMask != null)

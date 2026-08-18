@@ -116,6 +116,7 @@ public class EnermyMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private EnermyAudio enemyAudio;
+    private EnemySlowEffect slowEffect;
 
     // =====================================================
     // RUNTIME DATA
@@ -230,6 +231,11 @@ public class EnermyMovement : MonoBehaviour
         {
             enemyAudio =
                 GetComponent<EnermyAudio>();
+        }
+        if (slowEffect == null)
+        {
+            slowEffect =
+                GetComponent<EnemySlowEffect>();
         }
     }
 
@@ -797,12 +803,19 @@ Random.insideUnitCircle.normalized;
         LastMoveDirection =
             direction;
 
-        desiredVelocity =
-            direction *
+        float speedMultiplier =
+    GetSlowMultiplier();
+
+        float finalMoveSpeed =
             Mathf.Max(
                 0f,
                 moveSpeed
-            );
+            ) *
+            speedMultiplier;
+
+        desiredVelocity =
+            direction *
+            finalMoveSpeed;
 
         rb.linearVelocity =
             desiredVelocity +
@@ -947,6 +960,31 @@ Random.insideUnitCircle.normalized;
                 ) *
                 Time.deltaTime
             );
+    }
+
+    private float GetSlowMultiplier()
+    {
+        /*
+         * IceSpike có thể AddComponent
+         * lúc runtime nên nếu reference null
+         * thì tìm lại.
+         */
+        if (slowEffect == null)
+        {
+            slowEffect =
+                GetComponent<EnemySlowEffect>();
+        }
+
+        if (slowEffect == null)
+        {
+            return 1f;
+        }
+
+        return Mathf.Clamp(
+            slowEffect.SpeedMultiplier,
+            0.05f,
+            1f
+        );
     }
 
     // =====================================================
