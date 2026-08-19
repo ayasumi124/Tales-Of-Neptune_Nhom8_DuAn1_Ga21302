@@ -13,7 +13,7 @@ public class Attack : MonoBehaviour
 
     public bool IsAttacking =>
         isAttacking;
-
+    public event System.Action OnAttackImpactFrame;
     // =====================================================
     // HITBOX
     // =====================================================
@@ -280,13 +280,16 @@ public class Attack : MonoBehaviour
     {
         if (!isAttacking)
             return;
+        // Đây là đúng frame Player vung kiếm tới điểm gây damage.
+    // Ice Hammer nghe event này để Slam.
+    OnAttackImpactFrame?.Invoke();
 
-        int currentCombo =
-            Mathf.Clamp(
-                combo,
-                0,
-                maxCombo - 1
-            );
+    int currentCombo =
+        Mathf.Clamp(
+            combo,
+            0,
+            maxCombo - 1
+        );
 
         // =============================================
         // LUNGE

@@ -20,7 +20,17 @@ public class IceSpike : MonoBehaviour
     [Min(0.1f)]
     [SerializeField]
     private float slowDuration = 2f;
+    [Header("Effects")]
+    [SerializeField]
+    private GameObject slowEffectPrefab;
 
+    [Header("Slow Audio")]
+    [SerializeField]
+    private AudioClip slowSound;
+
+    [Range(0f, 1f)]
+    [SerializeField]
+    private float slowSoundVolume = 0.5f;
     [Header("Timing")]
     [Tooltip(
         "Thời gian chờ để hitbox bật, " +
@@ -202,7 +212,7 @@ public class IceSpike : MonoBehaviour
     }
 
     private void ApplySlow(
-        EnermyHealth enemy)
+    EnermyHealth enemy)
     {
         if (enemy == null)
             return;
@@ -222,9 +232,12 @@ public class IceSpike : MonoBehaviour
         }
 
         slow.ApplySlow(
-            slowMultiplier,
-            slowDuration
-        );
+    slowMultiplier,
+    slowDuration,
+    slowEffectPrefab,
+    slowSound,
+    slowSoundVolume
+);
     }
 
     private void RotateToDirection()

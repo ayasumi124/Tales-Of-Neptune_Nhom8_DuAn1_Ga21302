@@ -81,7 +81,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 2025507539
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4732386883548283348, guid: 9d6270336acf5bb4b90c1893f17ae9b7, type: 3}
@@ -174,9 +174,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eacfbd19fc20654f80db13f770a923c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IceSpike
-  damage: 25
-  slowMultiplier: 0.6
-  slowDuration: 2
+  damage: 75
+  slowMultiplier: 0.5
+  slowDuration: 5
+  slowEffectPrefab: {fileID: 4073805542457044059, guid: fd5ab9c8d8ab6fd4b99e37f27d48a113, type: 3}
+  slowSound: {fileID: 8300000, guid: 0e68fdb37ad9b8241816648c52d61569, type: 3}
+  slowSoundVolume: 0.5
   hitboxDelay: 0.1
   hitboxDuration: 0.25
   lifeTime: 0.8
