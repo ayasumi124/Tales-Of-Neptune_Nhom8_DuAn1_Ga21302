@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+
 
 public class CloneFollow : MonoBehaviour
 {
@@ -18,6 +20,10 @@ public class CloneFollow : MonoBehaviour
 
     public Transform[] attackPoints;
     public LayerMask enermyLayer;
+    [Header("Knockback")]
+    [SerializeField]
+    private float knockbackStrength = 4f;
+
 
     [Header("Follow")]
 
@@ -29,9 +35,9 @@ public class CloneFollow : MonoBehaviour
 
     float teleportTimer;
     [Header("Obstacle")]
-public LayerMask obstacleLayer;
+    public LayerMask obstacleLayer;
 
-public float avoidDistance = 0.6f;
+    public float avoidDistance = 0.6f;
 
 
     public int damage = 35;
@@ -56,6 +62,7 @@ public float avoidDistance = 0.6f;
     float idleTimer;
     float attackTimer;
     float searchTimer;
+
 
     enum State
     {
@@ -98,11 +105,11 @@ public float avoidDistance = 0.6f;
         float playerDistance =
     Vector2.Distance(transform.position, player.position);
 
-if (playerDistance > followDistance)
-{
-    targetEnemy = null;
-    state = State.Follow;
-}
+        if (playerDistance > followDistance)
+        {
+            targetEnemy = null;
+            state = State.Follow;
+        }
 
         // Teleport nếu bị bỏ quá xa
         if (playerDistance > teleportDistance)
@@ -235,7 +242,8 @@ if (playerDistance > followDistance)
             return;
         }
 
-        float dis = Vector2.Distance(rb.position, targetEnemy.position);
+        float dis =
+            GetDistanceToEnemy(targetEnemy);
 
         if (dis > detectRange)
         {
@@ -244,144 +252,230 @@ if (playerDistance > followDistance)
             return;
         }
 
-        // Nếu player đi quá xa thì bỏ đánh và quay về
+        // Player quá xa -> Clone bỏ combat và quay lại.
         float playerDistance =
-    Vector2.Distance(transform.position, player.position);
+            Vector2.Distance(
+                transform.position,
+                player.position
+            );
 
-        // Player quá xa -> bỏ combat ngay
         if (playerDistance > followDistance)
         {
             targetEnemy = null;
             state = State.Follow;
             return;
         }
-        // Chưa đủ gần thì tiếp tục đuổi
+
+        // Chưa tới MÉP collider của enemy thì tiếp tục đuổi.
         if (dis > attackRange)
         {
-            MoveTo(targetEnemy.position);
+            Vector2 targetPoint =
+                GetClosestEnemyPoint(
+                    targetEnemy
+                );
+
+            MoveTo(targetPoint);
             return;
         }
 
-        rb.linearVelocity = Vector2.zero;
+        rb.linearVelocity =
+            Vector2.zero;
 
-        animator.SetBool("IsRunning", false);
+        animator.SetBool(
+            "IsRunning",
+            false
+        );
 
         StopFootstep();
 
-        attackTimer -= Time.deltaTime;
+        attackTimer -=
+            Time.deltaTime;
 
-        if (attackTimer > 0)
+        if (attackTimer > 0f)
             return;
 
-        attackTimer = attackCooldown;
+        attackTimer =
+            attackCooldown;
+
+        Vector2 enemyPoint =
+            GetClosestEnemyPoint(
+                targetEnemy
+            );
 
         Vector2 face =
-            ((Vector2)targetEnemy.position - rb.position).normalized;
+            (
+                enemyPoint -
+                rb.position
+            ).normalized;
 
-        if (Mathf.Abs(face.x) > Mathf.Abs(face.y))
-            face = new Vector2(Mathf.Sign(face.x), 0);
+        if (Mathf.Abs(face.x) >
+            Mathf.Abs(face.y))
+        {
+            face =
+                new Vector2(
+                    Mathf.Sign(face.x),
+                    0f
+                );
+        }
         else
-            face = new Vector2(0, Mathf.Sign(face.y));
+        {
+            face =
+                new Vector2(
+                    0f,
+                    Mathf.Sign(face.y)
+                );
+        }
+
+        animator.SetFloat(
+            "LastMoveX",
+            face.x
+        );
+
+        animator.SetFloat(
+            "LastMoveY",
+            face.y
+        );
+
+        animator.SetInteger(
+            "Combo",
+            Random.Range(0, 2)
+        );
+
+        animator.SetTrigger(
+            "Attack"
+        );
+
+        if (attackSource != null &&
+            attackSound != null)
+        {
+            attackSource.PlayOneShot(
+                attackSound
+            );
+        }
+    }
+
+    Vector2 GetClosestEnemyPoint(
+        Transform enemy)
+    {
+        if (enemy == null)
+            return rb.position;
+
+        Collider2D enemyCollider =
+            enemy.GetComponentInChildren<
+                Collider2D
+            >();
+
+        if (enemyCollider != null)
+        {
+            return enemyCollider.ClosestPoint(
+                rb.position
+            );
+        }
+
+        return enemy.position;
+    }
+
+    float GetDistanceToEnemy(
+        Transform enemy)
+    {
+        Vector2 closestPoint =
+            GetClosestEnemyPoint(enemy);
+
+        return Vector2.Distance(
+            rb.position,
+            closestPoint
+        );
+    }
+    void MoveTo(Vector2 target)
+    {
+        Vector2 dir = (target - rb.position);
+
+        float distance = dir.magnitude;
+
+        if (distance < 0.08f)
+        {
+            rb.linearVelocity = Vector2.zero;
+
+            animator.SetBool("IsRunning", false);
+
+            StopFootstep();
+
+            return;
+        }
+
+        dir.Normalize();
+
+        // ====== Né vật cản ======
+
+        RaycastHit2D hit = Physics2D.Raycast(
+            rb.position,
+            dir,
+            avoidDistance,
+            obstacleLayer);
+
+        if (hit.collider != null)
+        {
+            Vector2 left = new Vector2(-dir.y, dir.x);
+
+            Vector2 right = new Vector2(dir.y, -dir.x);
+
+            bool leftBlocked =
+                Physics2D.Raycast(
+                    rb.position,
+                    left,
+                    avoidDistance,
+                    obstacleLayer);
+
+            bool rightBlocked =
+                Physics2D.Raycast(
+                    rb.position,
+                    right,
+                    avoidDistance,
+                    obstacleLayer);
+
+            if (!leftBlocked)
+            {
+                dir = Vector2.Lerp(dir, left, 0.8f).normalized;
+            }
+            else if (!rightBlocked)
+            {
+                dir = Vector2.Lerp(dir, right, 0.8f).normalized;
+            }
+            else
+            {
+                dir = -dir;
+            }
+        }
+
+        // =======================
+
+        Vector2 desiredVelocity =
+            dir * moveSpeed;
+
+        rb.linearVelocity =
+            Vector2.Lerp(
+                rb.linearVelocity,
+                desiredVelocity,
+                Time.deltaTime * 12f);
+
+        animator.SetBool("IsRunning", true);
+
+        Vector2 face;
+
+        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+            face = new Vector2(Mathf.Sign(dir.x), 0);
+        else
+            face = new Vector2(0, Mathf.Sign(dir.y));
+
+        animator.SetFloat("MoveX", face.x);
+        animator.SetFloat("MoveY", face.y);
 
         animator.SetFloat("LastMoveX", face.x);
         animator.SetFloat("LastMoveY", face.y);
 
-        animator.SetInteger("Combo", Random.Range(0, 2));
-
-        animator.SetTrigger("Attack");
-
-        attackSource.PlayOneShot(attackSound);
+        if (!footstepSource.isPlaying)
+            footstepSource.Play();
     }
-    void MoveTo(Vector2 target)
-{
-    Vector2 dir = (target - rb.position);
-
-    float distance = dir.magnitude;
-
-    if (distance < 0.08f)
-    {
-        rb.linearVelocity = Vector2.zero;
-
-        animator.SetBool("IsRunning", false);
-
-        StopFootstep();
-
-        return;
-    }
-
-    dir.Normalize();
-
-    // ====== Né vật cản ======
-
-    RaycastHit2D hit = Physics2D.Raycast(
-        rb.position,
-        dir,
-        avoidDistance,
-        obstacleLayer);
-
-    if (hit.collider != null)
-    {
-        Vector2 left = new Vector2(-dir.y, dir.x);
-
-        Vector2 right = new Vector2(dir.y, -dir.x);
-
-        bool leftBlocked =
-            Physics2D.Raycast(
-                rb.position,
-                left,
-                avoidDistance,
-                obstacleLayer);
-
-        bool rightBlocked =
-            Physics2D.Raycast(
-                rb.position,
-                right,
-                avoidDistance,
-                obstacleLayer);
-
-        if (!leftBlocked)
-        {
-            dir = Vector2.Lerp(dir, left, 0.8f).normalized;
-        }
-        else if (!rightBlocked)
-        {
-            dir = Vector2.Lerp(dir, right, 0.8f).normalized;
-        }
-        else
-        {
-            dir = -dir;
-        }
-    }
-
-    // =======================
-
-    Vector2 desiredVelocity =
-        dir * moveSpeed;
-
-    rb.linearVelocity =
-        Vector2.Lerp(
-            rb.linearVelocity,
-            desiredVelocity,
-            Time.deltaTime * 12f);
-
-    animator.SetBool("IsRunning", true);
-
-    Vector2 face;
-
-    if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-        face = new Vector2(Mathf.Sign(dir.x), 0);
-    else
-        face = new Vector2(0, Mathf.Sign(dir.y));
-
-    animator.SetFloat("MoveX", face.x);
-    animator.SetFloat("MoveY", face.y);
-
-    animator.SetFloat("LastMoveX", face.x);
-    animator.SetFloat("LastMoveY", face.y);
-
-    if (!footstepSource.isPlaying)
-        footstepSource.Play();
-}
 
     void ChooseRandomTarget()
     {
@@ -408,10 +502,10 @@ if (playerDistance > followDistance)
 
         // Player quá xa -> KHÔNG tìm quái
         if (playerDistance > followDistance)
-{
-    targetEnemy = null;
-    return;
-}
+        {
+            targetEnemy = null;
+            return;
+        }
 
         GameObject[] enemies =
             GameObject.FindGameObjectsWithTag("Enermy");
@@ -436,7 +530,14 @@ if (playerDistance > followDistance)
 
     public void DealDamage()
     {
-        foreach (Transform point in attackPoints)
+        if (attackPoints == null)
+            return;
+
+        HashSet<EnermyHealth> damaged =
+            new HashSet<EnermyHealth>();
+
+        foreach (Transform point
+                 in attackPoints)
         {
             if (point == null)
                 continue;
@@ -445,19 +546,55 @@ if (playerDistance > followDistance)
                 Physics2D.OverlapCircleAll(
                     point.position,
                     attackRadius,
-                    enermyLayer);
+                    enermyLayer
+                );
 
-            foreach (Collider2D hit in hits)
+            foreach (Collider2D hit
+                     in hits)
             {
-                EnermyHealth hp = hit.GetComponent<EnermyHealth>();
+                if (hit == null)
+                    continue;
 
-                if (hp != null)
+                EnermyHealth hp =
+                    hit.GetComponentInParent<
+                        EnermyHealth
+                    >();
+
+                if (hp == null)
                 {
-                    Vector2 dir =
-                        (hp.transform.position - transform.position).normalized;
-
-                    hp.TakeDamage(damage, dir);
+                    hp =
+                        hit.GetComponentInChildren<
+                            EnermyHealth
+                        >();
                 }
+
+                if (hp == null)
+                    continue;
+
+                // Boss có nhiều collider cũng chỉ
+                // ăn damage 1 lần mỗi Attack Event.
+                if (!damaged.Add(hp))
+                    continue;
+
+                Vector2 dir =
+                    (
+                        hp.transform.position -
+                        transform.position
+                    ).normalized;
+
+                if (dir.sqrMagnitude <
+                    0.001f)
+                {
+                    dir =
+                        Vector2.down;
+                }
+
+                hp.TakeDamage(
+    damage,
+    dir,
+    knockbackStrength,
+    true
+);
             }
         }
     }
