@@ -21,4 +21,6 @@ MonoBehaviour:
   manaCost: 20
   duration: 1
   cooldown: 5
+  castSound: {fileID: 8300000, guid: 5fff9b605bde6b84f93e68cc33160be6, type: 3}
+  castVolume: 1
   unlocked: 1

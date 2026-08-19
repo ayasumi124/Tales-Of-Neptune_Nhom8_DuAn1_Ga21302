@@ -1850,7 +1850,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 799678501
-  m_SortingLayer: 7
+  m_SortingLayer: 9
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -17532,15 +17532,15 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 2021422909}
     m_Modifications:
     - target: {fileID: 2710460646389834719, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.5
+      value: 11.115
       objectReference: {fileID: 0}
     - target: {fileID: 2710460646389834719, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.07
+      value: 4.65312
       objectReference: {fileID: 0}
     - target: {fileID: 2710460646389834719, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17552,15 +17552,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2710460646389834719, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2710460646389834719, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2710460646389834719, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2710460646389834719, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -17583,6 +17583,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
+--- !u!4 &1806247923 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2710460646389834719, guid: 206a6fd5ba8aad94c8743ba188c36cd2, type: 3}
+  m_PrefabInstance: {fileID: 1806247922}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1823413463
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18847,6 +18852,53 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &2021422907
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2021422909}
+  - component: {fileID: 2021422908}
+  m_Layer: 0
+  m_Name: Boss_Room
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2021422908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2021422907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6f950e6f6b69c44db065d01b4e3856f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomClearChestSpawner
+  enemyContainer: {fileID: 1806247923}
+  keyChest: {fileID: 3206645230024621439, guid: b72cccb64a60ddb42815d6c7cf04e504, type: 3}
+--- !u!4 &2021422909
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2021422907}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.615, y: -1.58312, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1806247923}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2054784327
 GameObject:
   m_ObjectHideFlags: 0
@@ -19134,7 +19186,6 @@ SceneRoots:
   - {fileID: 308199468}
   - {fileID: 624600131}
   - {fileID: 651145491}
-  - {fileID: 1806247922}
   - {fileID: 2996964365470273311}
   - {fileID: 1647556055}
   - {fileID: 2988011946489977154}
@@ -19143,3 +19194,4 @@ SceneRoots:
   - {fileID: 362643102}
   - {fileID: 1823413463}
   - {fileID: 275450238}
+  - {fileID: 2021422909}

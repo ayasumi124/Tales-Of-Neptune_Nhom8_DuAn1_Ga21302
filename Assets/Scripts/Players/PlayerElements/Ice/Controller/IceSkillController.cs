@@ -13,10 +13,6 @@ public class IceSkillController : MonoBehaviour
     [SerializeField]
     private Players player;
 
-    // =====================================================
-    // SKILL 1 - ICE SPIKE
-    // =====================================================
-
     [Header("Skill 1 - Ice Spike")]
     [SerializeField]
     private GameObject iceSpikePrefab;
@@ -29,9 +25,28 @@ public class IceSkillController : MonoBehaviour
     [SerializeField]
     private float iceSpikeSpawnDistance = 1.1f;
 
-    [Header("Skill 1 Audio")]
+    [Header("Skill 2 - Ice Hammer")]
     [SerializeField]
-    private AudioClip iceSpikeSound;
+    private GameObject iceHammerCompanionPrefab;
+
+    private IceHammerCompanion activeIceHammer;
+
+    [Header("Skill 3 - Blizzard")]
+    [SerializeField]
+    private GameObject blizzardAuraPrefab;
+
+    [SerializeField]
+    private GameObject blizzardProjectilePrefab;
+
+    [SerializeField]
+    private float blizzardProjectileSpawnDistance =
+        0.8f;
+
+    private BlizzardAura activeBlizzard;
+
+    [Header("Skill 4 - Frost Nova")]
+    [SerializeField]
+    private GameObject frostNovaPrefab;
 
     // =====================================================
     // RUNTIME TIMERS
@@ -122,24 +137,21 @@ public class IceSkillController : MonoBehaviour
     // =====================================================
 
     public void TryCast(
-        ElementSkillData skill)
+    ElementSkillData skill)
     {
         if (skill == null)
         {
             Debug.LogError(
                 "IceSkillController nhận Skill null."
             );
-
             return;
         }
 
-        if (skill.elementType !=
-            ElementType.Ice)
+        if (skill.elementType != ElementType.Ice)
         {
             Debug.LogWarning(
                 $"{skill.skillName} không phải Ice Skill."
             );
-
             return;
         }
 
@@ -150,17 +162,57 @@ public class IceSkillController : MonoBehaviour
             index >= 4)
         {
             Debug.LogError(
-                $"{skill.skillName}: " +
-                $"Skill Index {skill.skillIndex} " +
-                "không hợp lệ."
+                $"{skill.skillName}: Skill Index " +
+                $"{skill.skillIndex} không hợp lệ."
             );
-
             return;
         }
 
-        // =================================================
-        // COOLDOWN CHECK
-        // =================================================
+        // =========================================
+        // SKILL 3 - BLIZZARD RECAST
+        // =========================================
+
+        /*
+         * Blizzard đang tồn tại:
+         * nhấn 3 lần nữa sẽ Release.
+         *
+         * Không:
+         * - check cooldown
+         * - trừ mana lần 2
+         */
+        if (skill.skillIndex == 3 &&
+            activeBlizzard != null)
+        {
+            bool released =
+                ReleaseBlizzardProjectile();
+
+            if (!released)
+                return;
+
+            // Aura kết thúc.
+            durationTimers[index] = 0f;
+            maxDurationTimers[index] = 0f;
+
+            StartSkillCooldown(
+    skill
+);
+
+            /*
+             * Không PlaySkillSound ở đây.
+             *
+             * BlizzardProjectile.Initialize()
+             * sẽ tự phát releaseSound.
+             */
+
+            Debug.Log(
+                "BLIZZARD RELEASE!"
+            );
+            return;
+        }
+
+        // =========================================
+        // NORMAL COOLDOWN CHECK
+        // =========================================
 
         if (cooldownTimers[index] > 0f)
         {
@@ -172,9 +224,9 @@ public class IceSkillController : MonoBehaviour
             return;
         }
 
-        // =================================================
+        // =========================================
         // MANA
-        // =================================================
+        // =========================================
 
         if (mana == null)
         {
@@ -187,21 +239,43 @@ public class IceSkillController : MonoBehaviour
             Debug.LogError(
                 "Player thiếu PlayerMana."
             );
-
             return;
         }
 
-        /*
-         * Kiểm tra prefab TRƯỚC khi trừ mana.
-         * Như vậy nếu quên gán prefab
-         * sẽ không bị mất mana oan.
-         */
+        // Kiểm tra prefab trước khi mất Mana.
+
         if (skill.skillIndex == 1 &&
             iceSpikePrefab == null)
         {
             Debug.LogError(
-                "IceSkillController chưa gán " +
-                "Ice Spike Prefab."
+                "Chưa gán Ice Spike Prefab."
+            );
+            return;
+        }
+
+        if (skill.skillIndex == 2 &&
+            iceHammerCompanionPrefab == null)
+        {
+            Debug.LogError(
+                "Chưa gán Ice Hammer Companion Prefab."
+            );
+            return;
+        }
+
+        if (skill.skillIndex == 3 &&
+            blizzardAuraPrefab == null)
+        {
+            Debug.LogError(
+                "Chưa gán Blizzard Aura Prefab."
+            );
+            return;
+        }
+
+        if (skill.skillIndex == 4 &&
+    frostNovaPrefab == null)
+        {
+            Debug.LogError(
+                "Chưa gán Frost Nova Prefab."
             );
 
             return;
@@ -219,9 +293,9 @@ public class IceSkillController : MonoBehaviour
             return;
         }
 
-        // =================================================
-        // CAST SKILL
-        // =================================================
+        // =========================================
+        // CAST
+        // =========================================
 
         bool castSuccess = false;
 
@@ -237,57 +311,188 @@ public class IceSkillController : MonoBehaviour
 
             case 2:
 
-                Debug.Log(
-                    "Ice Hammer chưa làm."
-                );
+                castSuccess =
+                    CastIceHammer(
+                        skill
+                    );
 
                 break;
 
 
             case 3:
 
-                Debug.Log(
-                    "Ice Blizzard chưa làm."
-                );
+                castSuccess =
+                    CastBlizzard(
+                        skill
+                    );
 
                 break;
 
 
             case 4:
 
-                Debug.Log(
-                    "Frost Nova chưa làm."
-                );
+                castSuccess =
+                    CastFrostNova();
 
                 break;
         }
 
         if (!castSuccess)
         {
-            /*
-             * Skill chưa cast được thì
-             * hoàn mana lại.
-             */
             mana.RestoreMana(
                 skill.manaCost
             );
 
             return;
         }
+        // Skill 3:
+        // âm thanh Aura sẽ phát ở lần cast đầu.
+        // Projectile có Release Sound riêng trong prefab.
+        //
+        // Skill 1, 2:
+        // phát Cast Sound bình thường.
+        if (skill.skillIndex != 3 &&
+    skill.skillIndex != 4)
+        {
+            PlaySkillSound(
+                skill
+            );
+        }
 
-        // =================================================
-        // START COOLDOWN
-        // =================================================
+        // =========================================
+        // BLIZZARD LẦN 1
+        // =========================================
+
+        if (skill.skillIndex == 3)
+        {
+            /*
+             * Đây là âm thanh khi TRIỆU HỒI
+             * Blizzard Aura.
+             *
+             * Projectile lần 2 đã có
+             * releaseSound riêng.
+             */
+            PlaySkillSound(
+                skill
+            );
+
+            StartSkillDuration(
+                skill
+            );
+
+            Debug.Log(
+                "BLIZZARD AURA START!"
+            );
+
+            return;
+        }
+
+        // =========================================
+        // SKILL 1 / 2 / 4
+        // =========================================
+
+        StartSkillCooldown(
+            skill
+        );
+
+        StartSkillDuration(
+            skill
+        );
+
+        Debug.Log(
+            $"ICE CAST: {skill.skillName}"
+        );
+    }
+
+    private bool CastFrostNova()
+    {
+        if (frostNovaPrefab == null)
+        {
+            Debug.LogError(
+                "Frost Nova Prefab đang null."
+            );
+
+            return false;
+        }
+
+        GameObject novaObject =
+            Instantiate(
+                frostNovaPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+
+        if (novaObject == null)
+        {
+            Debug.LogError(
+                "Instantiate Frost Nova thất bại."
+            );
+
+            return false;
+        }
+
+        FrostNova nova =
+            novaObject.GetComponent<
+                FrostNova
+            >();
+
+        if (nova == null)
+        {
+            Debug.LogError(
+                "Frost Nova Prefab thiếu " +
+                "FrostNova.cs."
+            );
+
+            Destroy(
+                novaObject
+            );
+
+            return false;
+        }
+
+        nova.Initialize(
+            gameObject
+        );
+
+        return true;
+    }
+
+    private void StartSkillCooldown(
+        ElementSkillData skill)
+    {
+        if (skill == null)
+            return;
+
+        int index =
+            skill.skillIndex - 1;
+
+        if (index < 0 ||
+            index >= cooldownTimers.Length)
+        {
+            return;
+        }
 
         cooldownTimers[index] =
             Mathf.Max(
                 0f,
                 skill.cooldown
             );
+    }
 
-        // =================================================
-        // START DURATION
-        // =================================================
+    private void StartSkillDuration(
+        ElementSkillData skill)
+    {
+        if (skill == null)
+            return;
+
+        int index =
+            skill.skillIndex - 1;
+
+        if (index < 0 ||
+            index >= durationTimers.Length)
+        {
+            return;
+        }
 
         durationTimers[index] =
             Mathf.Max(
@@ -297,15 +502,32 @@ public class IceSkillController : MonoBehaviour
 
         maxDurationTimers[index] =
             durationTimers[index];
-
-        Debug.Log(
-            $"ICE CAST: {skill.skillName}"
-        );
     }
 
-    // =====================================================
-    // SKILL 1 - ICE SPIKE
-    // =====================================================
+    private void PlaySkillSound(
+    ElementSkillData skill)
+    {
+        if (skill == null ||
+            skill.castSound == null)
+        {
+            return;
+        }
+
+        if (AudioManager.Instance == null)
+        {
+            Debug.LogWarning(
+                "Không tìm thấy AudioManager."
+            );
+
+            return;
+        }
+
+        AudioManager.Instance
+            .PlayElementSkillSFX(
+                skill.castSound,
+                skill.castVolume
+            );
+    }
 
     private bool CastIceSpike()
     {
@@ -368,7 +590,6 @@ public class IceSkillController : MonoBehaviour
             gameObject
         );
 
-        PlayIceSpikeSound();
 
         Debug.Log(
             $"Spawn Ice Spike tại " +
@@ -377,6 +598,268 @@ public class IceSkillController : MonoBehaviour
         );
 
         return true;
+    }
+
+    private bool CastIceHammer(
+    ElementSkillData skill)
+    {
+        if (iceHammerCompanionPrefab == null)
+        {
+            Debug.LogError(
+                "Chưa gán Ice Hammer Companion Prefab."
+            );
+
+            return false;
+        }
+
+        /*
+         * Không cho summon thêm Hammer
+         * nếu Hammer cũ còn tồn tại.
+         */
+        if (activeIceHammer != null)
+        {
+            Debug.Log(
+                "Ice Hammer vẫn đang được triệu hồi."
+            );
+
+            return false;
+        }
+
+        GameObject hammerObject =
+            Instantiate(
+                iceHammerCompanionPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+
+        activeIceHammer =
+            hammerObject.GetComponent<
+                IceHammerCompanion
+            >();
+
+        if (activeIceHammer == null)
+        {
+            Debug.LogError(
+                "Prefab thiếu IceHammerCompanion.cs."
+            );
+
+            Destroy(
+                hammerObject
+            );
+
+            return false;
+        }
+
+        activeIceHammer.Initialize(
+            gameObject
+        );
+
+        /*
+         * Duration của ElementSkillData
+         * quyết định Hammer tồn tại bao lâu.
+         */
+        StartCoroutine(
+            IceHammerDurationRoutine(
+                skill.duration
+            )
+        );
+
+        return true;
+    }
+
+    private System.Collections.IEnumerator
+    IceHammerDurationRoutine(
+        float duration)
+    {
+        float safeDuration =
+            Mathf.Max(
+                0.1f,
+                duration
+            );
+
+        yield return new WaitForSeconds(
+            safeDuration
+        );
+
+        if (activeIceHammer != null)
+        {
+            Destroy(
+                activeIceHammer.gameObject
+            );
+
+            activeIceHammer = null;
+        }
+    }
+
+    private bool CastBlizzard(
+    ElementSkillData skill)
+    {
+        /*
+         * LẦN 1:
+         * chưa có Blizzard
+         * → tạo Aura.
+         */
+        if (activeBlizzard == null)
+        {
+            if (blizzardAuraPrefab == null)
+            {
+                Debug.LogError(
+                    "Chưa gán Blizzard Aura Prefab."
+                );
+
+                return false;
+            }
+
+            GameObject auraObject =
+                Instantiate(
+                    blizzardAuraPrefab,
+                    transform.position,
+                    Quaternion.identity
+                );
+
+            activeBlizzard =
+                auraObject.GetComponent<
+                    BlizzardAura
+                >();
+
+            if (activeBlizzard == null)
+            {
+                Debug.LogError(
+                    "Blizzard Aura Prefab thiếu BlizzardAura.cs."
+                );
+
+                Destroy(auraObject);
+                return false;
+            }
+
+            activeBlizzard.Initialize(
+                transform
+            );
+
+            StartCoroutine(
+    BlizzardDurationRoutine(
+        skill
+    )
+);
+
+            return true;
+        }
+
+        /*
+         * LẦN 2:
+         * Blizzard đang hoạt động
+         * → chuyển thành projectile.
+         */
+        return ReleaseBlizzardProjectile();
+    }
+
+    private bool ReleaseBlizzardProjectile()
+    {
+        if (activeBlizzard == null)
+            return false;
+
+        if (blizzardProjectilePrefab == null)
+        {
+            Debug.LogError(
+                "Chưa gán Blizzard Projectile Prefab."
+            );
+
+            return false;
+        }
+
+        Vector2 direction =
+            GetCastDirection();
+
+        Vector3 spawnPosition =
+            transform.position +
+            (Vector3)(
+                direction *
+                blizzardProjectileSpawnDistance
+            );
+
+        GameObject projectileObject =
+            Instantiate(
+                blizzardProjectilePrefab,
+                spawnPosition,
+                Quaternion.identity
+            );
+
+        BlizzardProjectile projectile =
+            projectileObject.GetComponent<
+                BlizzardProjectile
+            >();
+
+        if (projectile == null)
+        {
+            Debug.LogError(
+                "Blizzard Projectile thiếu BlizzardProjectile.cs."
+            );
+
+            Destroy(projectileObject);
+            return false;
+        }
+
+        projectile.Initialize(
+            direction,
+            gameObject
+        );
+
+        Destroy(
+            activeBlizzard.gameObject
+        );
+
+        activeBlizzard = null;
+
+        return true;
+    }
+
+    private System.Collections.IEnumerator
+    BlizzardDurationRoutine(
+        ElementSkillData skill)
+    {
+        if (skill == null)
+            yield break;
+
+        float duration =
+            Mathf.Max(
+                0.1f,
+                skill.duration
+            );
+
+        yield return new WaitForSeconds(
+            duration
+        );
+
+        /*
+         * Nếu Player chưa Release Blizzard
+         * thì Aura tự kết thúc.
+         */
+        if (activeBlizzard != null)
+        {
+            Destroy(
+                activeBlizzard.gameObject
+            );
+
+            activeBlizzard = null;
+
+            int index =
+                skill.skillIndex - 1;
+
+            if (index >= 0 &&
+                index < durationTimers.Length)
+            {
+                durationTimers[index] = 0f;
+                maxDurationTimers[index] = 0f;
+            }
+
+            StartSkillCooldown(
+                skill
+            );
+
+            Debug.Log(
+                "Blizzard Aura hết thời gian → Cooldown."
+            );
+        }
     }
 
     // =====================================================
@@ -429,24 +912,6 @@ public class IceSkillController : MonoBehaviour
         return direction.y >= 0f
             ? Vector2.up
             : Vector2.down;
-    }
-
-    // =====================================================
-    // AUDIO
-    // =====================================================
-
-    private void PlayIceSpikeSound()
-    {
-        if (iceSpikeSound == null)
-            return;
-
-        if (AudioManager.Instance == null)
-            return;
-
-        AudioManager.Instance
-            .PlayElementSkillSFX(
-                iceSpikeSound
-            );
     }
 
     // =====================================================

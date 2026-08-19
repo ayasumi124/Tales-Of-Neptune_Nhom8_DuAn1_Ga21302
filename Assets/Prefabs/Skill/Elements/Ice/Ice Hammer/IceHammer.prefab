@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4855918725645575256
+--- !u!1 &3942046579381788013
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,10 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3922693041929593804}
-  - component: {fileID: 1271065222215739933}
-  - component: {fileID: 7450670090339108251}
-  - component: {fileID: 5025230710010915676}
+  - component: {fileID: 8834705545916154756}
+  - component: {fileID: 6981065799004601662}
+  - component: {fileID: 3669853685002507552}
+  - component: {fileID: 5344210168810782510}
   m_Layer: 0
   m_Name: IceHammer
   m_TagString: Untagged
@@ -19,29 +19,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3922693041929593804
+--- !u!4 &8834705545916154756
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4855918725645575256}
+  m_GameObject: {fileID: 3942046579381788013}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.146388, y: -4.7751207, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1271065222215739933
+--- !u!212 &6981065799004601662
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4855918725645575256}
+  m_GameObject: {fileID: 3942046579381788013}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 2025507539
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8694665474056538844, guid: e4e61dd90a4362241a7fbd40634c67b4, type: 3}
@@ -88,55 +88,19 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.75, y: 0.96}
+  m_Size: {x: 1.171875, y: 1.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!58 &7450670090339108251
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4855918725645575256}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0.046437025, y: 0.2425046}
-  m_Radius: 0.5539324
---- !u!95 &5025230710010915676
+--- !u!95 &3669853685002507552
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4855918725645575256}
+  m_GameObject: {fileID: 3942046579381788013}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: d1cb4acde62068349b0d8b8aa0402021, type: 2}
@@ -151,3 +115,48 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5344210168810782510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3942046579381788013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 777623559e07a2e40b35cc7c6c3a338b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IceHammerCompanion
+  followSpeed: 6
+  horizontalOffset: 0.45
+  verticalOffset: 1.2
+  floatHeight: 0.12
+  floatSpeed: 3
+  attackForwardDistance: 1.5
+  moveToAttackSpeed: 12
+  returnDelay: 0.1
+  slamCooldown: 0.25
+  damage: 90
+  impactRadius: 2
+  knockbackStrength: 4
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 16448
+  slowMultiplier: 0.5
+  slowDuration: 5
+  slowEffectPrefab: {fileID: 4073805542457044059, guid: fd5ab9c8d8ab6fd4b99e37f27d48a113, type: 3}
+  impactEffectPrefab: {fileID: 3989467307873708965, guid: 251c0f793624f264593144645ad8d95f, type: 3}
+  impactSound: {fileID: 8300000, guid: 62e9a40e86b17464fb49deae45167f7a, type: 3}
+  impactVolume: 5
+  fallingIceSpikePrefab: {fileID: 2992832513830716530, guid: 374d55c1ab3f29e419a9fdf297ebc0e1, type: 3}
+  fallingSpikeCount: 5
+  fallingSpikeMinRadius: 1
+  fallingSpikeRadius: 1
+  fallingSpikeHeight: 1.8
+  swingSound: {fileID: 8300000, guid: fd1be9cb8f4c4bf4894942280089e12d, type: 3}
+  swingVolume: 1
+  slowSound: {fileID: 8300000, guid: 0e68fdb37ad9b8241816648c52d61569, type: 3}
+  slowSoundVolume: 0.5
+  animator: {fileID: 3669853685002507552}
+  hammerSprite: {fileID: 6981065799004601662}
+  visualRoot: {fileID: 8834705545916154756}
