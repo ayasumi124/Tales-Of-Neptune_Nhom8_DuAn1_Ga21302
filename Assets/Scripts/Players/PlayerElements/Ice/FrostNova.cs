@@ -1,77 +1,33 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class FrostNova : MonoBehaviour
 {
-    // =====================================================
-    // DAMAGE
-    // =====================================================
-
-    [Header("Damage")]
-    [Min(1)]
+    [Header("References")]
     [SerializeField]
-    private int damage = 35;
-
-    [Min(0f)]
-    [SerializeField]
-    private float knockbackStrength = 4f;
-
-
-    // =====================================================
-    // AOE
-    // =====================================================
-
-    [Header("AOE")]
-    [Min(0.1f)]
-    [SerializeField]
-    private float radius = 2.2f;
+    private IceGroundDamage iceGroundDamage;
 
     [SerializeField]
-    private LayerMask enemyLayer;
-
-
-    // =====================================================
-    // FREEZE
-    // =====================================================
-
-    [Header("Freeze")]
-    [Min(0.1f)]
-    [SerializeField]
-    private float freezeDuration = 2.5f;
-
-    [SerializeField]
-    private GameObject freezeVFXPrefab;
-
-
-    // =====================================================
-    // TIMING
-    // =====================================================
+    private ParticleSystem[] loopingParticles;
 
     [Header("Timing")]
-    [Tooltip(
-        "Thời gian từ lúc spawn tới lúc gây damage + freeze."
-    )]
-    [Min(0f)]
-    [SerializeField]
-    private float impactDelay = 0.18f;
-
     [Min(0.1f)]
     [SerializeField]
-    private float lifeTime = 1.2f;
+    private float lifeTime = 6f;
 
+    [Min(0.05f)]
+    [SerializeField]
+    private float fadeOutDuration = 0.5f;
 
-    // =====================================================
-    // AUDIO
-    // =====================================================
-
-    [Header("Audio")]
+    [Header("Cast Audio")]
     [SerializeField]
     private AudioClip castSound;
 
     [Range(0f, 1f)]
     [SerializeField]
-    private float castVolume = 1f;
+    private float castVolume = 0.8f;
 
+    [Header("Impact Audio")]
     [SerializeField]
     private AudioClip impactSound;
 
@@ -79,22 +35,36 @@ public class FrostNova : MonoBehaviour
     [SerializeField]
     private float impactVolume = 1f;
 
-
-    // =====================================================
-    // STATE
-    // =====================================================
+    [Min(0f)]
+    [SerializeField]
+    private float impactSoundDelay = 0.18f;
 
     private GameObject owner;
 
+    private float impactSoundTimer;
+
     private bool initialized;
-    private bool impacted;
+    private bool impactSoundPlayed;
 
-    private float impactTimer;
+    private void Awake()
+    {
+        if (iceGroundDamage == null)
+        {
+            iceGroundDamage =
+                GetComponentInChildren<
+                    IceGroundDamage
+                >();
+        }
 
-
-    // =====================================================
-    // INITIALIZE
-    // =====================================================
+        if (loopingParticles == null ||
+            loopingParticles.Length == 0)
+        {
+            loopingParticles =
+                GetComponentsInChildren<
+                    ParticleSystem
+                >();
+        }
+    }
 
     public void Initialize(
         GameObject novaOwner)
@@ -102,159 +72,246 @@ public class FrostNova : MonoBehaviour
         owner = novaOwner;
 
         initialized = true;
+        impactSoundPlayed = false;
 
-        impactTimer =
+        impactSoundTimer =
             Mathf.Max(
                 0f,
-                impactDelay
+                impactSoundDelay
             );
 
         PlayCastSound();
 
-        Destroy(
-            gameObject,
-            Mathf.Max(
-                0.1f,
-                lifeTime
-            )
+        StartCoroutine(
+            LifeRoutine()
         );
     }
-
-
-    // =====================================================
-    // UPDATE
-    // =====================================================
 
     private void Update()
     {
-        if (!initialized ||
-            impacted)
-        {
+        if (!initialized)
             return;
-        }
 
-        impactTimer -=
+        if (impactSoundPlayed)
+            return;
+
+        impactSoundTimer -=
             Time.deltaTime;
 
-        if (impactTimer <= 0f)
+        if (impactSoundTimer <= 0f)
         {
-            Impact();
+            impactSoundPlayed = true;
+
+            PlayImpactSound();
         }
     }
 
-
-    // =====================================================
-    // IMPACT
-    // =====================================================
-
-    private void Impact()
+    private IEnumerator LifeRoutine()
     {
-        if (impacted)
-            return;
-
-        impacted = true;
-
-        PlayImpactSound();
-
-        DamageAndFreezeEnemies();
-    }
-
-
-    // =====================================================
-    // DAMAGE + FREEZE
-    // =====================================================
-
-    private void DamageAndFreezeEnemies()
-    {
-        Collider2D[] hits =
-            Physics2D.OverlapCircleAll(
-                transform.position,
-                radius,
-                enemyLayer
+        float safeLife =
+            Mathf.Max(
+                0.1f,
+                lifeTime
             );
 
-        HashSet<EnermyHealth>
-            processed =
-                new HashSet<EnermyHealth>();
+        float safeFade =
+            Mathf.Clamp(
+                fadeOutDuration,
+                0.05f,
+                safeLife
+            );
 
-        foreach (Collider2D hit in hits)
+        float normalDuration =
+            safeLife -
+            safeFade;
+
+        if (normalDuration > 0f)
         {
-            if (hit == null)
-                continue;
+            yield return new WaitForSeconds(
+                normalDuration
+            );
+        }
 
-            EnermyHealth enemy =
-                hit.GetComponentInParent<
-                    EnermyHealth
-                >();
+        yield return StartCoroutine(
+            FadeOutRoutine(
+                safeFade
+            )
+        );
 
-            if (enemy == null)
-                continue;
+        Destroy(gameObject);
+    }
 
-            if (!processed.Add(enemy))
-                continue;
+    private IEnumerator FadeOutRoutine(
+    float duration)
+    {
+        float timer = 0f;
 
-            Vector2 knockDirection =
-                (
-                    enemy.transform.position -
-                    transform.position
-                ).normalized;
+        AudioSource groundAudio = null;
+        float startGroundVolume = 0f;
 
-            if (knockDirection.sqrMagnitude <
-                0.001f)
+        if (iceGroundDamage != null)
+        {
+            groundAudio =
+                iceGroundDamage
+                    .GetComponent<AudioSource>();
+
+            if (groundAudio != null)
             {
-                knockDirection =
-                    Vector2.down;
+                startGroundVolume =
+                    groundAudio.volume;
+            }
+        }
+
+        float[] originalEmissionRates =
+            new float[
+                loopingParticles.Length
+            ];
+
+        for (int i = 0;
+             i < loopingParticles.Length;
+             i++)
+        {
+            ParticleSystem ps =
+                loopingParticles[i];
+
+            if (ps == null)
+                continue;
+
+            ParticleSystem.EmissionModule
+                emission =
+                    ps.emission;
+
+            originalEmissionRates[i] =
+                emission.rateOverTimeMultiplier;
+        }
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+
+            float t =
+                Mathf.Clamp01(
+                    timer /
+                    duration
+                );
+
+            float fade =
+                1f - t;
+
+            // =========================
+            // AUDIO
+            // =========================
+
+            if (groundAudio != null)
+            {
+                groundAudio.volume =
+                    startGroundVolume *
+                    fade;
             }
 
-            enemy.TakeDamage(
-                damage,
-                knockDirection,
-                knockbackStrength,
-                true
-            );
+            // =========================
+            // PARTICLES
+            // =========================
 
-            ApplyFreeze(
-                enemy
-            );
+            for (int i = 0;
+                 i < loopingParticles.Length;
+                 i++)
+            {
+                ParticleSystem ps =
+                    loopingParticles[i];
+
+                if (ps == null)
+                    continue;
+
+                // Giảm emission.
+                ParticleSystem.EmissionModule
+                    emission =
+                        ps.emission;
+
+                emission.rateOverTimeMultiplier =
+                    originalEmissionRates[i] *
+                    fade;
+
+                // Giảm alpha của tất cả
+                // particle đang tồn tại.
+                ParticleSystem.Particle[] particles =
+                    new ParticleSystem.Particle[
+                        ps.main.maxParticles
+                    ];
+
+                int count =
+                    ps.GetParticles(
+                        particles
+                    );
+
+                for (int p = 0;
+                     p < count;
+                     p++)
+                {
+                    Color color =
+                        particles[p]
+                            .GetCurrentColor(ps);
+
+                    color.a *= fade;
+
+                    particles[p].startColor =
+                        color;
+                }
+
+                ps.SetParticles(
+                    particles,
+                    count
+                );
+            }
+
+            yield return null;
         }
-    }
 
+        // =========================
+        // STOP AUDIO
+        // =========================
 
-    // =====================================================
-    // FREEZE
-    // =====================================================
-
-    private void ApplyFreeze(
-        EnermyHealth enemy)
-    {
-        if (enemy == null)
-            return;
-
-        EnemyFreezeEffect freeze =
-            enemy.GetComponent<
-                EnemyFreezeEffect
-            >();
-
-        if (freeze == null)
+        if (groundAudio != null)
         {
-            freeze =
-                enemy.gameObject
-                    .AddComponent<
-                        EnemyFreezeEffect
-                    >();
+            groundAudio.volume = 0f;
+            groundAudio.Stop();
         }
 
-        freeze.ApplyFreeze(
-            freezeDuration,
-            freezeVFXPrefab
+        // =========================
+        // STOP EMISSION
+        // =========================
+
+        for (int i = 0;
+             i < loopingParticles.Length;
+             i++)
+        {
+            ParticleSystem ps =
+                loopingParticles[i];
+
+            if (ps == null)
+                continue;
+
+            ParticleSystem.EmissionModule
+                emission =
+                    ps.emission;
+
+            emission.rateOverTimeMultiplier =
+                0f;
+
+            ps.Stop(
+                true,
+                ParticleSystemStopBehavior
+                    .StopEmitting
+            );
+        }
+
+        /*
+         * Cho hạt cuối có thời gian tan.
+         */
+        yield return new WaitForSeconds(
+            0.25f
         );
     }
-
-
-    // =====================================================
-    // AUDIO
-    // =====================================================
-
     private void PlayCastSound()
     {
         if (castSound == null)
@@ -277,7 +334,6 @@ public class FrostNova : MonoBehaviour
             castVolume
         );
     }
-
 
     private void PlayImpactSound()
     {
@@ -302,60 +358,35 @@ public class FrostNova : MonoBehaviour
         );
     }
 
-
-    // =====================================================
-    // GIZMO
-    // =====================================================
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.DrawWireSphere(
-            transform.position,
-            radius
-        );
-    }
-
-
-    // =====================================================
-    // VALIDATE
-    // =====================================================
-
     private void OnValidate()
     {
-        damage =
-            Mathf.Max(
-                1,
-                damage
-            );
-
-        knockbackStrength =
-            Mathf.Max(
-                0f,
-                knockbackStrength
-            );
-
-        radius =
-            Mathf.Max(
-                0.1f,
-                radius
-            );
-
-        freezeDuration =
-            Mathf.Max(
-                0.1f,
-                freezeDuration
-            );
-
-        impactDelay =
-            Mathf.Max(
-                0f,
-                impactDelay
-            );
-
         lifeTime =
             Mathf.Max(
                 0.1f,
                 lifeTime
+            );
+
+        fadeOutDuration =
+            Mathf.Clamp(
+                fadeOutDuration,
+                0.05f,
+                lifeTime
+            );
+
+        impactSoundDelay =
+            Mathf.Max(
+                0f,
+                impactSoundDelay
+            );
+
+        castVolume =
+            Mathf.Clamp01(
+                castVolume
+            );
+
+        impactVolume =
+            Mathf.Clamp01(
+                impactVolume
             );
     }
 }

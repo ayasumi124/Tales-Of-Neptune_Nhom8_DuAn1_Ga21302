@@ -19,7 +19,7 @@ MonoBehaviour:
   skillIndex: 4
   requiredMastery: 80
   manaCost: 70
-  duration: 7
+  duration: 10
   cooldown: 45
   castSound: {fileID: 0}
   castVolume: 1

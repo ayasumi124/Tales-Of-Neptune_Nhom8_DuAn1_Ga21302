@@ -28916,6 +28916,7 @@ MonoBehaviour:
   blizzardAuraPrefab: {fileID: 5756247560150001742, guid: a406fdd5fa3091e4489d23c81b4af0a3, type: 3}
   blizzardProjectilePrefab: {fileID: 2501220562007717134, guid: 81f4792649a52d44391ea6c1e45624c1, type: 3}
   blizzardProjectileSpawnDistance: 0.8
+  frostNovaPrefab: {fileID: 151839494398928844, guid: 19910a1495aa0cc43ab215bd2ea64481, type: 3}
 --- !u!114 &4657377782898843643 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8186096020419718719, guid: 5f965b5b284ac704da00072821f8a050, type: 3}

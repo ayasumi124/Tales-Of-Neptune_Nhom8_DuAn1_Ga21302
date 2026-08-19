@@ -3,43 +3,133 @@ using UnityEngine;
 
 public class IceGroundDamage : MonoBehaviour
 {
+    // =====================================================
+    // EXPANSION
+    // =====================================================
+
     [Header("Expansion")]
+    [Min(0f)]
     [SerializeField]
     private float startRadius = 0.2f;
 
+    [Min(0.1f)]
     [SerializeField]
     private float maxRadius = 2.2f;
 
+    [Min(0.01f)]
     [SerializeField]
     private float expandDuration = 0.35f;
 
-    [Header("Damage")]
-    [SerializeField]
-    private int damage = 35;
 
+    // =====================================================
+    // DAMAGE
+    // =====================================================
+
+    [Header("Damage")]
+
+    [Tooltip(
+        "Damage lần đầu IceGround lan tới Enemy."
+    )]
+    [Min(1)]
+    [SerializeField]
+    private int initialDamage = 35;
+
+    [Tooltip(
+        "Damage khi Enemy vẫn đứng trong IceGround " +
+        "sau khi hết Freeze hoặc bước vào vùng sau đó."
+    )]
+    [Min(1)]
+    [SerializeField]
+    private int groundDamage = 10;
+
+    [Min(0f)]
     [SerializeField]
     private float knockbackStrength = 4f;
 
     [SerializeField]
     private LayerMask enemyLayer;
 
+    [Header("Ground Audio")]
+    [SerializeField]
+    private AudioClip groundLoopSound;
+
+    [Range(0f, 1f)]
+    [SerializeField]
+    private float groundLoopVolume = 0.5f;
+
+    [SerializeField]
+    private AudioSource groundAudioSource;
+
+    // =====================================================
+    // FREEZE
+    // =====================================================
+
     [Header("Freeze")]
+    [Min(0.1f)]
     [SerializeField]
     private float freezeDuration = 2.5f;
 
     [SerializeField]
     private GameObject freezeVFXPrefab;
 
+
+    // =====================================================
+    // RE-HIT
+    // =====================================================
+
+    [Header("Re-Hit")]
+    [Tooltip(
+        "Khoảng nghỉ sau khi Enemy hết Freeze " +
+        "trước khi IceGround có thể đánh lại."
+    )]
+    [Min(0f)]
+    [SerializeField]
+    private float reHitDelay = 0.1f;
+
+
+    // =====================================================
+    // RUNTIME
+    // =====================================================
+
     private float timer;
 
     private float currentRadius;
 
-    private bool finished;
+    private bool expansionFinished;
 
+
+    /*
+     * Enemy đã từng bị cú Frost Nova đầu tiên.
+     *
+     * Có trong đây:
+     * → lần sau chỉ nhận groundDamage.
+     */
     private readonly HashSet<EnermyHealth>
-        hitEnemies =
+        initiallyHitEnemies =
             new HashSet<EnermyHealth>();
 
+
+    /*
+     * Tránh Enemy có nhiều Collider bị
+     * xử lý nhiều lần trong cùng một frame.
+     */
+    private readonly HashSet<EnermyHealth>
+        processedThisFrame =
+            new HashSet<EnermyHealth>();
+
+
+    /*
+     * Thời điểm sớm nhất Enemy
+     * có thể bị IceGround đánh lại.
+     */
+    private readonly Dictionary<EnermyHealth, float>
+        nextHitTimes =
+            new Dictionary<EnermyHealth, float>();
+
+
+    // =====================================================
+    // ENABLE
+    // =====================================================
 
     private void OnEnable()
     {
@@ -48,18 +138,49 @@ public class IceGroundDamage : MonoBehaviour
         currentRadius =
             startRadius;
 
-        finished = false;
+        expansionFinished =
+            false;
 
-        hitEnemies.Clear();
+        initiallyHitEnemies.Clear();
+
+        processedThisFrame.Clear();
+
+        nextHitTimes.Clear();
+
+        SetupGroundAudio();
+
+        PlayGroundLoop();
     }
 
 
+    // =====================================================
+    // UPDATE
+    // =====================================================
+
     private void Update()
     {
-        if (finished)
-            return;
+        UpdateExpansion();
 
-        timer += Time.deltaTime;
+        CheckEnemies();
+    }
+
+
+    // =====================================================
+    // EXPANSION
+    // =====================================================
+
+    private void UpdateExpansion()
+    {
+        if (expansionFinished)
+        {
+            currentRadius =
+                maxRadius;
+
+            return;
+        }
+
+        timer +=
+            Time.deltaTime;
 
         float normalized =
             Mathf.Clamp01(
@@ -77,17 +198,25 @@ public class IceGroundDamage : MonoBehaviour
                 normalized
             );
 
-        CheckEnemies();
-
         if (normalized >= 1f)
         {
-            finished = true;
+            expansionFinished =
+                true;
+
+            currentRadius =
+                maxRadius;
         }
     }
 
 
+    // =====================================================
+    // CHECK ENEMIES
+    // =====================================================
+
     private void CheckEnemies()
     {
+        processedThisFrame.Clear();
+
         Collider2D[] hits =
             Physics2D.OverlapCircleAll(
                 transform.position,
@@ -108,44 +237,161 @@ public class IceGroundDamage : MonoBehaviour
             if (enemy == null)
                 continue;
 
-            // Enemy này đã bị IceGround đánh rồi.
-            if (!hitEnemies.Add(enemy))
+            /*
+             * Enemy có nhiều Collider
+             * cũng chỉ xử lý 1 lần/frame.
+             */
+            if (!processedThisFrame.Add(
+                    enemy))
+            {
                 continue;
+            }
 
-            HitEnemy(enemy);
+            TryHitEnemy(
+                enemy
+            );
         }
     }
 
 
-    private void HitEnemy(
+    // =====================================================
+    // TRY HIT
+    // =====================================================
+
+    private void TryHitEnemy(
         EnermyHealth enemy)
     {
-        Vector2 direction =
+        if (enemy == null)
+            return;
+
+        EnemyFreezeEffect freeze =
+            enemy.GetComponent<
+                EnemyFreezeEffect
+            >();
+
+        // =================================================
+        // ĐANG FREEZE
+        // =================================================
+
+        if (freeze != null &&
+            freeze.IsFrozen)
+        {
+            /*
+             * Không damage thêm trong lúc
+             * Enemy vẫn còn Freeze.
+             */
+            return;
+        }
+
+
+        // =================================================
+        // RE-HIT DELAY
+        // =================================================
+
+        if (nextHitTimes.TryGetValue(
+                enemy,
+                out float nextHitTime))
+        {
+            if (Time.time <
+                nextHitTime)
+            {
+                return;
+            }
+        }
+
+
+        // =================================================
+        // CHỌN DAMAGE
+        // =================================================
+
+        bool firstHit =
+            !initiallyHitEnemies.Contains(
+                enemy
+            );
+
+        int finalDamage =
+            firstHit
+                ? initialDamage
+                : groundDamage;
+
+
+        HitEnemy(
+            enemy,
+            freeze,
+            finalDamage,
+            firstHit
+        );
+    }
+
+
+    // =====================================================
+    // HIT
+    // =====================================================
+
+    private void HitEnemy(
+        EnermyHealth enemy,
+        EnemyFreezeEffect freeze,
+        int finalDamage,
+        bool firstHit)
+    {
+        if (enemy == null)
+            return;
+
+        Vector2 knockDirection =
             (
                 enemy.transform.position -
                 transform.position
             ).normalized;
 
-        if (direction.sqrMagnitude <
+        if (knockDirection.sqrMagnitude <
             0.001f)
         {
-            direction =
+            knockDirection =
                 Vector2.down;
         }
 
-        // Damage
+
+        // =================================================
+        // DAMAGE
+        // =================================================
+
         enemy.TakeDamage(
-            damage,
-            direction,
+            finalDamage,
+            knockDirection,
             knockbackStrength,
             true
         );
 
-        // Freeze
-        EnemyFreezeEffect freeze =
-            enemy.GetComponent<
-                EnemyFreezeEffect
-            >();
+
+        // =================================================
+        // GHI NHẬN INITIAL HIT
+        // =================================================
+
+        if (firstHit)
+        {
+            initiallyHitEnemies.Add(
+                enemy
+            );
+
+            Debug.Log(
+                $"Frost Nova INITIAL HIT: " +
+                $"{enemy.name} - " +
+                $"{finalDamage} damage."
+            );
+        }
+        else
+        {
+            Debug.Log(
+                $"IceGround GROUND HIT: " +
+                $"{enemy.name} - " +
+                $"{finalDamage} damage."
+            );
+        }
+
+
+        // =================================================
+        // FREEZE
+        // =================================================
 
         if (freeze == null)
         {
@@ -161,16 +407,26 @@ public class IceGroundDamage : MonoBehaviour
             freezeVFXPrefab
         );
 
-        Debug.Log(
-            $"IceGround hit + freeze: " +
-            $"{enemy.name}"
-        );
+
+        // =================================================
+        // NEXT HIT
+        // =================================================
+
+        nextHitTimes[enemy] =
+            Time.time +
+            freezeDuration +
+            reHitDelay;
     }
 
 
+    // =====================================================
+    // GIZMO
+    // =====================================================
+
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.cyan;
+        Gizmos.color =
+            Color.cyan;
 
         float drawRadius =
             Application.isPlaying
@@ -183,6 +439,10 @@ public class IceGroundDamage : MonoBehaviour
         );
     }
 
+
+    // =====================================================
+    // VALIDATE
+    // =====================================================
 
     private void OnValidate()
     {
@@ -204,10 +464,22 @@ public class IceGroundDamage : MonoBehaviour
                 expandDuration
             );
 
-        damage =
+        initialDamage =
             Mathf.Max(
                 1,
-                damage
+                initialDamage
+            );
+
+        groundDamage =
+            Mathf.Max(
+                1,
+                groundDamage
+            );
+
+        knockbackStrength =
+            Mathf.Max(
+                0f,
+                knockbackStrength
             );
 
         freezeDuration =
@@ -215,5 +487,71 @@ public class IceGroundDamage : MonoBehaviour
                 0.1f,
                 freezeDuration
             );
+
+        reHitDelay =
+            Mathf.Max(
+                0f,
+                reHitDelay
+            );
+    }
+
+    private void SetupGroundAudio()
+    {
+        if (groundAudioSource == null)
+        {
+            groundAudioSource =
+                GetComponent<AudioSource>();
+        }
+
+        if (groundAudioSource == null)
+        {
+            groundAudioSource =
+                gameObject.AddComponent<AudioSource>();
+        }
+
+        groundAudioSource.playOnAwake =
+            false;
+
+        groundAudioSource.loop =
+            true;
+
+        groundAudioSource.spatialBlend =
+            0f;
+    }
+
+    private void PlayGroundLoop()
+    {
+        if (groundLoopSound == null ||
+            groundAudioSource == null)
+        {
+            return;
+        }
+
+        groundAudioSource.clip =
+            groundLoopSound;
+
+        groundAudioSource.volume =
+            groundLoopVolume;
+
+        groundAudioSource.Play();
+    }
+
+    private void StopGroundLoop()
+    {
+        if (groundAudioSource == null)
+            return;
+
+        groundAudioSource.Stop();
+        groundAudioSource.clip = null;
+    }
+
+    private void OnDisable()
+    {
+        StopGroundLoop();
+    }
+
+    private void OnDestroy()
+    {
+        StopGroundLoop();
     }
 }
