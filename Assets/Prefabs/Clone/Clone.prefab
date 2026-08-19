@@ -534,7 +534,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 2025507539
-  m_SortingLayer: 3
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 9128384846270689552, guid: 523572cf0bc453446b348c736ef382c1, type: 3}
@@ -672,6 +672,7 @@ MonoBehaviour:
   enermyLayer:
     serializedVersion: 2
     m_Bits: 64
+  knockbackStrength: 8
   emergencyFollowDistance: 6
   teleportDistance: 14
   teleportDelay: 2
@@ -679,7 +680,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8320
   avoidDistance: 0.6
-  damage: 25
+  damage: 75
   footstepSound: {fileID: 8300000, guid: 50105f5c63c24b6408bc16360f9b9ed6, type: 3}
   attackSound: {fileID: 8300000, guid: ba7f26e2931f0d747971fb2ba6361432, type: 3}
 --- !u!82 &-3323019700602753708
@@ -888,7 +889,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3932a51f535e6394caaad8dd25e6c724, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloneHealth
-  maxHealth: 8
+  maxHealth: 16
   currentHealth: 0
   hpCanvas: {fileID: 3769986063978951652}
 --- !u!114 &3177245113687502196
