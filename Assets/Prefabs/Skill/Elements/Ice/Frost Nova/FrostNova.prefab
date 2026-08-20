@@ -58,9 +58,9 @@ MonoBehaviour:
   - {fileID: 7809606497459495468}
   lifeTime: 10
   fadeOutDuration: 1
-  castSound: {fileID: 8300000, guid: af2af5330bef7a8459b844ece88f5920, type: 3}
+  castSound: {fileID: 8300000, guid: e8a822763c436834fa80f2c77b97ad3d, type: 3}
   castVolume: 1
-  impactSound: {fileID: 8300000, guid: 62e9a40e86b17464fb49deae45167f7a, type: 3}
+  impactSound: {fileID: 8300000, guid: e4461686fcdb48546990b2a67c6ce347, type: 3}
   impactVolume: 1
   impactSoundDelay: 0.18
 --- !u!1 &3536980327276069571
@@ -14948,7 +14948,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 16448
-  groundLoopSound: {fileID: 8300000, guid: a6b1c22a114557e41b9c379ea90fba61, type: 3}
+  groundLoopSound: {fileID: 8300000, guid: 48837307c02d4c344bb8c900bf855754, type: 3}
   groundLoopVolume: 0.5
   groundAudioSource: {fileID: 1248582025568533149}
   freezeDuration: 2.5
