@@ -81,6 +81,12 @@ TagManager:
   - name: Enermy
     uniqueID: 179487883
     locked: 0
+  - name: Effects
+    uniqueID: 2512174975
+    locked: 0
+  - name: NPC
+    uniqueID: 1801360191
+    locked: 0
   - name: Player
     uniqueID: 2025507539
     locked: 0
@@ -110,6 +116,9 @@ TagManager:
     locked: 0
   - name: Fairy
     uniqueID: 1370001017
+    locked: 0
+  - name: Weather
+    uniqueID: 3302177799
     locked: 0
   m_RenderingLayers:
   - Default

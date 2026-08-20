@@ -26,11 +26,26 @@ public class ElementSkillData : ScriptableObject
     public int requiredMastery;
 
     [Header("Skill Settings")]
+    [Min(0f)]
     public float manaCost;
+
     [Tooltip("Thời gian hiệu ứng chính tồn tại.")]
+    [Min(0f)]
     public float duration;
 
+    [Min(0f)]
     public float cooldown;
+
+    // =====================================================
+    // AUDIO
+    // =====================================================
+
+    [Header("Audio")]
+    [Tooltip("Âm thanh phát khi cast skill.")]
+    public AudioClip castSound;
+
+    [Range(0f, 2f)]
+    public float castVolume = 1f;
 
     [HideInInspector]
     public bool unlocked;

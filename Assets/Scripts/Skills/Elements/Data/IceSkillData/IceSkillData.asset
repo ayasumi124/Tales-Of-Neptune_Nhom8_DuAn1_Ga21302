@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971a0494660c6e6408e3dfe9481ee4fb, type: 3}
   m_Name: IceSkillData
   m_EditorClassIdentifier: Assembly-CSharp::ElementSkillData
-  skillName: IciSpear
-  description: 'cast a ice spear '
+  skillName: IceSpike
+  description: 'Cast a ice spear '
   icon: {fileID: 21300000, guid: 0a96accc25dedb1498c3cafe35e0d8b8, type: 3}
   elementType: 2
+  skillIndex: 1
   requiredMastery: 0
   manaCost: 20
+  duration: 1
   cooldown: 5
-  unlocked: 0
+  castSound: {fileID: 8300000, guid: 5fff9b605bde6b84f93e68cc33160be6, type: 3}
+  castVolume: 1
+  unlocked: 1

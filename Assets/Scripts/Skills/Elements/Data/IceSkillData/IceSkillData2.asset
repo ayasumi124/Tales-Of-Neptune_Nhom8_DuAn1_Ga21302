@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971a0494660c6e6408e3dfe9481ee4fb, type: 3}
   m_Name: IceSkillData2
   m_EditorClassIdentifier: Assembly-CSharp::ElementSkillData
-  skillName: IceBreath
-  description: Blow enermies with ice breath (freeze effect)
-  icon: {fileID: 21300000, guid: 4516cf6733e6fd440841e6bbfbf691e1, type: 3}
+  skillName: IceHammer
+  description: Smash enermies with giant ice hammer
+  icon: {fileID: 21300000, guid: 3d3b8ea64d1562249aa840cc88494018, type: 3}
   elementType: 2
+  skillIndex: 2
   requiredMastery: 25
   manaCost: 40
-  cooldown: 20
-  unlocked: 0
+  duration: 20
+  cooldown: 40
+  castSound: {fileID: 8300000, guid: a52ef9ffa47dae94cb6a3f9c55a01714, type: 3}
+  castVolume: 1
+  unlocked: 1

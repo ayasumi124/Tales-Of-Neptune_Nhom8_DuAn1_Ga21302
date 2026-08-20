@@ -2,7 +2,17 @@ using UnityEngine;
 
 public class ElementTestUnlock : MonoBehaviour
 {
-    [SerializeField] private ElementData fireData;
+    [Header("Element Data")]
+    [SerializeField]
+    private ElementData fireData;
+
+    [SerializeField]
+    private ElementData iceData;
+
+    [Header("Test")]
+    [SerializeField]
+    private ElementType testElement =
+        ElementType.Ice;
 
     private void Start()
     {
@@ -10,22 +20,73 @@ public class ElementTestUnlock : MonoBehaviour
             ElementMasteryManager.Instance == null)
         {
             Debug.LogError(
-                "Thiếu ElementEquipmentManager hoặc ElementMasteryManager."
+                "Thiếu ElementEquipmentManager hoặc " +
+                "ElementMasteryManager."
             );
+
             return;
         }
 
-        if (fireData == null)
+        ElementData selectedData =
+            GetSelectedElementData();
+
+        if (selectedData == null)
+        {
+            Debug.LogError(
+                $"Chưa gán ElementData cho {testElement}."
+            );
+
             return;
+        }
 
-        // Trang bị Fire vào Slot4.
+        // Equip element cần test.
         ElementEquipmentManager.Instance
-            .EquipElement(fireData);
+            .EquipElement(
+                selectedData
+            );
 
-        // Tạm cho đủ Mastery để test cả 4 skill.
-        ElementMasteryManager.Instance.AddMastery(
-            ElementType.Fire,
-            100
+        // Cho đủ Mastery để test.
+        ElementMasteryManager.Instance
+            .AddMastery(
+                testElement,
+                100
+            );
+
+        // Unlock toàn bộ skill đủ Mastery.
+        if (selectedData.skills != null)
+        {
+            foreach (
+                ElementSkillData skill
+                in selectedData.skills)
+            {
+                if (skill == null)
+                    continue;
+
+                ElementMasteryManager.Instance
+                    .UnlockSkill(
+                        skill
+                    );
+            }
+        }
+
+        Debug.Log(
+            $"TEST ELEMENT: {testElement} " +
+            "đã được Equip + 100 Mastery."
         );
+    }
+
+    private ElementData GetSelectedElementData()
+    {
+        switch (testElement)
+        {
+            case ElementType.Fire:
+                return fireData;
+
+            case ElementType.Ice:
+                return iceData;
+
+            default:
+                return null;
+        }
     }
 }

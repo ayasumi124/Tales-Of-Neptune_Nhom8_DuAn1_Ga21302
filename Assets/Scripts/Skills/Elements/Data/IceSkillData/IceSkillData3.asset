@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971a0494660c6e6408e3dfe9481ee4fb, type: 3}
   m_Name: IceSkillData3
   m_EditorClassIdentifier: Assembly-CSharp::ElementSkillData
-  skillName: IceHammer
-  description: Smash enermies with giant ice hammer
-  icon: {fileID: 21300000, guid: 3d3b8ea64d1562249aa840cc88494018, type: 3}
+  skillName: Blizzard
+  description: Infilct enemies with icywind around
+  icon: {fileID: 21300000, guid: 4516cf6733e6fd440841e6bbfbf691e1, type: 3}
   elementType: 2
+  skillIndex: 3
   requiredMastery: 50
   manaCost: 60
-  cooldown: 30
-  unlocked: 0
+  duration: 15
+  cooldown: 45
+  castSound: {fileID: 0}
+  castVolume: 1
+  unlocked: 1

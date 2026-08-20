@@ -20,6 +20,12 @@ MonoBehaviour:
   icon: {fileID: 8000716645655726165, guid: a983bdb70e29f3b4f8559ffef7be2eaa, type: 3}
   itemType: 0
   effectType: 1
+  equippable: 0
+  equipmentType: 0
+  attackBonus: 0
+  defenseBonus: 0
+  maxHealthBonus: 0
+  maxManaBonus: 0
   stackable: 1
   maxStack: 99
   effectValue: 2
