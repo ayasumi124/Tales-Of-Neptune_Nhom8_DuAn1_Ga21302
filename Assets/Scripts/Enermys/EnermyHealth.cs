@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
-
+using System;
+using Random = UnityEngine.Random;
 public class EnermyHealth : MonoBehaviour
 {
     [Header("Health")]
@@ -62,7 +63,8 @@ public class EnermyHealth : MonoBehaviour
 
     public bool IsBoss =>
         isBoss;
-
+    public static event Action<EnermyHealth>
+    OnBossDied;
     private Rigidbody2D rb;
     private Animator animator;
     private EnermyAudio enermyAudio;
@@ -489,6 +491,14 @@ public class EnermyHealth : MonoBehaviour
 
         currentHealth =
             0;
+        if (isBoss)
+        {
+            OnBossDied?.Invoke(this);
+
+            Debug.Log(
+                $"Boss {name} phát tín hiệu OnBossDied."
+            );
+        }
 
         StopRunningCoroutines();
 
