@@ -1121,7 +1121,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280488916153959458, guid: 7a205fd369c6fbb41806601ad11229ea, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -13.144795
+      value: -12.79
       objectReference: {fileID: 0}
     - target: {fileID: 3280488916153959458, guid: 7a205fd369c6fbb41806601ad11229ea, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17169,7 +17169,7 @@ SortingGroup:
   m_GameObject: {fileID: 553874588}
   m_Enabled: 1
   m_SortingLayerID: 799678501
-  m_SortingLayer: 8
+  m_SortingLayer: 9
   m_SortingOrder: -1
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -17219,7 +17219,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 799678501
-  m_SortingLayer: 8
+  m_SortingLayer: 9
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -34230,6 +34230,63 @@ Transform:
   - {fileID: 334236663}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &715673107
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 759777161040788318, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_Name
+      value: IceSkillChest
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -12.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2081193749332920407, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7da2093e578f2b54aa62281886682a9d, type: 3}
 --- !u!1001 &828693856
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40623,7 +40680,7 @@ SortingGroup:
   m_GameObject: {fileID: 969789601}
   m_Enabled: 1
   m_SortingLayerID: -95485913
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -40673,7 +40730,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -95485913
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -48607,7 +48664,7 @@ SortingGroup:
   m_GameObject: {fileID: 1404665329}
   m_Enabled: 1
   m_SortingLayerID: 1215820729
-  m_SortingLayer: 12
+  m_SortingLayer: 13
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -48657,7 +48714,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -95485913
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -113546,7 +113603,7 @@ SortingGroup:
   m_GameObject: {fileID: 1739495188}
   m_Enabled: 1
   m_SortingLayerID: -1376614893
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -113596,7 +113653,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1376614893
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -124252,7 +124309,7 @@ SortingGroup:
   m_GameObject: {fileID: 2064178899}
   m_Enabled: 1
   m_SortingLayerID: -1088343419
-  m_SortingLayer: 11
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
@@ -124302,7 +124359,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1088343419
-  m_SortingLayer: 11
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -124854,3 +124911,4 @@ SceneRoots:
   - {fileID: 1036797079}
   - {fileID: 710148962}
   - {fileID: 8540881130391518874}
+  - {fileID: 715673107}

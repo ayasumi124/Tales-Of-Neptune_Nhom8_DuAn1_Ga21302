@@ -160,72 +160,90 @@ public class AudioManager : MonoBehaviour
     }
 
     private void OnSceneUnloaded(
-        Scene scene)
-    {
-        /*
-         * Hủy meteor trước để AudioSource riêng
-         * trên từng meteor được dừng ngay.
-         */
-        FireMeteor.StopAllMeteors();
+    Scene scene)
+{
+    /*
+     * Hủy meteor trước để AudioSource riêng
+     * trên từng meteor được dừng ngay.
+     */
+    FireMeteor.StopAllMeteors();
 
-        StopGameplaySounds();
-    }
+    /*
+     * Dừng toàn bộ âm thanh gameplay
+     * thuộc scene cũ.
+     */
+    StopGameplaySounds();
+
+    /*
+     * Weather Source nằm trên AudioManager
+     * DontDestroyOnLoad nên BẮT BUỘC
+     * phải dừng thủ công.
+     */
+    StopWeather();
+}
 
     private void OnSceneLoaded(
-        Scene scene,
-        LoadSceneMode mode)
-    {
-        /*
-         * Dừng lại lần nữa để bảo đảm không còn
-         * âm thanh từ scene cũ lọt sang scene mới.
-         */
-        StopGameplaySounds();
-    }
+    Scene scene,
+    LoadSceneMode mode)
+{
+    /*
+     * Dọn thêm lần nữa để chắc chắn
+     * không còn sound của scene cũ.
+     *
+     * WeatherController của scene mới
+     * sẽ gọi PlayWeather() trong Start()
+     * nếu scene đó có thời tiết.
+     */
+    StopGameplaySounds();
+    StopWeather();
+}
 
     // =====================================================
     // GAMEPLAY SOUND CLEANUP
     // =====================================================
 
     public void StopGameplaySounds()
-    {
-        StopSFX();
-        StopElementSkillSound();
-        StopFootstep();
-    }
+{
+    StopSFX();
+    StopElementSkillSound();
+    StopFootstep();
+}
 
-    public void StopAllSFX()
-    {
-        StopGameplaySounds();
-    }
+public void StopAllSFX()
+{
+    StopGameplaySounds();
+    StopWeather();
+}
+
 
     private void StopSFX()
-    {
-        if (sfxSource == null)
-            return;
+{
+    if (sfxSource == null)
+        return;
 
-        sfxSource.Stop();
-        sfxSource.clip = null;
-        sfxSource.loop = false;
-    }
-
+    sfxSource.Stop();
+    sfxSource.clip = null;
+    sfxSource.loop = false;
+}
     public void StopElementSkillSound()
-    {
-        if (elementSkillSource == null)
-            return;
+{
+    if (elementSkillSource == null)
+        return;
 
-        elementSkillSource.Stop();
-        elementSkillSource.clip = null;
-        elementSkillSource.loop = false;
-    }
+    elementSkillSource.Stop();
+    elementSkillSource.clip = null;
+    elementSkillSource.loop = false;
+}
 
-    public void StopFootstep()
-    {
-        if (footstepSource == null)
-            return;
+   public void StopFootstep()
+{
+    if (footstepSource == null)
+        return;
 
-        footstepSource.Stop();
-        footstepSource.clip = null;
-    }
+    footstepSource.Stop();
+    footstepSource.clip = null;
+}
+
 
     // =====================================================
     // ELEMENT SKILL AUDIO
@@ -356,45 +374,69 @@ public class AudioManager : MonoBehaviour
     // WEATHER
     // =====================================================
 
-    public void PlayWeather(
-        AudioClip clip,
-        float volume = 0.5f)
+   
+public void PlayWeather(
+    AudioClip clip,
+    float volume = 0.5f)
+{
+    if (weatherSource == null)
     {
-        if (weatherSource == null)
-            return;
+        Debug.LogWarning(
+            "AudioManager: Weather Source chưa được gán.",
+            this
+        );
 
-        if (clip == null)
-        {
-            StopWeather();
-            return;
-        }
+        return;
+    }
 
-        // Đang phát đúng weather này rồi
-        if (weatherSource.clip == clip &&
-            weatherSource.isPlaying)
-        {
-            return;
-        }
+    if (clip == null)
+    {
+        StopWeather();
+        return;
+    }
 
-        weatherSource.Stop();
-
-        weatherSource.clip = clip;
-        weatherSource.loop = true;
+    /*
+     * Nếu đang phát đúng weather hiện tại
+     * thì chỉ cập nhật volume.
+     *
+     * Không restart clip để tránh tiếng mưa
+     * bị giật.
+     */
+    if (weatherSource.clip == clip &&
+        weatherSource.isPlaying)
+    {
         weatherSource.volume =
             Mathf.Clamp01(volume);
 
-        weatherSource.Play();
+        return;
     }
 
+    weatherSource.Stop();
+
+    weatherSource.clip = clip;
+    weatherSource.loop = true;
+    weatherSource.playOnAwake = false;
+
+    weatherSource.volume =
+        Mathf.Clamp01(volume);
+
+    weatherSource.Play();
+}
     public void StopWeather()
-    {
-        if (weatherSource == null)
-            return;
+{
+    if (weatherSource == null)
+        return;
 
-        weatherSource.Stop();
-        weatherSource.clip = null;
-    }
+    weatherSource.Stop();
+    weatherSource.clip = null;
 
+    /*
+     * Weather luôn là loop.
+     * Không bắt buộc nhưng giữ source
+     * đúng cấu hình sau khi Stop.
+     */
+    weatherSource.loop = true;
+}
     // =====================================================
     // MUSIC
     // =====================================================

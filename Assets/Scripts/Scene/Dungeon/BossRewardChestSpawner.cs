@@ -1,10 +1,23 @@
+using System.Collections;
 using UnityEngine;
 
 public class BossRewardChestSpawner : MonoBehaviour
 {
+    // =====================================================
+    // BOSS
+    // =====================================================
+
     [Header("Boss")]
+    [Tooltip(
+        "Kéo đúng EnermyHealth của Boss vào đây."
+    )]
     [SerializeField]
-    private Transform bossContainer;
+    private EnermyHealth targetBoss;
+
+
+    // =====================================================
+    // REWARD
+    // =====================================================
 
     [Header("Reward Chests")]
     [SerializeField]
@@ -14,124 +27,134 @@ public class BossRewardChestSpawner : MonoBehaviour
     [SerializeField]
     private Transform[] spawnPoints;
 
-    [Header("Settings")]
-    [SerializeField]
-    private float checkInterval = 0.25f;
 
+    // =====================================================
+    // SETTINGS
+    // =====================================================
+
+    [Header("Settings")]
+    [Min(0f)]
     [SerializeField]
     private float spawnDelay = 1f;
 
-    private bool bossWasAlive;
+
+    // =====================================================
+    // STATE
+    // =====================================================
+
     private bool rewardSpawned;
+    private Coroutine spawnCoroutine;
 
-    private float checkTimer;
-    private float spawnTimer;
 
-    private bool waitingToSpawn;
+    // =====================================================
+    // EVENT
+    // =====================================================
 
-    private void Start()
+    private void OnEnable()
     {
-        bossWasAlive =
-            HasLivingBoss();
-
-        checkTimer = 0f;
+        EnermyHealth.OnBossDied +=
+            HandleBossDied;
     }
 
-    private void Update()
+    private void OnDisable()
+    {
+        EnermyHealth.OnBossDied -=
+            HandleBossDied;
+    }
+
+
+    // =====================================================
+    // BOSS DIED
+    // =====================================================
+
+    private void HandleBossDied(
+        EnermyHealth deadBoss)
     {
         if (rewardSpawned)
             return;
 
-        if (waitingToSpawn)
+        if (deadBoss == null)
+            return;
+
+        /*
+         * Nếu đã gán Target Boss,
+         * chỉ Boss đó mới được kích hoạt reward.
+         */
+        if (targetBoss != null &&
+            deadBoss != targetBoss)
         {
-            spawnTimer -= Time.deltaTime;
-
-            if (spawnTimer <= 0f)
-            {
-                SpawnRewards();
-            }
-
             return;
         }
 
-        checkTimer -= Time.deltaTime;
+        Debug.Log(
+            $"BossRewardChestSpawner nhận Boss chết: " +
+            $"{deadBoss.name}"
+        );
 
-        if (checkTimer > 0f)
-            return;
-
-        checkTimer = checkInterval;
-
-        bool bossAlive =
-            HasLivingBoss();
-
-        /*
-         * Chỉ spawn reward nếu trước đó
-         * thực sự có Boss sống.
-         *
-         * Tránh trường hợp scene vừa load
-         * mà container rỗng -> tự spawn chest.
-         */
-        if (bossWasAlive &&
-            !bossAlive)
+        if (spawnCoroutine != null)
         {
-            waitingToSpawn = true;
+            StopCoroutine(
+                spawnCoroutine
+            );
+        }
 
-            spawnTimer =
-                Mathf.Max(
-                    0f,
+        spawnCoroutine =
+            StartCoroutine(
+                SpawnRewardRoutine()
+            );
+    }
+
+
+    // =====================================================
+    // DELAY
+    // =====================================================
+
+    private IEnumerator SpawnRewardRoutine()
+    {
+        if (spawnDelay > 0f)
+        {
+            yield return
+                new WaitForSeconds(
                     spawnDelay
                 );
         }
 
-        if (bossAlive)
-        {
-            bossWasAlive = true;
-        }
+        SpawnRewards();
+
+        spawnCoroutine = null;
     }
 
-    private bool HasLivingBoss()
-    {
-        if (bossContainer == null)
-            return false;
 
-        for (int i = 0;
-             i < bossContainer.childCount;
-             i++)
-        {
-            Transform child =
-                bossContainer.GetChild(i);
-
-            if (child == null ||
-                !child.gameObject.activeInHierarchy)
-            {
-                continue;
-            }
-
-            EnermyHealth health =
-                child.GetComponentInChildren<
-                    EnermyHealth
-                >();
-
-            if (health != null)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    // =====================================================
+    // SPAWN
+    // =====================================================
 
     private void SpawnRewards()
     {
         if (rewardSpawned)
             return;
 
-        rewardSpawned = true;
-        waitingToSpawn = false;
-
         if (chestPrefabs == null ||
-            spawnPoints == null)
+            chestPrefabs.Length == 0)
         {
+            Debug.LogError(
+                "BossRewardChestSpawner: " +
+                "chưa gán Chest Prefabs.",
+                this
+            );
+
+            return;
+        }
+
+        if (spawnPoints == null ||
+            spawnPoints.Length == 0)
+        {
+            Debug.LogError(
+                "BossRewardChestSpawner: " +
+                "chưa gán Spawn Points.",
+                this
+            );
+
             return;
         }
 
@@ -141,38 +164,66 @@ public class BossRewardChestSpawner : MonoBehaviour
                 spawnPoints.Length
             );
 
+        if (count <= 0)
+            return;
+
+        rewardSpawned = true;
+
+        Debug.Log(
+            $"Spawn {count} Boss Reward Chest."
+        );
+
         for (int i = 0;
              i < count;
              i++)
         {
-            GameObject prefab =
+            GameObject chestPrefab =
                 chestPrefabs[i];
 
-            Transform point =
+            Transform spawnPoint =
                 spawnPoints[i];
 
-            if (prefab == null ||
-                point == null)
+            if (chestPrefab == null)
             {
+                Debug.LogWarning(
+                    $"Chest Prefab [{i}] đang null.",
+                    this
+                );
+
                 continue;
             }
 
-            Instantiate(
-                prefab,
-                point.position,
-                point.rotation
+            if (spawnPoint == null)
+            {
+                Debug.LogWarning(
+                    $"Spawn Point [{i}] đang null.",
+                    this
+                );
+
+                continue;
+            }
+
+            GameObject chest =
+                Instantiate(
+                    chestPrefab,
+                    spawnPoint.position,
+                    spawnPoint.rotation
+                );
+
+            Debug.Log(
+                $"Spawn {chest.name} tại " +
+                $"{spawnPoint.name}."
             );
         }
     }
 
+
+    // =====================================================
+    // VALIDATE
+    // =====================================================
+
     private void OnValidate()
     {
-        checkInterval =
-            Mathf.Max(
-                0.05f,
-                checkInterval
-            );
-
         spawnDelay =
             Mathf.Max(
                 0f,
